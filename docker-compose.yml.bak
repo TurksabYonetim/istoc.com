@@ -1,0 +1,154 @@
+services:
+
+  # ──────────────────────────────────────────────
+  # Frontend — Vite statik site + Nginx
+  # ──────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./tradehubfront
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    ports:
+      - "${FRONTEND_PORT:-5500}:80"
+    depends_on:
+      - backend
+      - websocket
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Backend — Frappe Gunicorn (assets dahil)
+  # ──────────────────────────────────────────────
+  backend:
+    build:
+      context: ./tradehubback
+      dockerfile: Dockerfile
+    command: /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 -w 4 -t 120 frappe_wsgi:application
+    ports:
+      - "${BACKEND_PORT:-8001}:8000"
+    environment:
+      - FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME:-tradehub.localhost}
+      - SITES_PATH=sites
+      - FRAPPE_STREAM_LOGGING=1
+    volumes:
+      - ./tradehubback/sites:/home/frappe/frappe-bench/sites
+      - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
+      - ./tradehubback/frappe_wsgi.py:/home/frappe/frappe-bench/frappe_wsgi.py
+      - backend-logs:/home/frappe/frappe-bench/logs
+      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # WebSocket — Frappe Socket.IO
+  # ──────────────────────────────────────────────
+  websocket:
+    build:
+      context: ./tradehubback
+      dockerfile: Dockerfile
+    command: node apps/frappe/socketio.js
+    ports:
+      - "${SOCKETIO_PORT:-9001}:9000"
+    volumes:
+      - ./tradehubback/sites:/home/frappe/frappe-bench/sites
+      - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
+      - backend-logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      - redis-cache
+      - redis-queue
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Worker — Frappe arka plan işçisi
+  # ──────────────────────────────────────────────
+  worker:
+    build:
+      context: ./tradehubback
+      dockerfile: Dockerfile
+    command: bench worker
+    volumes:
+      - ./tradehubback/sites:/home/frappe/frappe-bench/sites
+      - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
+      - backend-logs:/home/frappe/frappe-bench/logs
+      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
+    depends_on:
+      - redis-queue
+      - backend
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Scheduler — Frappe zamanlayıcı
+  # ──────────────────────────────────────────────
+  scheduler:
+    build:
+      context: ./tradehubback
+      dockerfile: Dockerfile
+    command: bench schedule
+    volumes:
+      - ./tradehubback/sites:/home/frappe/frappe-bench/sites
+      - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
+      - backend-logs:/home/frappe/frappe-bench/logs
+      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
+    depends_on:
+      - redis-queue
+      - backend
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # MariaDB
+  # ──────────────────────────────────────────────
+  db:
+    image: mariadb:10.6
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: ${DB_NAME:-_a442feea467abfcc}
+      MYSQL_USER: frappe
+      MYSQL_PASSWORD: ${DB_PASSWORD:-rCN4UEwX6mG2wWui}
+    ports:
+      - "${DB_PORT:-3308}:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_ROOT_PASSWORD:-changeme}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Redis Cache
+  # ──────────────────────────────────────────────
+  redis-cache:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_CACHE_PORT:-13002}:6379"
+    volumes:
+      - redis-cache-data:/data
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Redis Queue
+  # ──────────────────────────────────────────────
+  redis-queue:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_QUEUE_PORT:-11002}:6379"
+    volumes:
+      - redis-queue-data:/data
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  redis-cache-data:
+  redis-queue-data:
+  backend-logs:

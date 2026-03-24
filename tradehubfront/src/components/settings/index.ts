@@ -1,0 +1,11 @@
+export { SettingsLayout, initSettingsLayout } from './SettingsLayout';
+export { SettingsAccountEdit, initSettingsAccountEdit } from './SettingsAccountEdit';
+export { SettingsTaxInfo, initSettingsTaxInfo } from './SettingsTaxInfo';
+export { SettingsLinkedAccounts, initSettingsLinkedAccounts } from './SettingsLinkedAccounts';
+export { SettingsPrivacy, initSettingsPrivacy } from './SettingsPrivacy';
+export { SettingsAdPreferences, initSettingsAdPreferences } from './SettingsAdPreferences';
+export { SettingsEmailPreferences, initSettingsEmailPreferences } from './SettingsEmailPreferences';
+export { SettingsChangePassword, initSettingsChangePassword } from './SettingsChangePassword';
+export { SettingsChangeEmail, initSettingsChangeEmail } from './SettingsChangeEmail';
+export { SettingsChangePhone, initSettingsChangePhone } from './SettingsChangePhone';
+export { SettingsDeleteAccount, initSettingsDeleteAccount } from './SettingsDeleteAccount';

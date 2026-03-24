@@ -1,0 +1,30 @@
+{
+    "frappe": {
+        "resolution": {
+            "commit_hash": null,
+            "branch": null
+        },
+        "required": [],
+        "idx": 1,
+        "version": "15.102.1"
+    },
+    "erpnext": {
+        "is_repo": true,
+        "resolution": {
+            "commit_hash": "1ffd814f928a0805877b89dc76e0dd4c7eb19148",
+            "branch": "version-15"
+        },
+        "required": [],
+        "idx": 2,
+        "version": "15.101.0"
+    },
+    "tradehub_core": {
+        "resolution": {
+            "commit_hash": null,
+            "branch": null
+        },
+        "required": [],
+        "idx": 3,
+        "version": "0.0.1"
+    }
+}

@@ -1,0 +1,4866 @@
+/* ============================================================
+   GOOGLE FONTS — Roboto Variable
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap');
+
+@import "tailwindcss";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+/* --- Dark Mode: class-based --- */
+@variant dark (&:where(.dark, .dark *));
+
+/* --- Alpine.js: hide elements until Alpine initializes --- */
+[x-cloak] {
+    display: none !important;
+}
+
+/* ============================================================
+   @theme — DESIGN TOKENS
+   ============================================================ */
+@theme {
+
+    /* ==========================================================
+     1. COLOR SYSTEM
+     ========================================================== */
+
+    /* --- Primary: Altın / Amber (#cc9900) --- */
+    --color-primary-50: #fef9e7;
+    --color-primary-100: #fdf0c3;
+    --color-primary-200: #fbe08a;
+    --color-primary-300: #f6c94d;
+    --color-primary-400: #e6b212;
+    --color-primary-500: #cc9900;
+    --color-primary-600: #b38600;
+    --color-primary-700: #8a6800;
+    --color-primary-800: #6b5100;
+    --color-primary-900: #4d3a00;
+    --color-primary-950: #2e2200;
+
+    /* --- Secondary: Near-Black --- */
+    --color-secondary-50: #f5f5f5;
+    --color-secondary-100: #e5e5e5;
+    --color-secondary-200: #cccccc;
+    --color-secondary-300: #a3a3a3;
+    --color-secondary-400: #737373;
+    --color-secondary-500: #525252;
+    --color-secondary-600: #333333;
+    --color-secondary-700: #1f1f1f;
+    --color-secondary-800: #141414;
+    --color-secondary-900: #0a0a0a;
+    --color-secondary-950: #050505;
+
+    /* --- Accent: Turkuaz / Cyan --- */
+    --color-accent-50: #ecfeff;
+    --color-accent-100: #cffafe;
+    --color-accent-200: #a5f3fc;
+    --color-accent-300: #67e8f9;
+    --color-accent-400: #22d3ee;
+    --color-accent-500: #06b6d4;
+    --color-accent-600: #0891b2;
+    --color-accent-700: #0e7490;
+    --color-accent-800: #155e75;
+    --color-accent-900: #164e63;
+    --color-accent-950: #083344;
+
+    /* --- Semantic Colors (Tailwind defaults) --- */
+    --color-success-50: #f0fdf4;
+    --color-success-500: #22c55e;
+    --color-success-700: #15803d;
+
+    --color-warning-50: #fffbeb;
+    --color-warning-500: #f59e0b;
+    --color-warning-700: #b45309;
+
+    --color-error-50: #fef2f2;
+    --color-error-500: #ef4444;
+    --color-error-700: #b91c1c;
+
+    --color-info-50: #eff6ff;
+    --color-info-500: #3b82f6;
+    --color-info-700: #1d4ed8;
+
+    /* --- Surface Colors (Light / Dark) --- */
+    --color-surface: #ffffff;
+    --color-surface-muted: #fafafa;
+    --color-surface-raised: #f5f5f5;
+    --color-surface-overlay: rgba(0, 0, 0, 0.5);
+    --color-surface-inverse: #0a0a0a;
+
+    /* --- Text Colors --- */
+    --color-text-primary: #0a0a0a;
+    --color-text-secondary: #525252;
+    --color-text-tertiary: #a3a3a3;
+    --color-text-disabled: #d4d4d4;
+    --color-text-inverse: #fafafa;
+    --color-text-link: #cc9900;
+    --color-text-link-hover: #b38600;
+
+    /* --- Border Colors --- */
+    --color-border-default: #e5e5e5;
+    --color-border-strong: #a3a3a3;
+    --color-border-focus: #cc9900;
+    --color-border-error: #ef4444;
+
+
+    /* ==========================================================
+     2. TYPOGRAPHY
+     WCAG AA+ — Çocuk & yaşlı erişilebilirliği
+     ========================================================== */
+
+    /* --- Font Family --- */
+    --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+    /* --- Font Size Scale --- */
+    --font-size-xs: 0.75rem;
+    /* 12px — yalnızca caption/label */
+    --font-size-sm: 0.875rem;
+    /* 14px — yardımcı metin */
+    --font-size-base: 1.125rem;
+    /* 18px — body default */
+    --font-size-lg: 1.25rem;
+    /* 20px */
+    --font-size-xl: 1.5rem;
+    /* 24px */
+    --font-size-2xl: 1.875rem;
+    /* 30px */
+    --font-size-3xl: 2.25rem;
+    /* 36px */
+    --font-size-4xl: 3rem;
+    /* 48px */
+    --font-size-5xl: 3.75rem;
+    /* 60px */
+
+    /* --- Line Height --- */
+    --line-height-none: 1;
+    --line-height-tight: 1.25;
+    /* headings (h1-h3) */
+    --line-height-snug: 1.375;
+    /* h4-h6, subtitle */
+    --line-height-normal: 1.625;
+    /* body — cömert */
+    --line-height-relaxed: 1.75;
+    /* büyük metin blokları */
+    --line-height-loose: 2;
+    /* çocuk/yaşlı okuma modu */
+
+    /* --- Letter Spacing --- */
+    --letter-spacing-tighter: -0.03em;
+    /* büyük headingler */
+    --letter-spacing-tight: -0.015em;
+    /* h3-h4 */
+    --letter-spacing-normal: 0em;
+    /* body */
+    --letter-spacing-wide: 0.025em;
+    /* uppercase label */
+    --letter-spacing-wider: 0.05em;
+    /* overline, caps */
+
+    /* --- Font Weight --- */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-black: 900;
+
+
+    /* ==========================================================
+     3. SPACING & SIZING
+     Base unit: 8px
+     ========================================================== */
+
+    --spacing-0: 0px;
+    --spacing-0_5: 2px;
+    /* micro: border offset */
+    --spacing-1: 4px;
+    /* mini: icon-text gap */
+    --spacing-2: 8px;
+    /* base unit */
+    --spacing-3: 12px;
+    /* gutter (xs/sm) */
+    --spacing-4: 16px;
+    /* component padding */
+    --spacing-5: 20px;
+    --spacing-6: 24px;
+    /* gutter (lg), card padding */
+    --spacing-8: 32px;
+    /* section inner */
+    --spacing-10: 40px;
+    --spacing-12: 48px;
+    /* section gap small */
+    --spacing-16: 64px;
+    /* section gap medium */
+    --spacing-20: 80px;
+    /* section gap large */
+    --spacing-24: 96px;
+    /* page section */
+    --spacing-32: 128px;
+    /* hero spacing */
+    --spacing-40: 160px;
+    --spacing-48: 192px;
+    --spacing-64: 256px;
+
+    /* --- Semantic Spacing Tokens --- */
+    --spacing-card-padding: 8px;
+    /* 24px */
+    --spacing-card-gap: 11px;
+    /* 16px */
+    --spacing-section-y: 64px;
+    /* 64px */
+    --spacing-section-y-lg: 96px;
+    /* 96px */
+    --spacing-page-x: 16px;
+    /* 16px — mobile */
+    --spacing-page-x-lg: 32px;
+    /* 32px — desktop */
+    --spacing-stack-sm: 8px;
+    /* 8px */
+    --spacing-stack-md: 16px;
+    /* 16px */
+    --spacing-stack-lg: 32px;
+    /* 32px */
+    --spacing-inline-sm: 8px;
+    /* 8px */
+    --spacing-inline-md: 12px;
+    /* 12px */
+    --spacing-inline-lg: 24px;
+    /* 24px */
+    --spacing-input-x: 12px;
+    /* 12px */
+    --spacing-input-y: 8px;
+    /* 8px */
+    --spacing-button-x: 24px;
+    /* 24px */
+    --spacing-button-y: 12px;
+    /* 12px */
+
+    /* --- Container / Max-Width --- */
+    --container-xs: 320px;
+    /* iPhone 4 uyumu */
+    --container-sm: 568px;
+    /* Tablet */
+    --container-md: 960px;
+    /* Laptop */
+    --container-lg: 1472px;
+    /* Desktop — boxed */
+    --container-xl: 1472px;
+    /* Wide */
+    --container-full: 100%;
+
+
+    /* ==========================================================
+     4. BREAKPOINTS
+     ========================================================== */
+
+    --breakpoint-xs: 320px;
+    --breakpoint-sm: 480px;
+    --breakpoint-md: 640px;
+    --breakpoint-lg: 768px;
+    --breakpoint-xl: 1024px;
+    --breakpoint-2xl: 1280px;
+    --breakpoint-3xl: 1536px;
+    --breakpoint-4xl: 1920px;
+
+
+    /* ==========================================================
+     5. BORDER & RADIUS
+     ========================================================== */
+
+    --radius-none: 0px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-xl: 32px;
+    --radius-full: 9999px;
+
+    /* --- Semantic Radius --- */
+    --radius-button: 8px;
+    /* 8px */
+    --radius-card: 8px;
+    /* 16px */
+    --radius-input: 8px;
+    /* 8px */
+    --radius-badge: 9999px;
+    /* pill */
+    --radius-modal: 32px;
+    /* 32px */
+    --radius-tooltip: 4px;
+    /* 4px */
+
+
+    /* ==========================================================
+     6. SHADOW & ELEVATION
+     ========================================================== */
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+
+    --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.04), 0 4px 8px -1px rgba(0, 0, 0, 0.08);
+
+    --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.06), 0 12px 24px -4px rgba(0, 0, 0, 0.10);
+
+    --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.06), 0 24px 48px -8px rgba(0, 0, 0, 0.12);
+
+    /* --- Semantic Shadow — moved to @theme inline below --- */
+
+
+    /* ==========================================================
+     7. MOTION & TRANSITIONS
+     ========================================================== */
+
+    --duration-fast: 100ms;
+    --duration-default: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 500ms;
+
+    --ease-default: ease-in-out;
+    --ease-in: ease-in;
+    --ease-out: ease-out;
+
+    /* --- animate tokens — moved to @theme inline below --- */
+
+
+
+
+    /* ==========================================================
+     10. Z-INDEX
+     ========================================================== */
+
+    --z-behind: -1;
+    --z-base: 0;
+    --z-raised: 1;
+    --z-dropdown: 10;
+    --z-sticky: 20;
+    --z-header: 30;
+    --z-sidebar: 35;
+    --z-backdrop: 40;
+    --z-modal: 50;
+    --z-popover: 60;
+    --z-toast: 70;
+    --z-tooltip: 80;
+    --z-spotlight: 90;
+    --z-max: 100;
+    --z-fixed: 40;
+
+}
+
+/* ============================================================
+   :root — COMPONENT TOKENS
+   ============================================================ */
+:root {
+    /* ==========================================================
+     FLUID TYPOGRAPHY TOKENS (320px → 1280px)
+     ========================================================== */
+    --text-page-title: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+    /* 18px → 24px */
+    --text-product-title: clamp(0.8125rem, 0.75rem + 0.25vw, 0.9375rem);
+    /* 13px → 15px */
+    --text-product-price: clamp(0.9375rem, 0.875rem + 0.25vw, 1.25rem);
+    /* 15px → 20px */
+    --text-product-meta: clamp(0.6875rem, 0.65rem + 0.15vw, 0.8125rem);
+    /* 11px → 13px */
+    --text-badge: clamp(0.625rem, 0.6rem + 0.1vw, 0.75rem);
+    /* 10px → 12px */
+    --text-breadcrumb: clamp(0.6875rem, 0.65rem + 0.15vw, 0.8125rem);
+    /* 11px → 13px */
+    --text-filter: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+    /* 12px → 14px */
+    --text-body: clamp(0.8125rem, 0.78rem + 0.15vw, 0.9375rem);
+    /* 13px → 15px */
+
+    /* ==========================================================
+     FLUID SPACING TOKENS (320px → 1280px)
+     ========================================================== */
+    --space-page-x: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
+    /* 12px → 24px */
+    --space-card-padding: clamp(0.5rem, 0.4rem + 0.4vw, 1rem);
+    /* 8px → 16px */
+    --space-card-gap: clamp(0.5rem, 0.4rem + 0.4vw, 1rem);
+    /* 8px → 16px */
+    --space-section-gap: clamp(1rem, 0.8rem + 0.8vw, 2rem);
+    /* 16px → 32px */
+
+    /* ==========================================================
+     8. COMPONENT TOKENS
+     ========================================================== */
+
+    /* --- Button --- */
+    --btn-bg: #cc9900;
+    --btn-text: var(--color-surface);
+    --btn-border-width: 0px;
+    --btn-border-color: var(--color-primary-500);
+    --btn-font-size: 0.875rem;
+    --btn-font-weight: 600;
+    --btn-shadow: none;
+
+    /* --- Button Outline Variant --- */
+    --btn-outline-bg: var(--color-surface);
+    --btn-outline-text: var(--color-primary-500);
+    --btn-outline-border-width: 2px;
+    --btn-outline-border-color: var(--color-primary-500);
+
+    /* --- Auth Pages (Login, Register, Forgot Password) --- */
+    --auth-accent: var(--color-primary-500);
+    --auth-input-focus: var(--color-primary-500);
+    --auth-header-border: var(--color-primary-500);
+
+    /* --- Card --- */
+    --card-bg: var(--color-surface);
+    --card-border-width: 0px;
+    --card-border-color: var(--color-border-default);
+    --card-title-size: 0.6875rem;
+    --card-title-weight: 600;
+    --card-price-color: var(--color-text-heading);
+    --card-price-size: 16px;
+    --card-price-weight: 700;
+    --card-desc-color: #6b7280;
+    --card-desc-size: 12px;
+    --card-moq-color: #6b7280;
+    --card-moq-size: 11px;
+    --card-badge-bg: var(--color-primary-50);
+    --card-badge-text: var(--color-primary-500);
+    --card-badge-size: 10px;
+    --card-badge-radius: 5px;
+    --card-verified-color: var(--color-primary-500);
+    --card-verified-size: 9px;
+    --card-supplier-color: #9ca3af;
+    --card-supplier-size: 9px;
+
+    /* --- Input / Search --- */
+    --input-bg: var(--color-surface);
+    --input-border-width: 1px;
+    --input-border-color: var(--color-border-default);
+    --input-text-color: var(--color-text-primary);
+    --input-font-size: 0.875rem;
+    --input-focus-border-color: var(--color-primary-500);
+
+    /* --- Badge --- */
+    --badge-font-size: 0.75rem;
+    --badge-font-weight: 600;
+    --badge-padding-x: 12px;
+    --badge-padding-y: 4px;
+
+    /* --- Navigation Link --- */
+    --nav-font-size: 0.8125rem;
+    --nav-font-weight: 300;
+    --nav-text-color: #000000;
+    --nav-hover-color: var(--color-primary-600);
+
+
+    /* ==========================================================
+     9. PAGE SECTION TOKENS
+     ========================================================== */
+
+    /* --- Header / TopBar --- */
+    --header-bg: var(--color-surface);
+    --header-scroll-bg: var(--color-surface);
+    --header-scroll-border: var(--color-border-default);
+    --header-height: 64px;
+    --header-border-color: transparent;
+    --header-text-color: #374151;
+    --header-icon-color: #374151;
+    --header-icon-hover-color: var(--color-primary-500);
+
+    /* --- SubHeader --- */
+    --subheader-bg: var(--color-surface);
+    --subheader-text-color: #000000;
+    --subheader-hover-color: #a3a3a3;
+    --subheader-hover-bg: rgba(255, 255, 255, 0.8);
+    --subheader-active-color: #000000;
+    --subheader-border-color: transparent;
+
+    /* --- Header Gradient --- */
+    --header-gradient-1: #fff7ed;
+    --header-gradient-2: #f6f4e8;
+    --header-gradient-3: #fff1f2;
+    --header-gradient-4: #fbfaf0;
+    --header-gradient-5: #fff7ed;
+
+    /* --- Search Area --- */
+    --search-bg: transparent;
+    --search-tab-color: #6b7280;
+    --search-tab-active-color: var(--color-primary-500);
+    --search-input-border-color: var(--color-primary-500);
+    --search-btn-gradient-start: var(--color-primary-400);
+    --search-btn-gradient-end: var(--color-primary-600);
+    --search-box-bg: var(--color-surface);
+    --search-input-text: var(--color-text-heading);
+    --search-image-link-color: #6b7280;
+    --search-dropdown-bg: var(--color-surface);
+    --search-dropdown-border: #fcd34d;
+    --search-dropdown-text: #374151;
+    --search-dropdown-muted: #9ca3af;
+    --search-chip-bg: #f9fafb;
+    --search-chip-text: #4b5563;
+    --search-chip-border: #e5e7eb;
+    --search-chip-hover-bg: #f3f4f6;
+    --search-chip-accent: #fbbf24;
+    --search-welcome-bg: #f8f8f8;
+    --search-welcome-text: var(--color-text-heading);
+
+    /* --- MegaMenu --- */
+    --mega-bg: var(--color-surface);
+    --mega-sidebar-bg: #f9fafb;
+    --mega-sidebar-hover-bg: var(--color-surface);
+    --mega-sidebar-active-bg: var(--color-surface);
+    --mega-border-color: #e5e7eb;
+    --mega-text-color: var(--color-text-primary);
+    --mega-heading-color: var(--color-text-primary);
+    --mega-body-text: #6b7280;
+    --mega-link-color: #000000;
+    --mega-link-hover-color: var(--color-primary-600);
+    --mega-icon-color: #6b7280;
+    --mega-icon-bg: #f3f4f6;
+    --mega-accent-color: var(--color-primary-600);
+    --mega-accent-bg: #fcd34d;
+    --mega-card-hover-border: #fcd34d;
+    --mega-sidebar-active-border: #e1b533;
+    --mega-font-size: 0.8125rem;
+    --mega-font-weight: 400;
+
+    /* --- Hero --- */
+    --hero-bg: var(--color-surface);
+    --hero-card-bg: var(--color-surface);
+    --hero-card-border-color: var(--color-border-default);
+    --hero-card-radius: 16px;
+    --hero-title-color: var(--color-text-heading);
+
+    /* --- Manufacturers Hero Section --- */
+    --mfr-hero-card-bg: var(--color-surface);
+    --mfr-hero-card-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+    --mfr-hero-card-radius: 6px;
+    --mfr-sidebar-bg: var(--color-surface);
+    --mfr-sidebar-heading-color: var(--color-text-heading);
+    --mfr-sidebar-text-color: #374151;
+    --mfr-sidebar-icon-color: #6b7280;
+    --mfr-sidebar-chevron-color: #d1d5db;
+    --mfr-sidebar-hover-bg: #f9fafb;
+    --mfr-flyout-bg: #f4f4f4;
+    --mfr-flyout-heading-color: var(--color-text-heading);
+    --mfr-flyout-link-color: #767676;
+    --mfr-sample-heading-color: #222222;
+    --mfr-sample-label-color: var(--color-text-muted);
+    --mfr-sample-img-bg: #f5f5f5;
+    --mfr-ranking-heading-color: #222222;
+    --mfr-ranking-label-color: var(--color-text-muted);
+    --mfr-profile-text-color: #222222;
+    --mfr-profile-label-color: var(--color-text-muted);
+    --mfr-profile-avatar-bg: #dddddd;
+    --mfr-profile-btn-bg: var(--color-primary-500, #cc9900);
+    --mfr-profile-btn-hover: var(--color-primary-700, #8a6800);
+    --mfr-profile-btn-text: var(--color-surface);
+    --mfr-profile-rfq-border: #222222;
+    --mfr-profile-rfq-text: #222222;
+
+    /* --- Category Popup --- */
+    --catpopup-bg: var(--color-surface);
+    --catpopup-border: #e5e7eb;
+    --catpopup-heading: var(--color-text-heading);
+    --catpopup-text: #4b5563;
+    --catpopup-link: var(--color-primary-500);
+    --catpopup-link-hover: var(--color-primary-600);
+    --catpopup-sidebar-bg: #f9fafb;
+    --catpopup-sidebar-hover-bg: #f3f4f6;
+    --catpopup-sidebar-active-bg: var(--color-surface);
+    --catpopup-sidebar-active-border: var(--color-primary-500);
+    --catpopup-sidebar-font-size: 0.6875rem;
+    --catpopup-sidebar-font-weight: 400;
+    --catpopup-sidebar-padding-x: 0.125rem;
+    --catpopup-sidebar-padding-y: 0.25rem;
+    --catpopup-icon: #9ca3af;
+    --catpopup-product-bg: #f3f4f6;
+    --catpopup-close-color: #9ca3af;
+
+    /* --- Top Deals Section --- */
+    --topdeals-bg: #F8F8F8;
+    --topdeals-title-color: var(--color-text-heading);
+    --topdeals-subtitle-color: #6b7280;
+    --topdeals-link-color: var(--color-text-heading);
+    --topdeals-card-bg: var(--color-surface);
+    --topdeals-card-border: var(--color-border-default);
+    --topdeals-price-color: #dc2626;
+    --topdeals-original-price-color: #9ca3af;
+    --topdeals-moq-color: #222222;
+    --topdeals-badge-bg: #DE0505;
+    --topdeals-price-bg: #FFEDED;
+    --topdeals-badge-text: var(--color-surface);
+
+    /* --- Top Deals Page --- */
+    --topdeals-page-hero-gradient: linear-gradient(135deg, #ff6b35 0%, #ee2737 50%, #c41442 100%);
+    --topdeals-page-tab-active-border: var(--color-text-heading);
+    --topdeals-page-tab-text: #6b7280;
+    --topdeals-page-pill-bg: #f3f4f6;
+    --topdeals-page-pill-active-bg: var(--color-surface);
+    --topdeals-page-pill-active-border: var(--color-text-heading);
+
+    /* --- Top Ranking Section --- */
+    --topranking-bg: #F5F5F5;
+    --topranking-title-color: var(--color-text-heading);
+    --topranking-subtitle-color: #6b7280;
+    --topranking-link-color: var(--color-text-heading);
+    --topranking-card-bg: var(--color-surface);
+    --topranking-card-border: #e5e7eb;
+    --topranking-badge-bg: var(--color-text-heading);
+    --topranking-badge-text: var(--color-surface);
+    --topranking-name-color: var(--color-text-heading);
+    --topranking-label-color: #6b7280;
+
+    /* --- Tailored Selections Section --- */
+    --tailored-bg: #F5F5F5;
+    --tailored-title-color: var(--color-text-heading);
+    --tailored-link-color: var(--color-text-heading);
+    --tailored-card-bg: var(--color-surface);
+    --tailored-card-border: var(--color-border-default);
+    --tailored-collection-title-color: var(--color-text-heading);
+    --tailored-views-color: #6b7280;
+    --tailored-price-color: var(--color-text-heading);
+
+    /* --- Product Grid Section --- */
+    --product-bg: #f4f4f4;
+    --product-card-bg: var(--color-surface);
+    --product-card-border: #e5e7eb;
+    --product-card-radius: 8px;
+    --product-card-padding: 12px;
+    --product-card-border-width: 0px;
+    --product-card-shadow: none;
+    --product-card-hover-shadow: none;
+    --product-grid-gap: 8px;
+    --product-font-family: Alibaba_B2B_Sans, Inter, "SF Pro Text", Roboto, "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --product-image-bg: var(--color-surface);
+    --product-image-radius: 8px;
+    --product-image-padding: 0px;
+    --product-image-size: 209px;
+    --product-image-hover-scale: 1.06;
+    --product-image-ratio: 1 / 1;
+    --product-lens-size: 36px;
+    --product-lens-bg: var(--color-surface);
+    --product-lens-color: #4b5563;
+    --product-lens-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.12);
+    --product-title-color: #222222;
+    --product-title-size: 14px;
+    --product-title-weight: 400;
+    --product-title-line-height: 1.2857;
+    --product-title-letter-spacing: 0em;
+    --product-price-color: var(--color-text-primary);
+    --product-price-size: 20px;
+    --product-price-weight: 700;
+    --product-price-line-height: 26px;
+    --product-moq-color: #000000;
+    --product-moq-size: 14px;
+    --product-moq-weight: 400;
+    --product-stats-color: #767676;
+    --product-stats-weight: 400;
+    --product-badge-bg: transparent;
+    --product-badge-text: #ff4d12;
+    --product-badge-size: 13px;
+    --product-badge-radius: 3px;
+    --product-verified-color: #0b65c2;
+    --product-verified-size: 12px;
+    --product-verified-weight: 700;
+    --product-supplier-color: #767676;
+    --product-supplier-size: 12px;
+    --product-meta-weight: 400;
+    --product-note-color: #3f3f46;
+    --product-note-size: 12px;
+    --product-note-weight: 400;
+    --product-card-min-height: 384px;
+
+    /* --- Product Detail Page --- */
+    --pd-bg: var(--color-surface);
+    --pd-breadcrumb-color: #6b7280;
+    --pd-breadcrumb-link-color: var(--color-primary-500);
+    --pd-title-color: var(--color-text-heading);
+    --pd-title-size: 1.5rem;
+    --pd-rating-star-color: #f59e0b;
+    --pd-rating-text-color: #6b7280;
+    --pd-price-color: var(--color-text-heading);
+    --pd-price-size: 1.75rem;
+    --pd-price-tier-bg: #f9fafb;
+    --pd-price-tier-active-bg: var(--color-primary-50);
+    --pd-price-tier-active-border: var(--color-primary-500);
+    --pd-variant-border: var(--color-border-default);
+    --pd-variant-active-border: var(--color-primary-500);
+    --pd-variant-active-bg: var(--color-primary-50);
+    --pd-qty-input-border: var(--color-border-default);
+    --pd-shipping-icon-color: #6b7280;
+    --pd-trade-assurance-bg: #f0fdf4;
+    --pd-trade-assurance-text: #15803d;
+    --pd-tab-color: #6b7280;
+    --pd-tab-active-color: var(--color-primary-500);
+    --pd-tab-active-border: var(--color-primary-500);
+    --pd-spec-header-bg: #f9fafb;
+    --pd-spec-border: var(--color-border-default);
+    --pd-spec-key-color: #6b7280;
+    --pd-spec-value-color: var(--color-text-heading);
+    --pd-review-star-color: #f59e0b;
+    --pd-review-bar-bg: var(--color-border-default);
+    --pd-review-bar-fill: #f59e0b;
+    --pd-supplier-card-bg: var(--color-surface);
+    --pd-supplier-verified-color: var(--color-primary-500);
+    --pd-faq-border: var(--color-border-default);
+    --pd-related-bg: #f8f8f8;
+
+    /* --- Footer --- */
+    --footer-bg: var(--color-surface);
+    --footer-text-color: var(--color-text-muted);
+    --footer-heading-color: var(--color-text-body);
+    --footer-link-color: var(--color-text-muted);
+    --footer-link-hover-color: var(--color-primary-500);
+    --footer-border-color: #e5e7eb;
+
+
+    /* ==========================================================
+     9b. SEMANTIC CTA & NORMALIZATION TOKENS
+     ========================================================== */
+
+    /* --- CTA Semantic — moved to @theme inline below --- */
+
+    /* --- Text Normalizasyon --- */
+    --color-text-heading: #111827;
+    --color-text-body: #333333;
+    --color-text-muted: #666666;
+    --color-text-placeholder: #999999;
+
+    /* --- Border Normalizasyon --- */
+    --color-border-light: #f0f0f0;
+    --color-border-medium: #d1d5db;
+
+    /* --- CTA Button Token'ları --- */
+    --search-btn-bg: var(--color-cta-primary);
+    --search-btn-hover: var(--color-cta-primary-hover);
+
+    /* --- Genel Aksiyon Token'ları --- */
+    --toggle-active-bg: var(--color-cta-primary);
+    --modal-btn-primary-bg: var(--color-cta-primary);
+    --stepper-active-bg: var(--color-cta-primary);
+
+
+
+    /* ==========================================================
+     SELLER STOREFRONT — STORE-SPECIFIC TOKENS
+     ========================================================== */
+
+    --color-store-nav-bg: var(--color-primary-600);
+    --color-store-nav-text: var(--color-surface);
+    --color-store-nav-active-overlay: rgba(0, 0, 0, 0.15);
+    --color-store-accent: var(--color-primary-500);
+    --color-store-accent-hover: var(--color-primary-600);
+
+    /* ==========================================================
+     RFQ PAGE — SPECIFIC TOKENS
+     ========================================================== */
+
+    /* --- Shadows --- */
+    --shadow-form: 0 10px 40px rgba(0, 0, 0, 0.12);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    /* --- Colors --- */
+    --color-product-name: #222222;
+    --color-cta-text: var(--color-text-heading);
+
+    /* --- Font Sizes --- */
+    --font-size-caption: 0.8125rem;
+    /* 13px */
+    --font-size-hero-lg: 2rem;
+    /* 32px */
+
+}
+
+/* ============================================================
+   @theme inline — tokens that reference var()
+   ============================================================ */
+@theme inline {
+
+    /* --- Semantic Shadow --- */
+    --shadow-card: var(--shadow-sm);
+    --shadow-dropdown: var(--shadow-md);
+    --shadow-modal: var(--shadow-xl);
+    --shadow-toast: var(--shadow-lg);
+
+    /* --- Animation --- */
+    --animate-fade-in: fade-in var(--duration-default) var(--ease-default);
+    --animate-fade-out: fade-out var(--duration-default) var(--ease-default);
+    --animate-slide-up: slide-up var(--duration-default) var(--ease-default);
+
+    /* --- CTA Semantic (Secondary / Dark) --- */
+    --color-cta-primary: var(--color-secondary-600);
+    --color-cta-primary-hover: var(--color-secondary-700);
+    --color-cta-primary-light: var(--color-secondary-500);
+    --color-cta-primary-tint: var(--color-secondary-50);
+}
+
+
+/* ============================================================
+   HEADER GRADIENT (warm pastel – shown by default, removed on scroll)
+   ============================================================ */
+
+.header-gradient {
+    background-image: none;
+
+    @variant xl {
+        background-image: linear-gradient(135deg, var(--header-gradient-1) 0%, var(--header-gradient-2) 25%, var(--header-gradient-3) 50%, var(--header-gradient-4) 75%, var(--header-gradient-5) 100%);
+        background-size: 300% 300%;
+        animation: searchGradientShift 12s ease infinite;
+    }
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes searchGradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    25% {
+        background-position: 50% 100%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    75% {
+        background-position: 50% 0%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-slide-up {
+    opacity: 0;
+    animation: slide-up 0.5s ease-out forwards;
+}
+
+/* --- Reduced Motion: disable all animations --- */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
+/* ============================================================
+   DARK MODE OVERRIDES — class-based via @variant dark
+   ============================================================ */
+
+@layer theme {
+
+    :root,
+    :host {
+        @variant dark {
+            --color-surface: #0f172a;
+            --color-surface-raised: #1e293b;
+            --color-surface-muted: #1a2332;
+            --color-surface-overlay: rgba(0, 0, 0, 0.7);
+            --color-surface-inverse: #f8fafc;
+
+            --color-text-heading: #f1f5f9;
+            --color-text-body: #cbd5e1;
+            --color-text-muted: #94a3b8;
+            --color-text-placeholder: #64748b;
+            --color-text-disabled: #475569;
+            --color-text-inverse: #0f172a;
+            --color-text-link: #e6b212;
+            --color-text-link-hover: #f6c94d;
+
+            --color-border-default: #334155;
+            --color-border-medium: #475569;
+            --color-border-light: #1e293b;
+            --color-border-strong: #64748b;
+            --color-border-focus: #e6b212;
+
+            --color-product-card-bg: #1e293b;
+            --color-product-card-border: #334155;
+            --color-product-price: #f1f5f9;
+            --color-header-bg: #0f172a;
+            --color-footer-bg: #0f172a;
+        }
+    }
+}
+
+
+/* ============================================================
+   UTILITY LAYERS
+   ============================================================ */
+
+@layer base {
+    html {
+        overflow-x: clip;
+        /* clip instead of hidden allows position: sticky to work properly */
+        font-family: var(--font-sans);
+        font-size: var(--font-size-base);
+        /* 18px */
+        line-height: var(--line-height-normal);
+        /* 1.625 */
+        font-weight: var(--font-weight-normal);
+        /* 400 */
+        letter-spacing: var(--letter-spacing-normal);
+        color: var(--color-text-primary);
+        background-color: var(--color-surface);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* --- Focus Visible — WCAG erişilebilirlik --- */
+    :focus-visible {
+        outline: 2px solid var(--color-primary-500);
+        outline-offset: 2px;
+    }
+
+    /* --- Reduced Motion Desteği --- */
+    @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+
+/* ============================================================
+   COMPONENT CLASSES — CSS variable driven
+   ============================================================ */
+
+@layer components {
+
+    /* --- Primary Button --- */
+    .th-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        background: var(--btn-bg);
+        color: var(--btn-text);
+        border: var(--btn-border-width) solid var(--btn-border-color);
+        border-radius: var(--radius-button);
+        padding: var(--spacing-button-y) var(--spacing-button-x);
+        font-size: var(--btn-font-size);
+        font-weight: var(--btn-font-weight);
+        box-shadow: var(--btn-shadow);
+        cursor: pointer;
+        line-height: 1.25;
+        transition: all 0.15s ease;
+    }
+
+    .th-btn:hover {
+        filter: brightness(0.9);
+    }
+
+    .th-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        filter: none;
+    }
+
+    /* --- Outline Button --- */
+    .th-btn-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        background: var(--btn-outline-bg);
+        color: var(--btn-outline-text);
+        border: var(--btn-outline-border-width) solid var(--btn-outline-border-color);
+        border-radius: var(--radius-button);
+        padding: var(--spacing-button-y) var(--spacing-button-x);
+        font-size: var(--btn-font-size);
+        font-weight: var(--btn-font-weight);
+        cursor: pointer;
+        line-height: 1.25;
+        transition: all 0.15s ease;
+    }
+
+    .th-btn-outline:hover {
+        filter: brightness(0.95);
+    }
+
+    /* --- Button Size Modifiers --- */
+    .th-btn-sm {
+        padding: calc(var(--spacing-button-y) * 0.65) calc(var(--spacing-button-x) * 0.7);
+        font-size: calc(var(--btn-font-size) * 0.85);
+    }
+
+    .th-btn-lg {
+        padding: calc(var(--spacing-button-y) * 1.3) calc(var(--spacing-button-x) * 1.3);
+        font-size: calc(var(--btn-font-size) * 1.15);
+    }
+
+    .th-btn-pill {
+        border-radius: var(--radius-full);
+    }
+
+    /* --- Dark Button (CTA: Add to Cart, Checkout, etc.) --- */
+    .th-btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        background: var(--color-cta-primary, #333333);
+        color: var(--color-text-inverse, #ffffff);
+        border: none;
+        border-radius: var(--radius-button);
+        padding: var(--spacing-button-y) var(--spacing-button-x);
+        font-size: var(--btn-font-size);
+        font-weight: var(--btn-font-weight);
+        cursor: pointer;
+        line-height: 1.25;
+        transition: all 0.15s ease;
+    }
+
+    .th-btn-dark:hover {
+        background: var(--color-cta-primary-hover, #1f1f1f);
+    }
+
+    .th-btn-dark:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .auth-input-focus:focus {
+        --tw-ring-color: var(--auth-input-focus, #cc9900);
+        border-color: var(--auth-input-focus, #cc9900);
+        box-shadow: 0 0 0 1px var(--auth-input-focus, #cc9900);
+        outline: none;
+    }
+
+    .auth-otp-focus:focus {
+        border-color: var(--auth-input-focus, #cc9900);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--auth-input-focus, #cc9900) 20%, transparent);
+        outline: none;
+    }
+
+    .auth-link-hover:hover {
+        color: var(--auth-accent, #cc9900);
+    }
+
+    /* --- Card --- */
+    .th-card {
+        background: var(--card-bg);
+        border: var(--card-border-width) solid var(--card-border-color);
+        border-radius: var(--radius-card);
+        padding: var(--spacing-card-padding);
+        box-shadow: var(--shadow-card);
+        transition: all 0.2s ease;
+    }
+
+    .th-card-title {
+        font-size: var(--card-title-size);
+        font-weight: var(--card-title-weight);
+    }
+
+    /* --- Input --- */
+    .th-input {
+        background: var(--input-bg);
+        color: var(--input-text-color);
+        border: var(--input-border-width) solid var(--input-border-color);
+        border-radius: var(--radius-input);
+        padding: var(--spacing-input-y) var(--spacing-input-x);
+        font-size: var(--input-font-size);
+        outline: none;
+        transition: border-color 0.15s ease;
+    }
+
+    .th-input:focus {
+        border-color: var(--input-focus-border-color);
+    }
+
+    .th-input::placeholder {
+        color: var(--color-text-tertiary);
+    }
+
+    /* --- Badge --- */
+    .th-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-badge);
+        font-size: var(--badge-font-size);
+        font-weight: var(--badge-font-weight);
+        padding: var(--badge-padding-y) var(--badge-padding-x);
+        line-height: 1.25;
+    }
+
+    /* --- Navigation Link --- */
+    .th-nav-link {
+        font-size: var(--nav-font-size);
+        font-weight: var(--nav-font-weight);
+        color: var(--nav-text-color);
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+    .th-nav-link:hover {
+        color: var(--nav-hover-color);
+    }
+
+    /* --- Header Icon (theme-variable driven hover) --- */
+    .th-header-icon {
+        color: var(--header-icon-color);
+        transition: color 0.15s ease;
+    }
+
+    .th-header-icon:hover {
+        color: var(--header-icon-hover-color);
+    }
+
+    /* --- SubHeader Link (theme-variable driven hover) --- */
+    .th-subheader-link {
+        color: var(--subheader-text-color);
+        font-size: var(--nav-font-size);
+        font-weight: var(--nav-font-weight);
+        transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .th-subheader-link:hover {
+        color: var(--subheader-hover-color);
+        background-color: var(--subheader-hover-bg);
+    }
+
+    /* --- Footer Link (theme-variable driven hover) --- */
+    .th-footer-link {
+        color: var(--footer-link-color);
+        transition: color 0.2s ease;
+    }
+
+    .th-footer-link:hover {
+        color: var(--footer-link-hover-color);
+    }
+
+    /* --- Footer Social Icon (theme-variable driven hover) --- */
+    .th-footer-social {
+        color: var(--footer-text-color);
+        transition: color 0.2s ease;
+    }
+
+    .th-footer-social:hover {
+        color: var(--footer-link-hover-color);
+    }
+
+    /* --- Search Tab (theme-variable driven) --- */
+    .th-search-tab {
+        color: var(--search-tab-color);
+        transition: color 0.15s ease;
+    }
+
+    .th-search-tab--active {
+        color: var(--search-tab-active-color);
+        border-color: var(--search-tab-active-color);
+    }
+
+    /* --- Search Chip (theme-variable driven hover) --- */
+    .search-chip:hover {
+        background-color: var(--search-chip-hover-bg) !important;
+    }
+
+    /* --- Search Image Link hover --- */
+    .th-search-image-link:hover {
+        color: var(--search-tab-active-color);
+    }
+
+    /* --- Mega Menu sidebar item --- */
+    .th-mega-sidebar-item {
+        color: var(--mega-text-color);
+        font-size: var(--mega-font-size);
+    }
+
+    .th-mega-sidebar-item:hover {
+        background-color: var(--mega-sidebar-hover-bg);
+        color: var(--mega-text-color);
+    }
+
+    .th-mega-sidebar-item--active {
+        background-color: var(--mega-sidebar-active-bg);
+        color: var(--mega-text-color);
+        font-weight: 500;
+        border-left: 2px solid var(--mega-sidebar-active-border);
+    }
+
+    /* --- Mega Menu content elements --- */
+    .th-mega-heading {
+        color: var(--mega-heading-color);
+        font-size: var(--mega-font-size);
+        font-weight: 700;
+    }
+
+    .th-mega-body-text {
+        color: var(--mega-body-text);
+        font-size: var(--mega-font-size);
+    }
+
+    .th-mega-link {
+        color: var(--mega-link-color);
+        font-size: var(--mega-font-size);
+        font-weight: var(--mega-font-weight);
+        transition: color 0.15s ease;
+    }
+
+    .th-mega-link:hover {
+        color: var(--mega-link-hover-color);
+    }
+
+    .th-mega-icon {
+        color: var(--mega-icon-color);
+        transition: color 0.15s ease;
+    }
+
+    .th-mega-icon-circle {
+        background-color: var(--mega-icon-bg);
+        transition: background-color 0.15s ease;
+    }
+
+    .th-mega-accent-icon {
+        color: var(--mega-accent-color);
+    }
+
+    .th-mega-accent-bg {
+        background-color: var(--mega-accent-bg);
+    }
+
+    .th-mega-card:hover {
+        border-color: var(--mega-card-hover-border);
+    }
+
+    /* --- Category Popup sidebar item (active state — JS-toggled) --- */
+    .th-catpopup-sidebar-item--active {
+        background-color: var(--catpopup-sidebar-active-bg);
+        color: var(--catpopup-heading);
+        font-weight: 500;
+        border-left-color: var(--catpopup-sidebar-active-border);
+    }
+
+}
+
+
+/* ============================================================
+   GRID SYSTEM
+   ============================================================ */
+
+@layer utilities {
+    .container-boxed {
+        max-width: var(--container-lg);
+        /* 1472px */
+        margin-inline: auto;
+        padding-inline: var(--spacing-page-x);
+    }
+
+    .container-wide {
+        max-width: var(--container-xl);
+        /* 1472px */
+        margin-inline: auto;
+        padding-inline: var(--spacing-page-x);
+    }
+
+    .container-boxed,
+    .container-wide {
+        @variant 2xl {
+            padding-inline: var(--spacing-page-x-lg);
+        }
+    }
+
+    /* --- Scrollbar hide utility --- */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* --- SubHeader: center-outward underline animation --- */
+    .subheader-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background-color: var(--color-primary-500);
+        transition: width 0.25s ease, left 0.25s ease;
+    }
+
+    .subheader-link:hover::after {
+        width: 100%;
+        left: 0;
+    }
+
+    .subheader-link--active::after {
+        width: 100%;
+        left: 0;
+    }
+
+    /* --- Product Card: themeable card with CSS variable support --- */
+
+    .product-card {
+        min-height: var(--product-card-min-height, 384px);
+        padding: var(--product-card-padding, 12px);
+        font-family: var(--product-font-family, Alibaba_B2B_Sans, Inter, "SF Pro Text", Roboto, "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Microsoft YaHei", sans-serif);
+        color: var(--color-text-primary);
+        background: var(--product-card-bg, #ffffff);
+        border: var(--product-card-border-width, 0px) solid var(--product-card-border, #e5e7eb);
+        border-radius: var(--product-card-radius, 8px);
+        box-shadow: var(--product-card-shadow, none);
+    }
+
+    .product-card::before,
+    .product-card::after {
+        content: '';
+        display: block;
+    }
+
+    .product-card__image-area {
+        width: min(100%, var(--product-image-size, 209px));
+        margin: 0 auto;
+        aspect-ratio: var(--product-image-ratio, 1 / 1);
+    }
+
+    .product-card__image-wrap {
+        border-radius: var(--product-image-radius, 8px);
+        background: var(--product-image-bg, #ffffff);
+        padding: var(--product-image-padding, 0px);
+    }
+
+    .product-card__image-wrap::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        z-index: -1;
+    }
+
+    .product-card__img {
+        border-radius: var(--product-image-radius, 8px);
+        transition: transform 0.3s ease;
+    }
+
+    .product-card__image-area:hover .product-card__img,
+    .product-card__image-area:focus-within .product-card__img {
+        transform: scale(var(--product-image-hover-scale, 1.06));
+    }
+
+    .product-card__lens-wrap {
+        left: var(--product-card-padding, 12px);
+        bottom: var(--product-card-padding, 12px);
+        width: var(--product-lens-size, 36px);
+        height: var(--product-lens-size, 36px);
+    }
+
+    .product-card__lens {
+        background: var(--product-lens-bg, #ffffff);
+        box-shadow: var(--product-lens-shadow, 0 2px 6px 2px rgba(0, 0, 0, 0.12));
+        color: var(--product-lens-color, #4b5563);
+    }
+
+    .product-card__title-wrap {
+        color: var(--product-title-color, #222222);
+    }
+
+    .product-card__title,
+    .product-card__title span {
+        color: var(--product-title-color, #222222);
+        font-size: var(--product-title-size, 14px);
+        font-weight: var(--product-title-weight, 400);
+        line-height: var(--product-title-line-height, 1.2857);
+        letter-spacing: var(--product-title-letter-spacing, 0em);
+    }
+
+    .product-card__price {
+        color: var(--product-price-color, #0a0a0a);
+        font-size: var(--product-price-size, 20px);
+        font-weight: var(--product-price-weight, 700);
+        line-height: var(--product-price-line-height, 26px);
+    }
+
+    .product-card__discount {
+        color: var(--product-discount-color, rgb(247, 66, 30));
+        font-size: var(--product-discount-size, 14px);
+        font-weight: var(--product-discount-weight, 600);
+        line-height: 18px;
+    }
+
+    .product-card__moq-line {
+        font-size: var(--product-moq-size, 14px);
+    }
+
+    .product-card__moq {
+        color: var(--product-moq-color, #000);
+        font-size: var(--product-moq-size, 14px);
+        font-weight: var(--product-moq-weight, 400);
+    }
+
+    .product-card__stats {
+        color: var(--product-stats-color, #767676);
+        font-weight: var(--product-stats-weight, 400);
+    }
+
+    .product-card__supplier {
+        color: var(--product-supplier-color, #767676);
+    }
+
+    .product-card__supplier-text {
+        color: var(--product-supplier-color, #767676);
+        font-size: var(--product-supplier-size, 12px);
+        font-weight: var(--product-meta-weight, 400);
+    }
+
+    .product-card__supplier-text+.product-card__supplier-text::before {
+        content: '·';
+        display: inline-block;
+        margin: 0 4px;
+    }
+
+    .product-card__promo {
+        color: var(--product-badge-text, #ff4d12);
+        font-size: var(--product-badge-size, 13px);
+        font-weight: 700;
+        line-height: 18px;
+    }
+
+    /* --- Fy26 Product Card — Layout now in Tailwind (ProductListingGrid.ts) --- */
+    /* searchx-*, fy26-*, price-area-center, action-area-layout migrated to Tailwind */
+
+    /* Responsive grid columns migrated to Tailwind classes in templates */
+}
+
+/* ── Product List View Mode ─────────────────────────────────── */
+/* Single class on .product-grid controls the entire list layout */
+
+/* List mode: single column grid */
+.product-grid.product-list-mode {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+}
+
+/* ≤479px: list mode falls back to vertical card (no horizontal override) */
+
+/* 480px–1199px: 2-column grid — image left, content+buttons right */
+@media (min-width: 480px) {
+    .product-grid.product-list-mode>[role="listitem"] .fy26-product-card-wrapper {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 0 16px;
+        padding: 12px;
+        border: 1px solid var(--product-card-border, #e5e7eb);
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .product-grid.product-list-mode .searchx-img-area {
+        grid-row: 1 / -1;
+        grid-column: 1;
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .product-grid.product-list-mode .fy26-product-card-content {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    .product-grid.product-list-mode .fy26-product-card-content .px-1 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .product-grid.product-list-mode .action-area-layout {
+        grid-column: 2;
+        grid-row: 2;
+        padding: 0;
+        margin-top: 8px;
+    }
+
+    .product-grid.product-list-mode .searchx-product-e-title {
+        height: auto !important;
+        -webkit-line-clamp: 2;
+        font-size: 1rem;
+        line-height: 22px;
+    }
+}
+
+/* ≥1200px: flex-row layout — image, content, buttons side by side */
+@media (min-width: 1200px) {
+    .product-grid.product-list-mode>[role="listitem"] .fy26-product-card-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .product-grid.product-list-mode .searchx-img-area {
+        width: 240px;
+        flex-shrink: 0;
+        margin-bottom: 0;
+    }
+
+    .product-grid.product-list-mode .fy26-product-card-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .product-grid.product-list-mode .action-area-layout {
+        flex-shrink: 0;
+        margin-top: 0;
+    }
+}
+
+/* ── Product Card: compact fonts for tight grid (3-4 cols with sidebar) ── */
+
+/* 1024px–1599px: sidebar visible, 3-4 columns → cards ~220-300px wide */
+@media (min-width: 1024px) and (max-width: 1599px) {
+    .product-grid:not(.product-list-mode) .searchx-product-e-title {
+        font-size: 13px;
+        line-height: 17px;
+        height: 51px;
+        /* 3 lines × 17px */
+    }
+
+    .product-grid:not(.product-list-mode) .fy26-price {
+        font-size: 1rem;
+        line-height: 1.375rem;
+    }
+
+    .product-grid:not(.product-list-mode) .fy26-moq-stats,
+    .product-grid:not(.product-list-mode) .fy26-moq-stats .text-sm {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    .product-grid:not(.product-list-mode) .searchx-product-e-abutton {
+        font-size: 12px;
+        padding-left: 8px;
+        padding-right: 8px;
+        height: 2rem;
+    }
+}
+
+.hero-side-slider .swiper-slide {
+    transition: transform 200ms ease-out;
+}
+
+
+.hero-side-slider.hero-side-peek-prev .swiper-slide-active,
+.hero-side-slider.hero-side-peek-prev .swiper-slide-prev {
+    transform: translateX(28px);
+}
+
+.hero-side-slider.hero-side-peek-next .swiper-slide-active,
+.hero-side-slider.hero-side-peek-next .swiper-slide-next {
+    transform: translateX(-28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-side-slider .swiper-slide {
+        transition: none;
+    }
+
+    .hero-side-slider.hero-side-peek-prev .swiper-slide-active,
+    .hero-side-slider.hero-side-peek-prev .swiper-slide-prev,
+    .hero-side-slider.hero-side-peek-next .swiper-slide-active,
+    .hero-side-slider.hero-side-peek-next .swiper-slide-next {
+        transform: none;
+    }
+}
+
+/* Factory card slider peek animation */
+.factory-slider.factory-peek-prev .swiper-slide-active,
+.factory-slider.factory-peek-prev .swiper-slide-prev {
+    transform: translateX(28px);
+}
+
+.factory-slider.factory-peek-next .swiper-slide-active,
+.factory-slider.factory-peek-next .swiper-slide-next {
+    transform: translateX(-28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .factory-slider .swiper-slide {
+        transition: none;
+    }
+
+    .factory-slider.factory-peek-prev .swiper-slide-active,
+    .factory-slider.factory-peek-prev .swiper-slide-prev,
+    .factory-slider.factory-peek-next .swiper-slide-active,
+    .factory-slider.factory-peek-next .swiper-slide-next {
+        transform: none;
+    }
+}
+
+
+/* ============================================================
+   PRODUCT DETAIL PAGE LAYOUT
+   ============================================================ */
+
+/* Sticky mode: activated by JS after scrolling past card */
+@variant xl {
+    #pd-hero-info.pd-sticky {
+        position: sticky;
+        top: 165px;
+        max-height: calc(100vh - 180px);
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+/* Related Products — inside left column */
+.related-products-section {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.related-products-swiper .swiper-wrapper {
+    align-items: stretch;
+}
+
+.related-products-swiper .swiper-slide {
+    height: auto;
+}
+
+/* Mobile sticky bottom bar visibility now controlled by Tailwind classes in product-detail.ts */
+
+/* ProductTabs — inside left column (no container-boxed) */
+#pd-hero-left #product-tabs-section {
+    margin-top: 24px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Content area inside info card */
+#pd-info-scrollable {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* When sticky: enable internal scroll with hidden scrollbar */
+.pd-sticky #pd-info-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: none;
+}
+
+.pd-sticky #pd-info-scrollable::-webkit-scrollbar {
+    width: 0;
+}
+
+/* ============================================================
+   PRODUCT TITLE BAR — Above gallery, full-width (Alibaba-style)
+   ============================================================ */
+
+/* ProductTitleBar — migrated to Tailwind in ProductTitleBar.ts */
+
+/* ============================================================
+   PRODUCT IMAGE GALLERY — Alibaba-style
+   ============================================================ */
+
+/* Gallery container: thumbnail strip (left) + main image (right) */
+#product-gallery {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Thumbnail strip — migrated to Tailwind in ProductImageGallery.ts */
+
+.pd-thumb-arrow:hover {
+    color: var(--color-text-body, #333333);
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+/* Individual thumbnail */
+.gallery-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid var(--color-border-default, var(--color-border-default, #e5e5e5));
+    cursor: pointer;
+    transition: border-color .15s;
+}
+
+.gallery-thumb.active {
+    border-color: var(--color-text-heading);
+}
+
+.gallery-thumb:hover:not(.active) {
+    border-color: var(--color-border-strong);
+}
+
+/* Main image area */
+#gallery-main-image {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+#gallery-main-image.zoom-enabled {
+    cursor: zoom-in;
+}
+
+#gallery-main-image.zoom-enabled>[data-gallery-main-media="true"] {
+    transition: transform .18s ease-out;
+    transform-origin: 50% 50%;
+    will-change: transform;
+}
+
+#gallery-main-image.is-zooming>[data-gallery-main-media="true"] {
+    transition: transform .03s linear;
+}
+
+.gallery-media-asset {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+}
+
+@media (hover: none),
+(pointer: coarse) {
+    #gallery-main-image.zoom-enabled {
+        cursor: default;
+    }
+}
+
+/* Prev/Next navigation arrows */
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-surface, #ffffff);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow .15s;
+}
+
+.gallery-nav-btn:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+}
+
+
+#gallery-prev {
+    left: 10px;
+}
+
+/* gallery-prev 2xl offset — when thumbnail strip is visible */
+@media (width >=1536px) {
+    #gallery-prev {
+        left: 88px;
+    }
+}
+
+#gallery-next {
+    right: 10px;
+}
+
+/* Action buttons — migrated to Tailwind in ProductImageGallery.ts */
+
+.gallery-action-btn:hover {
+    color: var(--color-text-body, #333333);
+}
+
+/* pd-gallery-tabs — migrated to Tailwind in ProductImageGallery.ts */
+
+#pd-hero-gallery {
+    text-align: center;
+}
+
+.gallery-view-tab {
+    padding: 6px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--color-text-muted, #666666);
+    border: none;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.gallery-view-tab.active {
+    background: var(--color-surface, #ffffff);
+    color: var(--color-text-primary);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Full-screen gallery lightbox (image click) */
+body.gallery-lightbox-open {
+    overflow: hidden;
+}
+
+#gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-spotlight, 90);
+    background: rgba(7, 10, 16, 0.84);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 20px 20px;
+}
+
+#gallery-lightbox.hidden {
+    display: none;
+}
+
+#gallery-lightbox-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    background: transparent;
+}
+
+#gallery-lightbox-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.gallery-lightbox-action-btn {
+    border: none;
+    background: transparent;
+    color: var(--color-text-inverse);
+    opacity: 0.94;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.gallery-lightbox-action-btn:hover {
+    opacity: 1;
+}
+
+#gallery-lightbox-close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-inverse);
+    opacity: 0.95;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity .15s ease;
+}
+
+#gallery-lightbox-close:hover {
+    opacity: 1;
+}
+
+#gallery-lightbox-inner {
+    width: min(1150px, 100%);
+    height: min(82vh, 720px);
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+}
+
+#gallery-lightbox-sidebar {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.gallery-lightbox-scroll {
+    width: 42px;
+    height: 34px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--color-text-heading, #111827);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.gallery-lightbox-scroll:hover {
+    background: var(--color-surface, #ffffff);
+}
+
+#gallery-lightbox-thumb-list {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    padding: 2px 0;
+}
+
+#gallery-lightbox-thumb-list::-webkit-scrollbar {
+    display: none;
+}
+
+.gallery-lightbox-thumb {
+    width: 76px;
+    height: 76px;
+    border: 2px solid rgba(255, 255, 255, 0.30);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color .15s ease;
+}
+
+.gallery-lightbox-thumb.active {
+    border-color: var(--color-surface);
+}
+
+#gallery-lightbox-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#gallery-lightbox-count {
+    color: var(--color-text-inverse);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: normal;
+}
+
+#gallery-lightbox-image {
+    width: 100%;
+    height: 100%;
+}
+
+#gallery-lightbox-image>.gallery-media-asset {
+    object-fit: contain;
+}
+
+#gallery-lightbox-image>[data-gallery-main-media="true"] {
+    width: 100%;
+    height: 100%;
+}
+
+#gallery-lightbox-vertical-nav {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 44px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.gallery-lightbox-nav-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-heading, #111827);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.gallery-lightbox-nav-btn+.gallery-lightbox-nav-btn {
+    border-top: 1px solid rgba(17, 24, 39, 0.12);
+}
+
+.gallery-lightbox-nav-btn:hover {
+    background: rgba(17, 24, 39, 0.06);
+}
+
+/* Gallery lightbox <=960px — migrated to Tailwind in ProductImageGallery.ts */
+
+/* Attributes card — replaces gallery when "Ozellikler" tab is active
+   Lives inside #product-gallery flex container, same position as #gallery-main-image */
+/* ProductAttributes — migrated to Tailwind in ProductAttributes.ts */
+
+.pd-attr-cell:nth-child(even) {
+    border-right: none;
+}
+
+.pd-attr-cell:nth-last-child(-n+2) {
+    border-bottom: none;
+}
+
+.pd-attr-row:last-child {
+    border-bottom: none;
+}
+
+/* pd-section-heading — migrated to Tailwind in AttributesTabContent.ts */
+
+/* 4-column attributes table */
+.pd-attrs-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.pd-attrs-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--pd-spec-border, #e5e5e5);
+    vertical-align: top;
+}
+
+.pd-attrs-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pd-attrs-key {
+    color: var(--pd-spec-key-color, #6b7280);
+    width: 25%;
+    background: var(--pd-spec-header-bg, #f9fafb);
+}
+
+.pd-attrs-val {
+    color: var(--pd-spec-value-color, #111827);
+    font-weight: 600;
+    width: 25%;
+}
+
+/* pd-section-collapsible layout — migrated to Tailwind in AttributesTabContent.ts */
+
+.pd-section-collapsible svg {
+    transition: transform .2s;
+}
+
+.pd-section-collapsible.open svg {
+    transform: rotate(180deg);
+}
+
+/* Lead time table header cells */
+.pd-attrs-table th {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-spec-key-color, #6b7280);
+    background: var(--pd-spec-header-bg, #f9fafb);
+    border-bottom: 1px solid var(--pd-spec-border, #e5e5e5);
+    text-align: left;
+}
+
+/* Customization styles — migrated to Tailwind in AttributesTabContent.ts */
+
+/* ============================================================
+   REVIEWS REDESIGN — Alibaba-style reviews section
+   ============================================================ */
+
+/* Sub-tabs (Urun Yorumlari | Magaza Yorumlari) */
+/* Layout now in Tailwind: flex border-b-2 border-border-default mb-6 */
+.rv-sub-tabs {
+    gap: 0;
+}
+
+.rv-sub-tab {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--pd-rating-text-color, #6b7280);
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    transition: color 0.15s;
+}
+
+.rv-sub-tab.active {
+    color: var(--pd-title-color, #111827);
+    font-weight: 700;
+}
+
+.rv-sub-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--pd-tab-active-border, #cc9900);
+}
+
+/* Layout now in Tailwind: flex gap-8 pb-6 mb-5 */
+.rv-rating-summary {
+    border-bottom: 1px solid var(--pd-spec-border, #e5e5e5);
+}
+
+/* Layout now in Tailwind: flex flex-col items-center justify-center min-w-[140px] */
+
+.rv-rating-number {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--pd-title-color, #111827);
+}
+
+.rv-rating-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-review-star-color, #f59e0b);
+    margin-top: 4px;
+}
+
+.rv-rating-subtitle {
+    font-size: 12px;
+    color: var(--pd-rating-text-color, #6b7280);
+    margin-top: 6px;
+    text-align: center;
+}
+
+/* Layout now in Tailwind: flex-1 flex flex-col gap-2.5 justify-center */
+
+/* Layout now in Tailwind: flex items-center gap-2.5 */
+
+.rv-category-label {
+    font-size: 13px;
+    color: var(--pd-rating-text-color, #6b7280);
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.rv-category-bar-track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--pd-review-bar-bg, #e5e5e5);
+    overflow: hidden;
+}
+
+.rv-category-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--pd-review-bar-fill, #f59e0b);
+    transition: width 0.3s ease;
+}
+
+.rv-category-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pd-title-color, #111827);
+    min-width: 28px;
+    text-align: right;
+}
+
+/* Layout now in Tailwind: flex items-center gap-2 flex-wrap mb-4 */
+
+.rv-filter-pill {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-rating-text-color, #6b7280);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.rv-filter-pill.active {
+    border-color: var(--pd-tab-active-border, #cc9900);
+    color: var(--pd-tab-active-color, #cc9900);
+    background: var(--pd-price-tier-active-bg, #fef9e7);
+}
+
+.rv-filter-pill:hover:not(.active) {
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+/* Sort dropdown trigger */
+.rv-sort-btn {
+    margin-left: auto;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-rating-text-color, #6b7280);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Layout now in Tailwind: flex gap-2 flex-wrap mb-5 */
+
+.rv-mention-tag {
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    background: var(--pd-spec-header-bg, #f9fafb);
+    color: var(--pd-rating-text-color, #6b7280);
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+}
+
+/* Review card redesigned */
+.rv-card {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--pd-spec-border, #e5e5e5);
+}
+
+.rv-card:last-of-type {
+    border-bottom: none;
+}
+
+/* Layout now in Tailwind: flex items-start gap-3 mb-2.5 */
+
+.rv-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--color-text-inverse);
+}
+
+/* Layout now in Tailwind: flex-1 min-w-0 */
+
+/* Layout now in Tailwind: flex items-center gap-2 flex-wrap */
+
+.rv-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-title-color, #111827);
+}
+
+.rv-card-country {
+    font-size: 12px;
+    color: var(--pd-rating-text-color, #6b7280);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rv-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 3px;
+}
+
+.rv-badge-verified {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.rv-badge-repeat {
+    background: var(--color-primary-50, #fef9e7);
+    color: var(--color-cta-primary, #cc9900);
+}
+
+/* Layout now in Tailwind: flex items-center gap-2 mt-1 */
+
+.rv-card-date {
+    font-size: 12px;
+    color: var(--pd-rating-text-color, #6b7280);
+}
+
+.rv-card-comment {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--pd-spec-value-color, #111827);
+    margin-bottom: 12px;
+}
+
+/* Supplier reply */
+.rv-supplier-reply {
+    background: var(--pd-spec-header-bg, #f9fafb);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.rv-supplier-reply-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pd-rating-text-color, #6b7280);
+    margin-bottom: 4px;
+}
+
+.rv-supplier-reply-text {
+    font-size: 13px;
+    color: var(--pd-spec-value-color, #111827);
+    line-height: 1.5;
+}
+
+/* Linked product card inside review */
+.rv-product-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    text-decoration: none;
+}
+
+.rv-product-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    background: var(--pd-spec-header-bg, #f9fafb);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rv-product-title {
+    font-size: 12px;
+    color: var(--pd-title-color, #111827);
+    line-height: 1.3;
+}
+
+.rv-product-price {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pd-title-color, #111827);
+}
+
+/* Helpful button */
+.rv-helpful-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--pd-rating-text-color, #6b7280);
+    background: none;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rv-helpful-btn:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+    color: var(--pd-title-color, #111827);
+}
+
+.rv-helpful-btn.voted {
+    border-color: var(--pd-tab-active-border, #cc9900);
+    color: var(--pd-tab-active-color, #cc9900);
+}
+
+/* "Tumunu Goster" button */
+.rv-show-all-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 8px;
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-title-color, #111827);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rv-show-all-btn:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+    background: var(--pd-spec-header-bg, #f9fafb);
+}
+
+/* Responsive: rating summary mobile — migrated to Tailwind in ProductReviews.ts */
+
+/* ============================================================
+   PHASE E — Review Filtering, Sorting, Modals
+   ============================================================ */
+
+/* ── 1. Rating Dropdown ─────────────────────────────── */
+
+.rv-rating-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.rv-rating-dropdown-trigger {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-rating-text-color, #6b7280);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.rv-rating-dropdown-trigger:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+.rv-rating-dropdown-trigger.active {
+    border-color: var(--pd-tab-active-border, #cc9900);
+    color: var(--pd-tab-active-color, #cc9900);
+    background: var(--pd-price-tier-active-bg, #fef9e7);
+}
+
+.rv-rating-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 180px;
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: var(--shadow-dropdown);
+    z-index: 10;
+    display: none;
+    overflow: hidden;
+}
+
+.rv-rating-dropdown.open .rv-rating-dropdown-panel {
+    display: block;
+}
+
+.rv-rating-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--pd-spec-value-color, #111827);
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.rv-rating-dropdown-item:hover {
+    background: var(--pd-spec-header-bg, #f9fafb);
+}
+
+.rv-rating-dropdown-item.active {
+    color: var(--pd-tab-active-color, #cc9900);
+    font-weight: 600;
+}
+
+/* ── 2. Sort Dropdown ────────────────────────────────── */
+
+.rv-sort-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: auto;
+}
+
+.rv-sort-dropdown-trigger {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-rating-text-color, #6b7280);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.rv-sort-dropdown-trigger:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+.rv-sort-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    min-width: 160px;
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--pd-spec-border, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: var(--shadow-dropdown);
+    z-index: 10;
+    display: none;
+    overflow: hidden;
+}
+
+.rv-sort-dropdown.open .rv-sort-dropdown-panel {
+    display: block;
+}
+
+.rv-sort-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--pd-spec-value-color, #111827);
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.rv-sort-dropdown-item:hover {
+    background: var(--pd-spec-header-bg, #f9fafb);
+}
+
+.rv-sort-dropdown-item.active {
+    color: var(--pd-tab-active-color, #cc9900);
+    font-weight: 600;
+}
+
+/* ── 3. Active Mention Tags ──────────────────────────── */
+
+.rv-mention-tag {
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rv-mention-tag:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+.rv-mention-tag.active {
+    border-color: var(--pd-tab-active-border, #cc9900);
+    color: var(--pd-tab-active-color, #cc9900);
+    background: var(--pd-price-tier-active-bg, #fef9e7);
+    font-weight: 600;
+}
+
+/* ── 4. Language Toggle Row ──────────────────────────── */
+
+/* Layout now in Tailwind: flex items-center gap-2 mt-2 */
+/* SVG sizing now in Tailwind: w-3.5 h-3.5 shrink-0 */
+
+.rv-lang-row svg {
+    color: var(--pd-rating-text-color, #6b7280);
+}
+
+.rv-lang-row span {
+    color: var(--pd-rating-text-color, #6b7280);
+}
+
+.rv-lang-row a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--pd-rating-text-color, #6b7280);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.rv-lang-row a:hover {
+    color: var(--pd-title-color, #111827);
+}
+
+/* ── 5. Reviews Modal ────────────────────────────────── */
+
+.rv-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-backdrop, 40);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rv-modal {
+    background: var(--color-surface, #ffffff);
+    max-width: 800px;
+    width: 95%;
+    max-height: 85vh;
+    border-radius: var(--radius-modal, 16px);
+    box-shadow: var(--shadow-modal);
+    display: flex;
+    flex-direction: column;
+    z-index: var(--z-modal, 50);
+}
+
+/* Layout now in Tailwind: flex justify-between items-center px-6 py-5 shrink-0 */
+.rv-modal-header {
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+}
+
+.rv-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--pd-title-color, #111827);
+}
+
+.rv-modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--pd-rating-text-color, #6b7280);
+    transition: background 0.15s;
+}
+
+.rv-modal-close:hover {
+    background: var(--pd-spec-header-bg, #f9fafb);
+    color: var(--pd-title-color, #111827);
+}
+
+/* Layout now in Tailwind: overflow-y-auto px-6 pb-6 flex-1 */
+
+.rv-modal-hidden {
+    display: none !important;
+}
+
+/* ── 6. Login Modal ──────────────────────────────────── */
+/* Layout now in Tailwind — only pseudo-elements kept here */
+
+.rv-login-divider::before,
+.rv-login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+/* ── 7. Product Thumbnail in Store Reviews ───────────── */
+
+/* Layout now in Tailwind: flex items-center gap-3 rounded-lg p-3 mt-3 */
+.rv-product-card {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+/* Layout now in Tailwind: w-12 h-12 rounded object-cover shrink-0 */
+.rv-product-card-img {
+    background: var(--pd-spec-header-bg, #f9fafb);
+}
+
+/* Layout now in Tailwind: flex-1 min-w-0 */
+
+.rv-product-card-title {
+    font-size: 13px;
+    color: var(--color-text-body, #333333);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rv-product-card-price {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-title-color, #111827);
+    margin-top: 2px;
+}
+
+.rv-product-card-link {
+    font-size: 12px;
+    color: var(--color-text-body, #333333);
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.rv-product-card-link:hover {
+    text-decoration: underline;
+}
+
+/* ── 8. Hidden Reviews Link ──────────────────────────── */
+
+.rv-hidden-reviews-link {
+    font-size: 13px;
+    color: var(--color-cta-primary, #cc9900);
+    cursor: pointer;
+    margin-top: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: none;
+}
+
+.rv-hidden-reviews-link:hover {
+    text-decoration: underline;
+}
+
+/* ── 9. Responsive — Phase E — migrated to Tailwind in ProductReviews.ts, ReviewsModal.ts, LoginModal.ts ── */
+
+/* ============================================================
+   SUPPLIER TAB — "Know Your Supplier" redesign
+   ============================================================ */
+
+/* Hero banner */
+/* sp-* classes migrated to Tailwind in CompanyProfile.ts */
+
+/* ============================================================
+   PRODUCT INFO CARD — Alibaba layout-stick style
+   ============================================================ */
+
+#product-info {
+    background: var(--color-surface, #ffffff);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pd-sticky #product-info {
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    box-shadow: 0 10px 28px -18px rgba(17, 24, 39, 0.35);
+}
+
+/* Card Tabs — "Ürün Fiyatları" / "Toplu Teklif" (Alibaba-style) */
+#pd-card-tabs {
+    display: flex;
+    margin: -20px -20px 0;
+    padding: 0;
+    background: var(--color-surface-raised, #f5f5f5);
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+}
+
+.pd-card-tab {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-top: 3px solid transparent;
+    cursor: pointer;
+    color: var(--color-text-muted, #666666);
+    position: relative;
+    transition: background .15s, color .15s;
+}
+
+.pd-card-tab:not(:first-child) {
+    border-left: 1px solid var(--color-border-default, #e5e5e5);
+}
+
+.pd-card-tab.active {
+    color: var(--color-text-primary);
+    font-weight: 700;
+    background: var(--color-surface, #ffffff);
+    border-top-color: var(--pd-tab-active-border, #cc9900);
+}
+
+/* Ready to Ship badge */
+#pd-ready-badge {
+    display: inline-flex;
+    align-items: center;
+    margin: 16px 0 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1.5px solid #16a34a;
+    border-radius: 4px;
+    color: #16a34a;
+    background: #f0fdf4;
+}
+
+/* Price Tiers — clean horizontal layout */
+#pd-price-tiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    background: none;
+    border-radius: 0;
+    overflow: visible;
+    margin-bottom: 16px;
+}
+
+.pd-price-tier {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    cursor: default;
+}
+
+.pd-price-tier:not(:first-child) {
+    border-left: none;
+}
+
+.pd-price-tier.active {
+    background: none;
+}
+
+.pd-price-tier-qty {
+    font-size: 13px;
+    color: var(--color-text-muted, #666666);
+    margin-bottom: 4px;
+}
+
+.pd-price-tier-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text-heading, #111827);
+    line-height: 1.2;
+}
+
+.pd-price-tier.active .pd-price-tier-price {
+    color: #cc0000;
+}
+
+/* #pd-sample-price and .pd-sample-left migrated to Tailwind in ProductInfo.ts */
+
+.pd-sample-btn {
+    padding: 6px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #222;
+    border-radius: 20px;
+    background: var(--color-surface, #ffffff);
+    color: var(--color-text-heading, #111827);
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.pd-sample-btn:hover {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+/* #pd-variations-section, .pd-section-header, .pd-select-now migrated to Tailwind in ProductInfo.ts */
+
+.pd-variant-label {
+    font-size: 14px;
+    color: var(--pd-title-color, #111827);
+    margin: 16px 0 12px;
+}
+
+.variant-group {
+    margin-bottom: 0;
+}
+
+.variant-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Color variant thumbnails (Alibaba-style product images) */
+.pd-color-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pd-color-thumb {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 2px solid var(--color-border-default, var(--color-border-default, #e5e5e5));
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    background: transparent;
+    transition: border-color 0.15s ease;
+}
+
+.pd-color-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pd-color-thumb.active {
+    border-color: var(--pd-title-color, #111827);
+}
+
+.pd-color-thumb:hover:not(.active):not(.pd-color-thumb-disabled) {
+    border-color: #999;
+}
+
+.pd-color-thumb-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Variant pill buttons (Alibaba-style bordered pills) */
+.pd-variant-btn {
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--color-border-medium, #d1d5db);
+    background: var(--color-surface, #ffffff);
+    color: var(--pd-title-color, #111827);
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.pd-variant-btn.active {
+    border-color: var(--pd-title-color, #111827);
+    font-weight: 600;
+}
+
+.pd-variant-btn:hover:not(.active):not(:disabled) {
+    border-color: #999;
+}
+
+/* .pd-info-section, .pd-section-title, .pd-verified-badge, .pd-customization-list,
+   .pd-shipping-card and children migrated to Tailwind in ProductInfo.ts */
+
+/* CTA Buttons — two-state positioning (Alibaba-style)
+   Non-sticky: normal flow with top+bottom dividers
+   Sticky: pinned at bottom of scrollable area */
+#pd-cta-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--color-border-default, #e5e5e5);
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+}
+
+.pd-sticky #pd-cta-buttons {
+    position: sticky;
+    bottom: -22px;
+    z-index: 2;
+    background: var(--color-surface, #ffffff);
+    border-bottom: none;
+    margin: 0 -20px -20px;
+    padding: 16px 20px 20px;
+    box-shadow: 0 -8px 18px -14px rgba(17, 24, 39, 0.35);
+}
+
+/* Trade Assurance section — keep #pd-trade-assurance and .pd-sticky ordering in CSS */
+#pd-trade-assurance {
+    padding: 20px 0 0;
+    border-top: 1px solid var(--color-border-light, #f0f0f0);
+    margin-top: 20px;
+    order: 1;
+}
+
+.pd-sticky #pd-trade-assurance {
+    order: 0;
+}
+
+/* .pd-ta-header, .pd-ta-item, .pd-ta-payment-icons, .pd-ta-badge migrated to Tailwind in ProductInfo.ts */
+
+/* Cart drawer + shipping modal styles are now fully rendered with Tailwind
+   in SharedCartDrawer.ts (no legacy CSS overrides kept here). */
+
+
+/* ============================================================
+   MOBILE PRODUCT DETAIL -- Alibaba-Style Layout
+   Layout via Tailwind classes in MobileLayout.ts.
+   Only transitions, states, pseudo-elements remain in CSS.
+   ============================================================ */
+
+/* #pd-mobile-layout / #pd-desktop-layout visibility now handled with Tailwind
+   classes directly in product-detail.ts. */
+
+/* -- Gallery -- scrollbar hiding & placeholder gradient -- */
+#pdm-gallery-track::-webkit-scrollbar {
+    display: none;
+}
+
+.pdm-gallery-placeholder {
+    background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.pdm-gallery-action-btn {
+    transition: background 0.15s;
+}
+
+.pdm-gallery-action-btn:active {
+    background: rgba(255, 255, 255, 1);
+}
+
+/* -- Section tabs -- transitions & active state -- */
+.pdm-section-tab {
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.pdm-section-tab-active {
+    color: var(--pd-tab-active-color, #cc9900);
+    font-weight: 600;
+    border-bottom-color: var(--pd-tab-active-border, #cc9900);
+}
+
+/* -- Sample btn -- transition & active -- */
+.pdm-sample-btn {
+    transition: background 0.15s;
+}
+
+.pdm-sample-btn:active {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+/* -- Reviews star SVG -- */
+#pdm-reviews-row .pdm-stars svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* -- Collapsible sections -- transitions & states -- */
+.pdm-collapsible-header em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--color-text-placeholder, #999999);
+    margin-left: 4px;
+}
+
+.pdm-chevron {
+    transition: transform 0.2s ease;
+}
+
+.pdm-collapsible-open .pdm-chevron {
+    transform: rotate(180deg);
+}
+
+.pdm-collapsible-body.pdm-hidden {
+    display: none;
+}
+
+.pdm-color-thumb {
+    transition: border-color 0.15s;
+}
+
+.pdm-color-thumb.active {
+    border-color: var(--color-text-heading);
+}
+
+.pdm-color-thumb.pdm-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pdm-variant-pill {
+    transition: border-color 0.15s;
+}
+
+.pdm-variant-pill.active {
+    border-color: var(--color-text-heading);
+    font-weight: 600;
+}
+
+.pdm-variant-pill.pdm-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* -- Shipping section background -- */
+.pdm-shipping-section {
+    background: #f0fdf4;
+}
+
+/* -- Supplier card -- transitions & states -- */
+.pdm-supplier-meta img {
+    width: 16px;
+    height: 12px;
+    border-radius: 1px;
+}
+
+.pdm-supplier-btn {
+    transition: background 0.15s;
+}
+
+.pdm-supplier-btn:active {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+.pdm-bottom-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: flex-end;
+    transition: background 0.25s;
+    pointer-events: none;
+}
+
+.pdm-bottom-sheet.pdm-hidden {
+    display: none;
+}
+
+.pdm-bottom-sheet.pdm-sheet-visible {
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+}
+
+.pdm-sheet-inner {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    background: var(--color-surface, #ffffff);
+    border-radius: 16px 16px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    -webkit-overflow-scrolling: touch;
+}
+
+.pdm-bottom-sheet.pdm-sheet-visible .pdm-sheet-inner {
+    transform: translateY(0);
+}
+
+.pdm-sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin: 12px auto 8px;
+}
+
+.pdm-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-heading, #111827);
+}
+
+.pdm-sheet-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text-muted, #666666);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.pdm-sheet-body {
+    padding: 0 16px 24px;
+}
+
+body.pdm-sheet-open {
+    overflow: hidden;
+}
+
+/* Bottom sheet — Shipping detail */
+.pdm-shipping-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+    font-size: 14px;
+    color: var(--color-text-body, #333333);
+}
+
+.pdm-shipping-row:last-child {
+    border-bottom: none;
+}
+
+.pdm-shipping-row strong {
+    color: var(--color-text-heading, #111827);
+}
+
+.pdm-shipping-method-card {
+    padding: 14px;
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    border-radius: 8px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.pdm-shipping-method-card.active {
+    border-color: var(--color-cta-primary, #cc9900);
+}
+
+.pdm-shipping-method-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-heading, #111827);
+    margin-bottom: 8px;
+}
+
+.pdm-shipping-method-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--color-text-muted, #666666);
+}
+
+.pdm-shipping-method-details strong {
+    color: var(--color-text-heading, #111827);
+    font-size: 15px;
+}
+
+/* Bottom sheet — Protections */
+.pdm-prot-section {
+    margin-bottom: 20px;
+}
+
+.pdm-prot-section h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text-heading, #111827);
+    margin: 0 0 6px;
+}
+
+.pdm-prot-section p {
+    font-size: 13px;
+    color: var(--color-text-muted, #666666);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.pdm-payment-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pdm-payment-icon {
+    padding: 4px 8px;
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-body, #333333);
+    background: var(--color-surface-muted, #fafafa);
+}
+
+/* Bottom sheet — Key Attributes table */
+.pdm-attrs-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.pdm-attrs-table tr {
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+}
+
+.pdm-attrs-table tr:last-child {
+    border-bottom: none;
+}
+
+.pdm-attrs-table td {
+    padding: 12px 0;
+    font-size: 14px;
+    vertical-align: top;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.pdm-attrs-table td:first-child {
+    color: var(--color-text-placeholder, #999999);
+    width: 38%;
+    padding-right: 10px;
+}
+
+.pdm-attrs-table td:last-child {
+    color: var(--color-text-heading, #111827);
+    font-weight: 500;
+}
+
+/* Bottom sheet — Customization table */
+.pdm-custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.pdm-custom-table thead th {
+    font-size: 12px;
+    color: var(--color-text-placeholder, #999999);
+    font-weight: 500;
+    padding: 8px 4px 8px 0;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+    word-break: break-word;
+}
+
+.pdm-custom-table tbody td {
+    font-size: 14px;
+    color: var(--color-text-heading, #111827);
+    padding: 12px 4px 12px 0;
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* -- Bottom bar -- transitions & active states -- */
+.pdm-bar-chat-btn:active {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+.pdm-bar-cart-btn {
+    transition: background 0.15s;
+}
+
+.pdm-bar-cart-btn:active {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+.pdm-bar-order-btn {
+    transition: background 0.15s;
+}
+
+.pdm-bar-order-btn:active {
+    background: var(--color-cta-primary-hover, #b38600);
+}
+
+/* -- 375px overrides for elements not in modifiable TS files -- */
+/* Bottom bar 375px */
+#pd-mobile-bar {
+    @apply max-[374px]:gap-1 max-[374px]:px-2 max-[374px]:py-2 max-[374px]:pb-[calc(8px+env(safe-area-inset-bottom))] max-[374px]:max-w-[100vw] max-[374px]:box-border;
+}
+
+@media (max-width: 374px) {
+    #pd-mobile-bar {
+        grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr);
+    }
+}
+
+.pdm-bar-chat-btn {
+    @apply max-[374px]:w-9 max-[374px]:h-9 max-[374px]:rounded-[18px];
+}
+
+.pdm-bar-chat-btn svg {
+    @apply max-[374px]:w-[18px] max-[374px]:h-[18px];
+}
+
+.pdm-bar-cart-btn,
+.pdm-bar-order-btn {
+    @apply max-[374px]:h-9 max-[374px]:text-[11px] max-[374px]:rounded-[18px] max-[374px]:px-2;
+}
+
+/* Sheet 375px */
+.pdm-sheet-header {
+    @apply max-[374px]:px-2.5 max-[374px]:py-1 max-[374px]:pb-2.5 max-[374px]:text-sm;
+}
+
+.pdm-sheet-body {
+    @apply max-[374px]:px-2.5 max-[374px]:pb-4;
+}
+
+/* Attrs table 375px */
+.pdm-attrs-table td {
+    @apply max-[374px]:text-xs max-[374px]:py-2.5;
+}
+
+.pdm-attrs-table td:first-child {
+    @apply max-[374px]:w-[35%] max-[374px]:pr-2;
+}
+
+/* Custom table 375px */
+.pdm-custom-table thead th {
+    @apply max-[374px]:text-[11px];
+}
+
+.pdm-custom-table tbody td {
+    @apply max-[374px]:text-xs max-[374px]:py-2.5 max-[374px]:px-1 max-[374px]:pl-0;
+}
+
+/* Protections 375px */
+.pdm-prot-section h4 {
+    @apply max-[374px]:text-[13px];
+}
+
+.pdm-prot-section p {
+    @apply max-[374px]:text-xs;
+}
+
+.pdm-payment-icon {
+    @apply max-[374px]:text-[10px] max-[374px]:px-1.5 max-[374px]:py-[3px];
+}
+
+/* Footer overflow 375px */
+footer {
+    @apply max-[374px]:overflow-x-hidden;
+}
+
+/* Floating panel responsive hiding now handled via Tailwind classes (hidden lg:flex) */
+
+/* ═══════════════════════════════════════════════════════
+   Account Type Selector (Register Page)
+   ═══════════════════════════════════════════════════════ */
+
+/* Layout now in Tailwind: flex flex-col gap-3 */
+
+/* Layout now in Tailwind: flex items-center gap-3.5 w-full py-4 px-[18px] rounded-xl text-left relative cursor-pointer transition-all */
+.auth-account-type-card {
+    border: 1.5px solid var(--color-border-default, #e5e5e5);
+    background: var(--color-surface, #ffffff);
+}
+
+/* Radio circle via pseudo-element */
+.auth-account-type-card::before {
+    content: '';
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border-medium, #d1d5db);
+    border-radius: 50%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-account-type-card:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+    background-color: var(--color-surface-muted, #fafafa);
+}
+
+.auth-account-type-card:focus-visible {
+    outline: 2px solid var(--color-cta-primary, #cc9900);
+    outline-offset: 2px;
+}
+
+/* Selected state */
+.auth-account-type-card.selected {
+    border-color: #1f2937;
+    box-shadow: 0 0 0 1px #1f2937;
+}
+
+.auth-account-type-card.selected::before {
+    border-color: #1f2937;
+    box-shadow: inset 0 0 0 5px #1f2937;
+}
+
+.auth-account-type-card.selected:hover {
+    background-color: var(--color-surface, #ffffff);
+}
+
+/* Content takes remaining space, icon goes to end */
+/* Layout now in Tailwind: flex flex-col gap-0.5 flex-1 min-w-0 */
+
+/* Layout now in Tailwind: text-[15px] font-semibold leading-tight */
+.auth-account-type-label {
+    color: var(--color-text-heading, #111827);
+}
+
+/* Layout now in Tailwind: text-[13px] leading-snug */
+.auth-account-type-desc {
+    color: var(--color-text-muted, #666666);
+}
+
+/* Layout now in Tailwind: shrink-0 order-1 w-9 h-9 transition-colors */
+.auth-account-type-icon {
+    color: var(--color-text-placeholder, #999999);
+}
+
+.auth-account-type-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.auth-account-type-card.selected .auth-account-type-icon {
+    color: #1f2937;
+}
+
+/* Dark mode via class (Tailwind dark mode) */
+.dark .auth-account-type-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+.dark .auth-account-type-card::before {
+    border-color: #4b5563;
+}
+
+.dark .auth-account-type-card:hover {
+    border-color: #4b5563;
+    background-color: #263040;
+}
+
+.dark .auth-account-type-card.selected {
+    border-color: var(--color-border-default, var(--color-border-default, #e5e5e5));
+    box-shadow: 0 0 0 1px #e5e7eb;
+}
+
+.dark .auth-account-type-card.selected::before {
+    border-color: var(--color-border-default, var(--color-border-default, #e5e5e5));
+    box-shadow: inset 0 0 0 5px #e5e7eb;
+}
+
+.dark .auth-account-type-card.selected:hover {
+    background-color: #1f2937;
+}
+
+.dark .auth-account-type-label {
+    color: var(--color-surface-raised, #f5f5f5);
+}
+
+.dark .auth-account-type-desc {
+    color: var(--color-text-placeholder, #999999);
+}
+
+.dark .auth-account-type-icon {
+    color: var(--color-text-muted, #666666);
+}
+
+.dark .auth-account-type-card.selected .auth-account-type-icon {
+    color: #e5e7eb;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Auth Shared Styles (Login / Register pages)
+   ═══════════════════════════════════════════════════════ */
+
+/* Layout now in Tailwind: w-full */
+
+/* Layout now in Tailwind: relative */
+
+/* ═══════════════════════════════════════════════════════
+   Password Requirements (AccountSetupForm)
+   ═══════════════════════════════════════════════════════ */
+
+/* Layout now in Tailwind: flex flex-col gap-1.5 */
+
+/* Layout now in Tailwind: flex items-center gap-2 text-[13px] transition-colors */
+.auth-password-req-item {
+    color: var(--color-text-placeholder, #999999);
+}
+
+.auth-password-req-item.valid {
+    color: #16a34a;
+}
+
+.auth-password-req-item.invalid {
+    color: #dc2626;
+}
+
+/* Layout now in Tailwind: shrink-0 w-2 h-2 transition-all */
+
+/* Valid state: hide bullet, show checkmark via pseudo-element on the item */
+.auth-password-req-item.valid .auth-password-req-icon {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.auth-password-req-item.valid::before {
+    content: '';
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2316a34a'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Invalid state: red bullet */
+.auth-password-req-item.invalid .auth-password-req-icon {
+    color: #dc2626;
+}
+
+/* ── Dark mode (Tailwind class) ── */
+.dark .auth-password-req-item {
+    color: var(--color-text-muted, #666666);
+}
+
+.dark .auth-password-req-item.valid {
+    color: #22c55e;
+}
+
+.dark .auth-password-req-item.invalid {
+    color: #ef4444;
+}
+
+.dark .auth-password-req-item.valid::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2322c55e'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+}
+
+.dark .auth-password-req-item.invalid .auth-password-req-icon {
+    color: #ef4444;
+}
+
+/* --- Center-expand hover effect --- */
+.hover-expand-center {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.hover-expand-center::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    z-index: -1;
+    border-radius: inherit;
+}
+
+.hover-expand-center:hover::before {
+    transform: scaleX(1);
+}
+
+/* --- Factory Tab Active Indicator --- */
+.factory-tab-active {
+    position: relative;
+    font-weight: 700;
+}
+
+.factory-tab-active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 100px;
+    height: 3px;
+    background-color: var(--color-surface-inverse);
+    border-radius: 2px;
+}
+
+/* ==========================================================
+   CART — Pseudo-element styles (cannot be done with Tailwind)
+   ========================================================== */
+
+/* Checkbox checkmark (checked state) */
+.next-checkbox-wrapper.checked .next-checkbox-inner::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 8px;
+    width: 6px;
+    height: 11px;
+    border: solid var(--color-text-inverse);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Checkbox indeterminate dash */
+.next-checkbox-wrapper.indeterminate .next-checkbox-inner::after,
+.next-checkbox-wrapper .next-checkbox:has(input[data-indeterminate="true"]) .next-checkbox-inner::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 11px;
+    left: 5px;
+    width: 14px;
+    height: 0;
+    border: solid var(--color-text-inverse);
+    border-width: 0 0 2px 0;
+    transform: none;
+}
+
+/* Checkbox hover border */
+.next-checkbox-wrapper:hover .next-checkbox {
+    border-color: var(--color-cta-primary, #cc9900);
+}
+
+/* Cart checkbox: seçili/indeterminate durumda altın sarısı */
+.next-checkbox-wrapper .next-checkbox.bg-text-primary {
+    background-color: var(--color-cta-primary, #cc9900) !important;
+    border-color: transparent !important;
+}
+
+/* Utility: cta-primary background (not in Tailwind config) */
+.bg-cta-primary {
+    background-color: var(--color-cta-primary, #cc9900);
+}
+
+/* Icon pseudo-elements */
+.sc-c-spu-favorite-icon::before {
+    content: "\2661";
+}
+
+.sc-c-spu-delete-icon::before {
+    content: "\1F5D1";
+    font-size: 14px;
+}
+
+.sc-c-sku-delete-icon::before {
+    content: "\2715";
+    font-size: 14px;
+}
+
+/* Number picker: hide browser spin buttons */
+.number-picker-input::-webkit-outer-spin-button,
+.number-picker-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* ============================================================
+   BUYER DASHBOARD — CSS CUSTOM PROPERTIES
+   Dashboard-specific variables (OUTSIDE @theme)
+   ============================================================ */
+:root {
+    /* --- Page Colors --- */
+    --color-page-bg: #F5F5F5;
+    --color-card-bg: #FFFFFF;
+    --color-card-border: #E8E8E8;
+
+    /* --- Sidebar Colors --- */
+    --color-sidebar-bg: #FFFFFF;
+    --color-sidebar-text: #333333;
+    --color-sidebar-text-muted: #999999;
+    --color-sidebar-hover-bg: #F7F7F7;
+    --color-sidebar-active-bg: #F0FFF0;
+    --color-sidebar-active-border: #00B96B;
+    --color-sidebar-active-text: #00B96B;
+    --color-sidebar-icon: #666666;
+    --color-sidebar-chevron: #CCCCCC;
+    --color-sidebar-divider: #F0F0F0;
+    --color-sidebar-badge-bg: #FF4D4F;
+    --color-sidebar-badge-text: #FFFFFF;
+    --color-sidebar-flyout-bg: #FFFFFF;
+    --color-sidebar-flyout-shadow: rgba(0, 0, 0, 0.12);
+    --color-sidebar-flyout-border: #E8E8E8;
+    --color-sidebar-flyout-link: #333333;
+    --color-sidebar-flyout-link-hover: #CC9900;
+    --color-sidebar-explore-bg: #FFF8E6;
+    --color-sidebar-explore-text: #CC9900;
+
+    /* --- Dropdown Colors --- */
+    --color-dropdown-bg: #FFFFFF;
+    --color-dropdown-border: #E8E8E8;
+    --color-dropdown-shadow: rgba(0, 0, 0, 0.1);
+    --color-dropdown-hover-bg: #F7F7F7;
+    --color-dropdown-check: #CC9900;
+
+    /* --- Slider / Notification Colors --- */
+    --color-slider-bg: #F7F7F7;
+    --color-slider-dot-active: #333333;
+    --color-slider-dot-inactive: #D9D9D9;
+    --color-slider-arrow-bg: rgba(255, 255, 255, 0.9);
+    --color-slider-arrow-icon: #666666;
+
+    /* --- Orders Colors --- */
+    --color-orders-tab-active-bg: #333333;
+    --color-orders-tab-active-text: #FFFFFF;
+    --color-orders-tab-inactive-bg: #F0F0F0;
+    --color-orders-tab-inactive-text: #666666;
+    --color-orders-tab-hover-bg: #E8E8E8;
+    --color-orders-empty-bg: #FAFAFA;
+    --color-orders-empty-icon: #CCCCCC;
+    --color-orders-empty-text: #999999;
+    --color-orders-empty-btn-bg: transparent;
+    --color-orders-empty-btn-text: #222222;
+    --color-orders-empty-btn-border: #CCCCCC;
+
+    /* --- Right Panel Colors --- */
+    --color-rp-header-text: #333333;
+    --color-rp-action-text: #999999;
+    --color-rp-action-hover: #CC9900;
+    --color-rp-empty-icon: #CCCCCC;
+    --color-rp-empty-text: #999999;
+    --color-rp-empty-link: #CC9900;
+    --color-rp-product-price: #CC0000;
+    --color-rp-product-moq: #999999;
+
+    /* --- New Buyer Info Colors --- */
+    --color-nbi-profile-link: #2080D0;
+    --color-nbi-support-bg: #E6F7E6;
+    --color-nbi-support-text: #00B96B;
+    --color-nbi-stat-label: #999999;
+    --color-nbi-stat-value: #333333;
+    --color-nbi-stat-divider: #E8E8E8;
+
+    /* --- Dimensions --- */
+    --sidebar-expanded-width: 260px;
+    --sidebar-collapsed-width: 56px;
+    --right-panel-width: 380px;
+    --max-content-width: 1425px;
+    --dashboard-header-height: 56px;
+    --dashboard-avatar-size: 48px;
+    --dashboard-card-padding: 20px;
+    --dashboard-gap: 14px;
+
+    /* --- Transitions --- */
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+    --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* --- Border Radius --- */
+    --radius-card: 8px;
+    --radius-tab: 20px;
+    --radius-dropdown: 8px;
+    --radius-avatar: 50%;
+    --radius-badge: 10px;
+    --radius-btn: 20px;
+}
+
+
+/* ============================================================
+   BUYER DASHBOARD — LAYOUT
+   ============================================================ */
+
+/* ── Other Services Layout ─────────────────────────────────────── */
+
+/* --- OtherServicesLayout: migrated to Tailwind in OtherServicesLayout.ts --- */
+
+/* ── Settings Page: migrated to Tailwind in SettingsLayout.ts ──── */
+
+
+/* --- Settings components: migrated to Tailwind in settings/*.ts --- */
+/* --- Profile page: migrated to Tailwind in profile/ProfileLayout.ts --- */
+
+/* Toggle switch (shared by ad-pref and email-pref) - needs pseudo-elements */
+.ad-pref__toggle-slider,
+.email-pref__toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-border-medium);
+    border-radius: 13px;
+    transition: background 0.2s;
+}
+
+.ad-pref__toggle-slider::before,
+.email-pref__toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    top: 3px;
+    background: var(--color-surface, #ffffff);
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+input:checked+.ad-pref__toggle-slider,
+input:checked+.email-pref__toggle-slider {
+    background: var(--toggle-active-bg, #cc9900);
+}
+
+input:checked+.ad-pref__toggle-slider::before,
+input:checked+.email-pref__toggle-slider::before {
+    transform: translateX(22px);
+}
+
+/* Email checkbox custom styling - needs pseudo-elements */
+.email-pref__checkbox input:checked+.email-pref__checkmark {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.email-pref__checkbox input:checked+.email-pref__checkmark::after {
+    content: "";
+    width: 5px;
+    height: 9px;
+    border: solid var(--color-text-inverse);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
+}
+
+/* ============================================================
+   BUYER DASHBOARD — NewBuyerInfo
+   ============================================================ */
+/* --- NewBuyerInfo: migrated to Tailwind in NewBuyerInfo.ts --- */
+/* --- UserInfoCard: migrated to Tailwind in UserInfoCard.ts --- */
+
+/* ============================================================
+   BUYER DASHBOARD — Operation Slider (Swiper integration)
+   Only keeping: nav arrows (absolute positioning + group-hover),
+   pagination bullets (swiper overrides)
+   ============================================================ */
+
+/* Navigation Arrows — now styled via Tailwind in OperationSlider.ts */
+
+/* Pagination Bullets — swiper overrides */
+.operation-slider__pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-medium);
+    opacity: 1;
+    transition: all 200ms;
+}
+
+.operation-slider__pagination .swiper-pagination-bullet-active {
+    width: 16px;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--color-text-body);
+}
+
+/* ============================================================
+   BUYER DASHBOARD — Orders Section (state-driven CSS only)
+   Layout migrated to Tailwind in OrdersSection.ts, OrdersTabs.ts, OrdersContent.ts
+   ============================================================ */
+
+/* --- Tab state colors (kept for JS classList.toggle) --- */
+.orders__tab {
+    background: var(--color-orders-tab-inactive-bg);
+    color: var(--color-orders-tab-inactive-text);
+}
+
+.orders__tab:hover {
+    background: var(--color-orders-tab-hover-bg);
+}
+
+.orders__tab--active {
+    background: var(--color-orders-tab-active-bg);
+    color: var(--color-orders-tab-active-text);
+}
+
+.orders__tab--active:hover {
+    background: var(--color-orders-tab-active-bg);
+}
+
+.orders__tab-chevron {
+    transition: transform var(--transition-fast);
+}
+
+.orders__tab--active .orders__tab-chevron {
+    transform: rotate(180deg);
+}
+
+/* --- Dropdown (absolute positioning + animation) --- */
+.orders__dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 20px;
+    z-index: 20;
+    min-width: 200px;
+    background: var(--color-dropdown-bg);
+    border: 1px solid var(--color-dropdown-border);
+    border-radius: var(--radius-dropdown);
+    box-shadow: 0 4px 12px var(--color-dropdown-shadow);
+    padding: 4px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity var(--transition-fast), visibility var(--transition-fast), transform var(--transition-fast);
+}
+
+.orders__dropdown--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.orders__dropdown-item:hover {
+    background: var(--color-dropdown-hover-bg);
+}
+
+.orders__dropdown-item--selected {
+    font-weight: 600;
+}
+
+/* Responsive: Orders mobile scroll — migrated to Tailwind in OrdersTabs.ts */
+
+/* ============================================================
+   MESSAGES PAGE
+   ============================================================ */
+
+/* --- Messages: JS-toggled state classes --- */
+.msg-inbox__cat--active {
+    background: var(--color-border-light) !important;
+    color: var(--color-text-heading, #111827) !important;
+    font-weight: 600 !important;
+}
+
+.msg-list__item--active {
+    background: var(--color-surface-raised, #f5f5f5) !important;
+}
+
+
+/* Inquiries & Contacts pages — migrated to Tailwind utilities in components */
+
+
+/* ============================================================
+   ORDERS PAGE — Siparişlerim
+   ============================================================ */
+
+/* Orders page: tab content visibility + radio/checkbox pseudo-elements + accordion arrow (kept in CSS) */
+.os-tab-content {
+    display: none;
+}
+
+.os-tab-content--active {
+    display: block;
+}
+
+.os-tabs__tab--active {
+    color: var(--color-text-heading, #111827);
+    font-weight: 600;
+    border-bottom-color: var(--color-text-heading);
+}
+
+.os-tabs__tab--active.os-tabs__tab--orange {
+    color: var(--color-cta-primary, #cc9900);
+    border-bottom-color: var(--color-cta-primary, #cc9900);
+}
+
+.os-tabs__tab:hover {
+    color: var(--color-text-heading, #111827);
+}
+
+.os-pill--active {
+    color: var(--color-text-heading, #111827);
+    border-color: var(--color-text-heading);
+    font-weight: 500;
+}
+
+.os-pill:hover {
+    border-color: #999;
+}
+
+/* Radio checked state */
+.os-modal__radio input[type="radio"]:checked+.os-modal__radio-custom {
+    border-color: var(--color-cta-primary, #cc9900);
+}
+
+.os-modal__radio input[type="radio"]:checked+.os-modal__radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-cta-primary, #cc9900);
+}
+
+/* Checkbox checked state */
+.os-modal__checkbox input[type="checkbox"]:checked+.os-modal__checkbox-custom {
+    background: var(--color-cta-primary, #cc9900);
+    border-color: var(--color-cta-primary, #cc9900);
+}
+
+.os-modal__checkbox input[type="checkbox"]:checked+.os-modal__checkbox-custom::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 5px;
+    height: 8px;
+    border: solid var(--color-text-inverse);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* FAQ accordion arrow */
+.os-faq__accordion summary::after {
+    content: '▾';
+    font-size: 16px;
+    color: var(--color-text-placeholder, #999999);
+    transition: transform 200ms;
+}
+
+.os-faq__accordion[open] summary::after {
+    transform: rotate(180deg);
+}
+
+/* Modal animation */
+@keyframes osModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Input placeholder */
+.os-modal__input::placeholder,
+.os-reviews-toolbar__input::placeholder {
+    color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Nav link active state (toggled via JS) */
+.orders-page__nav-link--active {
+    font-weight: 600;
+    color: var(--color-text-heading, #111827);
+    border-left-color: var(--color-text-heading);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ╔══════════════════════════════════════════╗
+   ║  FAVORITES & BROWSING HISTORY PAGE       ║
+   ╚══════════════════════════════════════════╝ */
+
+/* ─── Favorites: tab content visibility + modal animation ─── */
+.fav-tab-content {
+    display: none;
+}
+
+.fav-tab-content--active {
+    display: block;
+}
+
+@keyframes favModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ─── Billing Toggle (JS toggle state) ─── */
+.sub-billing-toggle__btn--active {
+    background: var(--color-surface-raised, #f5f5f5) !important;
+    color: var(--color-text-heading, #111827) !important;
+    font-weight: 600 !important;
+}
+
+
+/* ╔══════════════════════════════════════════╗
+   ║  PAYMENT PAGE                            ║
+   ╚══════════════════════════════════════════╝ */
+
+/* ─── Layout ─── */
+/* ─── Payment: minimal CSS kept for JS-toggled states & animation ─── */
+@keyframes payModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.pay-tab-content {
+    display: none;
+}
+
+.pay-tab-content--active {
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DROPSHIPPING PAGE (.ds- prefix)
+   Stateful & interactive classes only — base styles use Tailwind
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar Column — collapsed by default, expand on hover ───── */
+
+.ds-sidebar-col {
+    width: 56px;
+    position: relative;
+    z-index: 30;
+}
+
+.ds-sidebar-col #buyer-sidebar {
+    width: 56px;
+    overflow: hidden;
+    transition: width 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+}
+
+.ds-sidebar-col #buyer-sidebar .sidebar-item--expanded>span:nth-child(n+2) {
+    display: none;
+}
+
+.ds-sidebar-col #buyer-sidebar .sidebar__section-title {
+    display: none;
+}
+
+.ds-sidebar-col #buyer-sidebar .sidebar-item--expanded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 3px auto;
+    gap: 0;
+}
+
+.ds-sidebar-col #buyer-sidebar .sidebar-item--expanded>span:first-child {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.ds-sidebar-col:hover #buyer-sidebar {
+    width: 260px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.ds-sidebar-col:hover #buyer-sidebar .sidebar-item--expanded>span:nth-child(n+2) {
+    display: inline-flex;
+}
+
+.ds-sidebar-col:hover #buyer-sidebar .sidebar__section-title {
+    display: block;
+}
+
+.ds-sidebar-col:hover #buyer-sidebar .sidebar-item--expanded {
+    width: auto;
+    height: auto;
+    min-height: 40px;
+    justify-content: flex-start;
+    padding: 8px;
+    margin: 0 20px 8px;
+    gap: 12px;
+}
+
+.ds-sidebar-col:hover #buyer-sidebar .sidebar-item--expanded .flex-1.truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* Responsive: ds-sidebar-col — handled via Tailwind in dropshipping.ts */
+
+/* ── Page Navigation ───────────────────────────────────────────── */
+
+.ds-page__nav {
+    display: flex;
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+    background: var(--color-surface, #fff);
+}
+
+.ds-page__nav-link {
+    padding: 14px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-muted, #666);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.ds-page__nav-link:hover {
+    color: var(--color-text-heading, #111827);
+}
+
+.ds-page__nav-link--active {
+    color: var(--color-cta-primary, #cc9900);
+    border-bottom-color: var(--color-cta-primary, #cc9900);
+}
+
+/* Responsive: ds-page__nav — migrated to Tailwind in DropshippingLayout.ts */
+
+/* ── Sticky Header Shadow ──────────────────────────────────────── */
+
+#sticky-header {
+    transition: box-shadow 0.3s ease;
+}
+
+#sticky-header.scrolled {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Filters ───────────────────────────────────────────────────── */
+
+.ds-filters {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+}
+
+.ds-filters__row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+}
+
+.ds-filters__row:last-child {
+    border-bottom: none;
+}
+
+.ds-filters__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-body, #333);
+}
+
+.ds-filters__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* ── Chips (stateful) ──────────────────────────────────────────── */
+
+.ds-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border-medium, #d1d5db);
+    border-radius: 16px;
+    background: var(--color-surface, #fff);
+    font-size: 13px;
+    color: var(--color-text-body, #333);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.ds-chip:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-muted, #fafafa);
+}
+
+.ds-chip--active {
+    border-color: var(--color-cta-primary, #cc9900);
+    color: var(--color-cta-primary, #cc9900);
+    background: var(--color-primary-50, #fef9e7);
+}
+
+.ds-chip--orange {
+    background: var(--color-cta-primary, #cc9900);
+    color: var(--color-text-inverse);
+    border-color: var(--color-cta-primary, #cc9900);
+}
+
+.ds-chip--orange:hover {
+    background: var(--color-cta-primary-hover, #b38600);
+    border-color: var(--color-cta-primary-hover, #b38600);
+}
+
+.ds-chip--country img {
+    border-radius: 1px;
+}
+
+.ds-chip--toggle {
+    border-style: dashed;
+}
+
+.ds-chip--toggle.ds-chip--active {
+    border-style: solid;
+}
+
+/* Responsive: ds-chip — migrated to Tailwind in DropshippingLayout.ts */
+
+/* ── Select ────────────────────────────────────────────────────── */
+
+.ds-select {
+    padding: 6px 28px 6px 12px;
+    border: 1px solid var(--color-border-medium, #d1d5db);
+    border-radius: 6px;
+    background: var(--color-surface, #fff) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    font-size: 13px;
+    color: var(--color-text-body, #333);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* ── Category Tags (stateful + hover dropdown) ─────────────────── */
+
+/* ds-category-row: position handled via Tailwind in DropshippingLayout.ts */
+
+/* ds-category-row chips padding: handled via Tailwind in DropshippingLayout.ts */
+
+.ds-category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--color-text-body, #333);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s;
+}
+
+.ds-category-tag:hover {
+    border-color: var(--color-border-strong);
+}
+
+.ds-category-tag svg {
+    color: var(--color-text-placeholder, #999);
+    transition: transform 0.2s;
+}
+
+.ds-category-tag--hidden {
+    display: none;
+}
+
+.ds-category-tag--active {
+    border-color: var(--color-cta-primary, #cc9900);
+    color: var(--color-cta-primary, #cc9900);
+    background: var(--color-primary-50, #fef9e7);
+}
+
+.ds-category-tag__dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 180px;
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    padding: 4px 0;
+}
+
+.ds-category-tag:hover .ds-category-tag__dropdown {
+    display: block;
+}
+
+.ds-category-tag:hover svg {
+    transform: rotate(180deg);
+}
+
+.ds-category-tag__dropdown-item {
+    display: block;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--color-text-body, #333);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.ds-category-tag__dropdown-item:hover {
+    background: var(--color-surface-raised, #f5f5f5);
+}
+
+.ds-category-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border: none;
+    background: none;
+    font-size: 13px;
+    color: var(--color-cta-primary, #cc9900);
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.ds-category-toggle__icon {
+    transition: transform 0.2s;
+}
+
+.ds-category-toggle:hover {
+    text-decoration: underline;
+}
+
+.ds-category-active-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 20px;
+}
+
+.ds-category-active-chips:empty {
+    display: none;
+}
+
+.ds-active-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border: 1px solid var(--color-cta-primary, #cc9900);
+    border-radius: 16px;
+    background: var(--color-primary-50, #fef9e7);
+    font-size: 12px;
+    color: var(--color-cta-primary, #cc9900);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-active-chip:hover {
+    background: var(--color-primary-200, #fbe08a);
+}
+
+/* Responsive: ds-category — migrated to Tailwind in DropshippingLayout.ts */
+
+/* ── Product Grid ──────────────────────────────────────────────── */
+
+/* ds-product-grid: layout handled via Tailwind in DropshippingLayout.ts */
+
+/* Card hover effects (parent→child) */
+.ds-card__img:hover .ds-card__img-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ds-card:hover .ds-card__title {
+    color: var(--color-cta-primary, #cc9900);
+}
+
+/* ── Orders (stateful tabs) ────────────────────────────────────── */
+
+.ds-orders__badge {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--color-surface-raised, #f5f5f5);
+    color: var(--color-text-muted, #666);
+    border: 1px solid var(--color-border-default, #e5e5e5);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-orders__badge:hover {
+    border-color: var(--color-border-medium, #d1d5db);
+}
+
+.ds-orders__badge--on {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.ds-orders__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border-default, #e5e5e5);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.ds-orders__tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.ds-orders__tab {
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--color-text-muted, #666);
+    border: none;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.ds-orders__tab:hover {
+    color: var(--color-text-body, #333);
+}
+
+.ds-orders__tab--active {
+    color: var(--color-cta-primary, #cc9900);
+    border-bottom-color: var(--color-cta-primary, #cc9900);
+    font-weight: 500;
+}
+
+.ds-orders__tab-content {
+    display: none;
+}
+
+.ds-orders__tab-content--active {
+    display: block;
+}
+
+/* Responsive: ds-orders__tabs — migrated to Tailwind in DropshippingLayout.ts */
+
+/* ── Modal (stateful show/hide) ────────────────────────────────── */
+
+.ds-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.ds-modal--open {
+    display: flex;
+}
+
+.ds-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.ds-modal__dialog {
+    position: relative;
+    background: var(--color-surface, #fff);
+    border-radius: 12px;
+    width: 480px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.ds-modal__close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    font-size: 20px;
+    color: var(--color-text-placeholder, #999);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.ds-modal__close:hover {
+    background: var(--color-surface-raised, #f5f5f5);
+    color: var(--color-text-body, #333);
+}
+
+.ds-modal__btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--color-border-medium, #d1d5db);
+    background: var(--color-surface, #fff);
+    color: var(--color-text-body, #333);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+/* Responsive: ds-modal__dialog — migrated to Tailwind in DropshippingLayout.ts */
+
+/* ── Toggle Switch (stateful) ──────────────────────────────────── */
+
+.ds-toggle__track {
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--color-border-medium);
+    position: relative;
+    transition: background 0.2s;
+}
+
+.ds-toggle--on .ds-toggle__track {
+    background: var(--color-cta-primary, #cc9900);
+}
+
+.ds-toggle__thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-surface, #fff);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.ds-toggle--on .ds-toggle__thumb {
+    transform: translateX(20px);
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+
+    header,
+    footer,
+    nav,
+    .floating-panel,
+    [data-floating-panel],
+    #sticky-header,
+    .scrollbar-hide,
+    button:not([type="submit"]) {
+        display: none !important;
+    }
+
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+
+    .max-w-\[1200px\] {
+        max-width: 100% !important;
+    }
+
+    aside {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   CART DRAWER — Loading state for lazy-loaded product buttons
+   ============================================================ */
+
+[data-add-to-cart].loading,
+[data-order-sample].loading {
+  pointer-events: none;
+  opacity: 0.6;
+  position: relative;
+}
+
+[data-add-to-cart].loading::after,
+[data-order-sample].loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cart-btn-spin 0.6s linear infinite;
+}
+
+@keyframes cart-btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   CHECKOUT PAGE — Float-label, Dropdown, Accordion, Modal
+   ============================================================ */
+
+/* ── Float-label Field ─────────────────────────────────────── */

@@ -1,0 +1,607 @@
+@use 'variables' as *;
+
+// ============================================================
+// TradeHub Dashboard — Design Tokens (--th-* namespace)
+// ============================================================
+
+:root {
+  // ── Brand ──────────────────────────────────────────────────
+  --th-brand-50: #eef2ff;
+  --th-brand-100: #e0e7ff;
+  --th-brand-500: #6c5dd3;
+  --th-brand-600: #5b4cc4;
+  --th-brand-900: #1e1b4b;
+
+  // ── Surface (Light) ───────────────────────────────────────
+  --th-surface-bg: #f6f6f9;
+  --th-surface-card: #ffffff;
+  --th-surface-elevated: #f8f9fb;
+  --th-surface-border: #e8e8ef;
+
+  // ── Semantic Status ───────────────────────────────────────
+  --th-success: #{$c-success};
+  --th-warning: #{$c-warning};
+  --th-danger: #{$c-error};
+  --th-info: #{$c-info};
+  --th-neutral: #6b7280;
+
+  // ── Chart Palette (12 colors) ──────────────────────────────
+  --th-chart-1: #6366f1;
+  --th-chart-2: #10b981;
+  --th-chart-3: #f59e0b;
+  --th-chart-4: #3b82f6;
+  --th-chart-5: #ec4899;
+  --th-chart-6: #8b5cf6;
+  --th-chart-7: #14b8a6;
+  --th-chart-8: #f97316;
+  --th-chart-9: #ef4444;
+  --th-chart-10: #84cc16;
+  --th-chart-11: #06b6d4;
+  --th-chart-12: #a78bfa;
+
+  // ── Typography Scale ──────────────────────────────────────
+  --th-text-xs: 11px;
+  --th-text-sm: 12px;
+  --th-text-base: 14px;
+  --th-text-md: 16px;
+  --th-text-lg: 18px;
+  --th-text-xl: 24px;
+  --th-text-2xl: 32px;
+  --th-text-3xl: 48px;
+
+  // ── Motion ────────────────────────────────────────────────
+  --th-duration-fast: 150ms;
+  --th-duration-normal: 250ms;
+  --th-duration-slow: 400ms;
+  --th-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --th-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  // ── Spacing (Dashboard Grid) ──────────────────────────────
+  --th-grid-gap: 20px;
+  --th-widget-radius: 12px;
+  --th-widget-padding: 20px;
+
+  // ── Score Type Badge Colors (Light) ───────────────────────
+  --th-type-weekly-bg: #ede9fe;
+  --th-type-weekly-fg: #6d28d9;
+  --th-type-monthly-bg: #dbeafe;
+  --th-type-monthly-fg: #1d4ed8;
+  --th-type-annual-bg: #d1fae5;
+  --th-type-annual-fg: #047857;
+  --th-type-daily-bg: #fef3c7;
+  --th-type-daily-fg: #92400e;
+  --th-type-periodic-bg: #e0e7ff;
+  --th-type-periodic-fg: #3730a3;
+  --th-type-lifetime-bg: #fce7f3;
+  --th-type-lifetime-fg: #9d174d;
+  --th-type-manual-bg: #f3f4f6;
+  --th-type-manual-fg: #374151;
+
+  // ── Status Badge Colors (Light) ───────────────────────────
+  --th-st-draft-bg: #f3f4f6;
+  --th-st-draft-fg: #4b5563;
+  --th-st-draft-dot: #9ca3af;
+  --th-st-calculating-bg: #dbeafe;
+  --th-st-calculating-fg: #1e40af;
+  --th-st-calculating-dot: #3b82f6;
+  --th-st-pending-review-bg: #fef3c7;
+  --th-st-pending-review-fg: #92400e;
+  --th-st-pending-review-dot: #f59e0b;
+  --th-st-finalized-bg: #d1fae5;
+  --th-st-finalized-fg: #065f46;
+  --th-st-finalized-dot: #22c55e;
+  --th-st-revised-bg: #ede9fe;
+  --th-st-revised-fg: #5b21b6;
+  --th-st-revised-dot: #8b5cf6;
+  --th-st-appealed-bg: #fee2e2;
+  --th-st-appealed-fg: #991b1b;
+  --th-st-appealed-dot: #ef4444;
+
+  // ── KPI Status Badge Colors (Light) ──────────────────────
+  --th-kpi-draft-bg: #f3f4f6;
+  --th-kpi-draft-fg: #4b5563;
+  --th-kpi-draft-dot: #9ca3af;
+  --th-kpi-active-bg: #dbeafe;
+  --th-kpi-active-fg: #1e40af;
+  --th-kpi-active-dot: #3b82f6;
+  --th-kpi-ontrack-bg: #d1fae5;
+  --th-kpi-ontrack-fg: #065f46;
+  --th-kpi-ontrack-dot: #22c55e;
+  --th-kpi-atrisk-bg: #fef3c7;
+  --th-kpi-atrisk-fg: #92400e;
+  --th-kpi-atrisk-dot: #f59e0b;
+  --th-kpi-below-bg: #ffedd5;
+  --th-kpi-below-fg: #9a3412;
+  --th-kpi-below-dot: #f97316;
+  --th-kpi-critical-bg: #fee2e2;
+  --th-kpi-critical-fg: #991b1b;
+  --th-kpi-critical-dot: #ef4444;
+  --th-kpi-exceeding-bg: #d1fae5;
+  --th-kpi-exceeding-fg: #065f46;
+  --th-kpi-exceeding-dot: #10b981;
+  --th-kpi-paused-bg: #f3f4f6;
+  --th-kpi-paused-fg: #6b7280;
+  --th-kpi-paused-dot: #9ca3af;
+  --th-kpi-expired-bg: #f3f4f6;
+  --th-kpi-expired-fg: #6b7280;
+  --th-kpi-expired-dot: #6b7280;
+  --th-kpi-calculated-bg: #ede9fe;
+  --th-kpi-calculated-fg: #5b21b6;
+  --th-kpi-calculated-dot: #8b5cf6;
+
+  // ── KPI Category Badge Colors (Light) ────────────────────
+  --th-cat-fulfillment-bg: #dbeafe;
+  --th-cat-fulfillment-fg: #1e40af;
+  --th-cat-delivery-bg: #e0e7ff;
+  --th-cat-delivery-fg: #3730a3;
+  --th-cat-quality-bg: #d1fae5;
+  --th-cat-quality-fg: #065f46;
+  --th-cat-service-bg: #fef3c7;
+  --th-cat-service-fg: #92400e;
+  --th-cat-compliance-bg: #fee2e2;
+  --th-cat-compliance-fg: #991b1b;
+  --th-cat-engagement-bg: #ede9fe;
+  --th-cat-engagement-fg: #5b21b6;
+  --th-cat-financial-bg: #fce7f3;
+  --th-cat-financial-fg: #9d174d;
+}
+
+// ── Dark Mode Overrides ─────────────────────────────────────
+html.dark {
+  --th-surface-bg: #{$d-bg};
+  --th-surface-card: #{$d-bg-card};
+  --th-surface-elevated: #{$d-bg-elevated};
+  --th-surface-border: #{$d-border};
+
+  --th-brand-50: #1e1b4b;
+  --th-brand-100: #24223d;
+
+  // ── Score Type Badge Colors (Dark) ────────────────────────
+  --th-type-weekly-bg: #2d1b69;
+  --th-type-weekly-fg: #c4b5fd;
+  --th-type-monthly-bg: #1e2a5e;
+  --th-type-monthly-fg: #93c5fd;
+  --th-type-annual-bg: #0c3b2e;
+  --th-type-annual-fg: #6ee7b7;
+  --th-type-daily-bg: #5c3a0e;
+  --th-type-daily-fg: #fde68a;
+  --th-type-periodic-bg: #1e1b4b;
+  --th-type-periodic-fg: #a5b4fc;
+  --th-type-lifetime-bg: #5b1a3a;
+  --th-type-lifetime-fg: #f9a8d4;
+  --th-type-manual-bg: #1f2937;
+  --th-type-manual-fg: #d1d5db;
+
+  // ── Status Badge Colors (Dark) ────────────────────────────
+  --th-st-draft-bg: #272b33;
+  --th-st-draft-fg: #9ca3af;
+  --th-st-draft-dot: #6b7280;
+  --th-st-calculating-bg: #172554;
+  --th-st-calculating-fg: #93c5fd;
+  --th-st-calculating-dot: #3b82f6;
+  --th-st-pending-review-bg: #451a03;
+  --th-st-pending-review-fg: #fbbf24;
+  --th-st-pending-review-dot: #f59e0b;
+  --th-st-finalized-bg: #052e16;
+  --th-st-finalized-fg: #4ade80;
+  --th-st-finalized-dot: #22c55e;
+  --th-st-revised-bg: #2e1065;
+  --th-st-revised-fg: #a78bfa;
+  --th-st-revised-dot: #8b5cf6;
+  --th-st-appealed-bg: #450a0a;
+  --th-st-appealed-fg: #fca5a5;
+  --th-st-appealed-dot: #ef4444;
+
+  // ── KPI Status Badge Colors (Dark) ───────────────────────
+  --th-kpi-draft-bg: #272b33;
+  --th-kpi-draft-fg: #9ca3af;
+  --th-kpi-draft-dot: #6b7280;
+  --th-kpi-active-bg: #172554;
+  --th-kpi-active-fg: #93c5fd;
+  --th-kpi-active-dot: #3b82f6;
+  --th-kpi-ontrack-bg: #052e16;
+  --th-kpi-ontrack-fg: #4ade80;
+  --th-kpi-ontrack-dot: #22c55e;
+  --th-kpi-atrisk-bg: #451a03;
+  --th-kpi-atrisk-fg: #fbbf24;
+  --th-kpi-atrisk-dot: #f59e0b;
+  --th-kpi-below-bg: #431407;
+  --th-kpi-below-fg: #fdba74;
+  --th-kpi-below-dot: #f97316;
+  --th-kpi-critical-bg: #450a0a;
+  --th-kpi-critical-fg: #fca5a5;
+  --th-kpi-critical-dot: #ef4444;
+  --th-kpi-exceeding-bg: #052e16;
+  --th-kpi-exceeding-fg: #6ee7b7;
+  --th-kpi-exceeding-dot: #10b981;
+  --th-kpi-paused-bg: #272b33;
+  --th-kpi-paused-fg: #9ca3af;
+  --th-kpi-paused-dot: #6b7280;
+  --th-kpi-expired-bg: #1f2937;
+  --th-kpi-expired-fg: #6b7280;
+  --th-kpi-expired-dot: #4b5563;
+  --th-kpi-calculated-bg: #2e1065;
+  --th-kpi-calculated-fg: #a78bfa;
+  --th-kpi-calculated-dot: #8b5cf6;
+
+  // ── KPI Category Badge Colors (Dark) ─────────────────────
+  --th-cat-fulfillment-bg: #1e2a5e;
+  --th-cat-fulfillment-fg: #93c5fd;
+  --th-cat-delivery-bg: #1e1b4b;
+  --th-cat-delivery-fg: #a5b4fc;
+  --th-cat-quality-bg: #0c3b2e;
+  --th-cat-quality-fg: #6ee7b7;
+  --th-cat-service-bg: #5c3a0e;
+  --th-cat-service-fg: #fde68a;
+  --th-cat-compliance-bg: #450a0a;
+  --th-cat-compliance-fg: #fca5a5;
+  --th-cat-engagement-bg: #2d1b69;
+  --th-cat-engagement-fg: #c4b5fd;
+  --th-cat-financial-bg: #5b1a3a;
+  --th-cat-financial-fg: #f9a8d4;
+}
+
+// ── Dashboard Grid ──────────────────────────────────────────
+.th-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--th-grid-gap);
+  width: 100%;
+}
+
+.th-widget-sm {
+  grid-column: span 12;
+}
+
+.th-widget-md {
+  grid-column: span 12;
+}
+
+.th-widget-lg {
+  grid-column: span 12;
+}
+
+.th-widget-xl {
+  grid-column: span 12;
+}
+
+.th-widget-full {
+  grid-column: span 12;
+}
+
+@media (min-width: 768px) {
+  .th-widget-sm {
+    grid-column: span 6;
+  }
+
+  .th-widget-md {
+    grid-column: span 6;
+  }
+
+  .th-widget-lg {
+    grid-column: span 6;
+  }
+
+  .th-widget-xl {
+    grid-column: span 8;
+  }
+}
+
+@media (min-width: 1024px) {
+  .th-widget-sm {
+    grid-column: span 3;
+  }
+
+  .th-widget-md {
+    grid-column: span 4;
+  }
+
+  .th-widget-lg {
+    grid-column: span 6;
+  }
+
+  .th-widget-xl {
+    grid-column: span 8;
+  }
+}
+
+@media (min-width: 1280px) {
+  .th-widget-sm {
+    grid-column: span 3;
+  }
+
+  .th-widget-md {
+    grid-column: span 4;
+  }
+
+  .th-widget-lg {
+    grid-column: span 6;
+  }
+
+  .th-widget-xl {
+    grid-column: span 8;
+  }
+}
+
+// ── Widget Wrapper ──────────────────────────────────────────
+.th-widget {
+  background: var(--th-surface-card);
+  border: 1px solid var(--th-surface-border);
+  border-radius: var(--th-widget-radius);
+  padding: var(--th-widget-padding);
+  transition: box-shadow var(--th-duration-normal) var(--th-ease-standard);
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: 0 2px 12px rgba(#000, 0.04);
+  }
+
+  @include dark {
+    box-shadow: 0 1px 4px rgba(#000, 0.3);
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(#000, 0.4);
+    }
+  }
+}
+
+.th-widget-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.th-widget-title {
+  font-size: var(--th-text-base);
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+
+  @include dark {
+    color: $d-text-max;
+  }
+}
+
+.th-widget-subtitle {
+  font-size: var(--th-text-xs);
+  color: #9ca3af;
+  margin-top: 2px;
+
+  @include dark {
+    color: $d-text-muted;
+  }
+}
+
+// ── KPI Card ────────────────────────────────────────────────
+.th-kpi-value {
+  font-size: var(--th-text-xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: #1f2937;
+
+  @include dark {
+    color: $d-text-max;
+  }
+}
+
+.th-kpi-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--th-text-xs);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 100px;
+
+  &.positive {
+    color: #059669;
+    background: rgba($c-success, 0.1);
+  }
+
+  &.negative {
+    color: #dc2626;
+    background: rgba($c-error, 0.1);
+  }
+
+  @include dark {
+    &.positive {
+      color: #34d399;
+      background: rgba($c-success, 0.15);
+    }
+
+    &.negative {
+      color: #f87171;
+      background: rgba($c-error, 0.15);
+    }
+  }
+}
+
+// ── Chart Container ─────────────────────────────────────────
+.th-chart-container {
+  width: 100%;
+  position: relative;
+  min-height: 200px;
+}
+
+// ── Loading & Error States ──────────────────────────────────
+.th-widget-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #9ca3af;
+
+  @include dark {
+    color: $d-text-muted;
+  }
+}
+
+.th-widget-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 200px;
+  color: $c-error;
+  text-align: center;
+
+  .th-retry-btn {
+    font-size: var(--th-text-sm);
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 8px;
+    background: rgba($c-error, 0.1);
+    color: $c-error;
+    border: none;
+    cursor: pointer;
+    transition: background var(--th-duration-fast) var(--th-ease-standard);
+
+    &:hover {
+      background: rgba($c-error, 0.2);
+    }
+  }
+}
+
+.th-widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 200px;
+  color: #9ca3af;
+  font-size: var(--th-text-sm);
+  text-align: center;
+
+  @include dark {
+    color: $d-text-muted;
+  }
+}
+
+// ── Tab Buttons (Period Selector) ───────────────────────────
+.th-tab-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--th-surface-elevated);
+  border-radius: 8px;
+  padding: 2px;
+
+  @include dark {
+    background: $d-bg-hover;
+  }
+}
+
+.th-tab-btn {
+  font-size: var(--th-text-xs);
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all var(--th-duration-fast) var(--th-ease-standard);
+  white-space: nowrap;
+
+  &:hover {
+    color: #374151;
+  }
+
+  &.active {
+    background: var(--th-surface-card);
+    color: var(--th-brand-500);
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(#000, 0.06);
+  }
+
+  @include dark {
+    color: $d-text-muted;
+
+    &:hover {
+      color: $d-text;
+    }
+
+    &.active {
+      background: $d-bg-card;
+      color: #8b7cf7;
+      box-shadow: 0 1px 3px rgba(#000, 0.3);
+    }
+  }
+}
+
+// ── Slide Over Panel ────────────────────────────────────────
+.th-slide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(#000, 0.4);
+  z-index: 50;
+  opacity: 0;
+  transition: opacity var(--th-duration-normal) var(--th-ease-standard);
+
+  &.visible {
+    opacity: 1;
+  }
+
+  @include dark {
+    background: rgba(#000, 0.6);
+  }
+}
+
+.th-slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 90vw);
+  background: var(--th-surface-card);
+  border-left: 1px solid var(--th-surface-border);
+  z-index: 51;
+  transform: translateX(100%);
+  transition: transform var(--th-duration-slow) var(--th-ease-standard);
+  overflow-y: auto;
+
+  &.visible {
+    transform: translateX(0);
+  }
+
+  @include dark {
+    background: $d-bg-card;
+    border-color: $d-border;
+  }
+}
+
+// ── Filter Bar ──────────────────────────────────────────────
+.th-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+
+.th-filter-select {
+  font-size: var(--th-text-sm);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--th-surface-border);
+  background: var(--th-surface-card);
+  color: #374151;
+  cursor: pointer;
+  transition: border-color var(--th-duration-fast) var(--th-ease-standard);
+
+  &:focus {
+    border-color: var(--th-brand-500);
+    outline: none;
+  }
+
+  @include dark {
+    background: $d-bg-card;
+    border-color: $d-border;
+    color: $d-text;
+  }
+}

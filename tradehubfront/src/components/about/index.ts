@@ -1,0 +1,1 @@
+export { AboutPageLayout } from './AboutPageLayout';

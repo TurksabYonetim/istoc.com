@@ -1,0 +1,49 @@
+.next-slick-arrow.next-slick-next.inner.medium.hoz {
+    display: block;
+    position: absolute;
+    top: 92px;
+    right: 0px;
+    bottom: 92px;
+    left: 292px;
+    width: 28px;
+    height: 56px;
+    margin: 0;
+    padding: 0;
+    line-height: 56px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 0, 0);
+    opacity: 0.5;
+    transition: opacity 0.1s linear, filter 0.1s linear;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.next-slick-arrow.next-slick-next.inner.medium.hoz:hover {
+    opacity: 1;
+    /* Varsayim / Assumption */
+}
+
+.next-icon.next-icon-arrow-right.next-medium {
+    display: inline-block;
+    width: 24px;
+    height: 57.125px;
+    font-family: "NextIcon", sans-serif;
+    font-size: 14px;
+    line-height: 56px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+}
+
+.next-icon.next-icon-arrow-right.next-medium::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 56px;
+    font-family: inherit;
+    font-size: 24px;
+    line-height: 56px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+}

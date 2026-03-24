@@ -1,0 +1,23 @@
+{
+ "allow_cors": 1,
+ "background_workers": 1,
+ "default_site": "tradehub.localhost",
+ "file_watcher_port": 6787,
+ "gunicorn_workers": 4,
+ "live_reload": false,
+ "redis_cache": "redis://redis-cache:6379",
+ "redis_queue": "redis://redis-queue:6379",
+ "redis_socketio": "redis://redis-cache:6379",
+ "serve_default_site": true,
+ "socketio_port": 9000,
+ "webserver_port": 8000,
+ "db_host": "db",
+ "db_port": 3306,
+ "mail_server": "mailpit",
+ "mail_port": 1025,
+ "use_tls": 0,
+ "use_ssl": 0,
+ "auto_email_id": "noreply@tradehub.localhost",
+ "disable_mail_smtp_authentication": 1,
+ "ignore_csrf": 1
+}

@@ -1,0 +1,124 @@
+# ── Eski / Geçici Dizinler ─────────────────────────────────────────────────────
+Frappe_Marketplace/
+Frappe_Marketplace-main/
+SELLER_MODULE_STATUS.md
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+.eggs/
+build/
+develop-eggs/
+
+# ── Frappe Bench — Python Virtualenv ──────────────────────────────────────────
+# Her geliştirici kendi ortamını kurar, conflict'in büyük kaynağı
+tradehubback/env/
+
+# ── Frappe Bench — Third-party Uygulamalar (Docker image'da mevcut) ───────────
+# Bu uygulamalar frappe/erpnext base image içinde geliyor, local kopyaları commit'lenmez
+tradehubback/apps/frappe/
+tradehubback/apps/erpnext/
+
+# ── Frappe Bench — Runtime / Process Dosyaları ────────────────────────────────
+tradehubback/logs/
+tradehubback/config/pids/
+tradehubback/config/scheduler_process
+tradehubback/config/supervisor.conf
+tradehubback/config/nginx.conf
+
+# ── Frappe Bench — Redis Runtime Dosyaları ────────────────────────────────────
+*.rdb
+*.pid
+
+# ── Gizli / Hassas Dosyalar ────────────────────────────────────────────────────
+# .env           → Asla paylaşılmaz (secrets)
+# .env.local     → Asla paylaşılmaz (kişisel override)
+# .env.*.local   → Asla paylaşılmaz (kişisel override)
+# .env.development / .env.production → Paylaşılabilir (localhost URL'leri)
+.env
+.env.local
+.env.*.local
+tradehubback/sites/*/site_config.json
+tradehubback/sites/common_site_config.json
+
+# ── Frappe Bench — Site Runtime Dosyaları ─────────────────────────────────────
+tradehubback/sites/assets/assets.json
+tradehubback/sites/assets/assets-rtl.json
+tradehubback/sites/*/logs/
+tradehubback/sites/*/locks/
+tradehubback/sites/*/indexes/
+tradehubback/sites/*/private/backups/
+tradehubback/sites/*/private/files/
+tradehubback/sites/*/public/files/
+tradehubback/sites/*/touched_tables.json
+tradehubback/sites/*/.scr/
+tradehubback/tradehub.localhost
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# docker-compose.yml paylaşılır, override her dev'e özel
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# ── Frontend — tradehubfront ───────────────────────────────────────────────────
+tradehubfront/node_modules/
+tradehubfront/dist/
+tradehubfront/dist-ssr/
+tradehubfront/*.local
+tradehubfront/.cache/
+tradehubfront/*.tsbuildinfo
+
+# ── Frontend — admin_panel ────────────────────────────────────────────────────
+admin_panel/frontend/node_modules/
+admin_panel/frontend/dist/
+admin_panel/frontend/dist-ssr/
+admin_panel/frontend/*.local
+admin_panel/frontend/.cache/
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS Dosyaları ──────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Log Dosyaları ─────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Test / Coverage ───────────────────────────────────────────────────────────
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ── Auto Claude ───────────────────────────────────────────────────────────────
+.auto-claude/
+.auto-claude-security.json
+.auto-claude-status
+.claude_settings.json
+.worktrees/
+.security-key
+logs/security/

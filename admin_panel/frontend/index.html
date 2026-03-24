@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full">
+
+<head>
+  <!-- Pre-render theme to prevent flash of wrong theme -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('th-theme');
+      var valid = (stored === 'light' || stored === 'dark') ? stored : null;
+      var theme = valid || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (!valid) localStorage.setItem('th-theme', theme);
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeHub B2B - Satıcı Paneli</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        screens: {
+          'xs': '320px',
+          'sm': '480px',
+          'md': '640px',
+          'lg': '768px',
+          'xl': '1024px',
+          '2xl': '1280px',
+          '3xl': '1536px',
+          '4xl': '1920px',
+        },
+        extend: {
+          colors: {
+            rail: { DEFAULT: '#0a0a0f', hover: '#1e1e28', icon: '#5c5c74', active: '#7c3aed' },
+            panel: { DEFAULT: '#16161d', border: '#222230', heading: '#8888a0', item: '#8888a0', hover: '#1e1e28', active: '#7c3aed' },
+            surface: { DEFAULT: '#f6f6f9', card: '#ffffff', border: '#e8e8ef' }
+          },
+          fontFamily: { sans: ['DM Sans', 'system-ui', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="h-full font-sans antialiased">
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

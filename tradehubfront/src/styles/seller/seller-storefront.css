@@ -1,0 +1,290 @@
+/**
+ * Seller Storefront — Residual CSS
+ * Only styles that cannot be achieved with Tailwind utilities alone.
+ * Layout, spacing, colors, and responsive styles are in component Tailwind classes.
+ * Imported by src/seller-storefront.ts
+ */
+
+/* ═══════════════════════════════════════════════════════════
+   C2: Store Nav — Scrolled State (JS-toggled)
+   ═══════════════════════════════════════════════════════════ */
+
+.store-nav {
+  transition: box-shadow 0.2s ease;
+}
+
+.store-nav--scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff !important;
+}
+
+.store-nav--scrolled .store-nav__item {
+  color: #374151 !important;
+}
+
+.store-nav--scrolled .store-nav__item svg {
+  color: #6b7280 !important;
+}
+
+.store-nav--scrolled .store-nav__hamburger {
+  color: #374151 !important;
+}
+
+.store-nav--scrolled .store-nav__item--active {
+  background-color: #f3f4f6 !important;
+}
+
+.store-nav--scrolled .store-nav__item:not(.store-nav__item--active):hover {
+  background-color: #f9fafb !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   C3: Hero Banner — Swiper Dot Pagination
+   ═══════════════════════════════════════════════════════════ */
+
+.store-hero__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 0;
+  margin: 0 2px;
+  display: inline-block;
+  opacity: 1;
+}
+
+.store-hero__dot--active {
+  background: var(--color-store-accent, #cc9900);
+  transform: scale(1.2);
+}
+
+.store-hero__dot:hover:not(.store-hero__dot--active) {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C7: Company Info Variant B — Custom Scrollbar
+   ═══════════════════════════════════════════════════════════ */
+
+.company-info__scrollable-text {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.company-info__scrollable-text::-webkit-scrollbar {
+  width: 6px;
+}
+
+.company-info__scrollable-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.company-info__scrollable-text::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+.company-info__scrollable-text::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C8: Certificates — Swiper Integration
+   ═══════════════════════════════════════════════════════════ */
+
+/* Swiper disabled state */
+.certificates__prev.swiper-button-disabled,
+.certificates__next.swiper-button-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Swiper pagination bullets */
+.certificates__dots .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #d1d5db;
+  opacity: 1;
+  transition: background-color 0.2s ease;
+}
+
+.certificates__dots .swiper-pagination-bullet-active {
+  background: var(--color-store-accent, #cc9900);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C1: Store Header — Animation & State
+   ═══════════════════════════════════════════════════════════ */
+
+.store-header__chevron--rotated {
+  transform: rotate(180deg);
+}
+
+.store-header__badge--pro {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C4: Category Grid — Parent-child hover
+   ═══════════════════════════════════════════════════════════ */
+
+.category-grid__card:hover {
+  transform: scale(1.03);
+}
+
+.category-grid__card:hover img {
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C5: Hot Products — Parent-child hover
+   ═══════════════════════════════════════════════════════════ */
+
+.hot-products__card:hover .hot-products__image-wrapper img {
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C6: Category Listing — Parent-child hover
+   ═══════════════════════════════════════════════════════════ */
+
+.category-listing__banner:hover img {
+  transform: scale(1.02);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C9: Why Choose Us — Hover lift
+   ═══════════════════════════════════════════════════════════ */
+
+.why-choose__icon-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C12: Contact Form — Active press
+   ═══════════════════════════════════════════════════════════ */
+
+.contact-form__send:active {
+  transform: scale(0.97);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C13: Floating Actions — Responsive Bottom Bar
+   Custom breakpoints (480px) require CSS media queries
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) and (min-width: 481px) {
+  .floating-actions__btn {
+    width: 44px;
+    height: 60px;
+  }
+
+  .floating-actions__btn span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto !important;
+    flex-direction: row;
+    z-index: var(--z-fixed, 40);
+  }
+
+  .floating-actions__btn {
+    width: 50%;
+    height: 48px;
+    border-radius: 0;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .floating-actions__btn span {
+    display: inline;
+    font-size: 13px;
+  }
+
+  body {
+    padding-bottom: 48px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   C14: Company Profile — Tab System (JS-toggled)
+   ═══════════════════════════════════════════════════════════ */
+
+.company-profile__main-tab {
+  position: relative;
+  outline: none;
+}
+
+.company-profile__main-tab.active {
+  color: #111827;
+  border-bottom-color: #111827;
+}
+
+.company-profile__main-tab:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-store-accent, #cc9900);
+}
+
+.company-profile__prod-cat.active {
+  color: #111827;
+  border-bottom-color: #111827;
+}
+
+
+
+.company-profile__contact-btn:focus-visible,
+.company-profile__inquiry-btn:focus-visible {
+  outline: 2px solid var(--color-store-accent, #cc9900);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Dark Mode Overrides
+   Styles using :where(.dark) that affect JS-toggled states
+   ═══════════════════════════════════════════════════════════ */
+
+:where(.dark, .dark *) .store-nav {
+  background-color: #991b1b;
+}
+
+:where(.dark, .dark *) .store-hero__dot {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+:where(.dark, .dark *) .store-hero__dot--active {
+  background: var(--color-store-accent, #cc9900);
+}
+
+:where(.dark, .dark *) .certificates__prev,
+:where(.dark, .dark *) .certificates__next {
+  background: #374151;
+}
+
+:where(.dark, .dark *) .certificates__prev:hover,
+:where(.dark, .dark *) .certificates__next:hover {
+  background: #4b5563;
+}
