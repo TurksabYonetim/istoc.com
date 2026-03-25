@@ -353,3 +353,258 @@ def send_inquiry(seller_code, message, share_business_card=0):
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
     return {"success": True, "inquiry_id": doc.name}
+
+
+# ─── Seller Dashboard Endpoints ───────────────────────────────────────
+
+_PROFILE_FIELDS = [
+    "name", "seller_name", "seller_code", "seller_type", "status",
+    "logo", "banner_image", "description", "slogan",
+    "company_name", "tax_id", "tax_office", "founded_year",
+    "staff_count", "annual_revenue", "factory_size", "business_type", "main_markets",
+    "email", "phone", "website",
+    "address_line1", "address_line2", "city", "district", "postal_code", "country",
+    "bank_name", "iban", "account_holder",
+    "rating", "total_orders", "health_score",
+]
+
+
+@frappe.whitelist()
+def get_my_profile():
+    """Oturumdaki satıcının tam profilini döndürür."""
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        frappe.throw(_("Satıcı profili bulunamadı."), frappe.DoesNotExistError)
+    return frappe.db.get_value(
+        "Admin Seller Profile", profile_name, _PROFILE_FIELDS, as_dict=True
+    )
+
+
+@frappe.whitelist()
+def update_profile(data=None):
+    """Oturumdaki satıcının profilini günceller."""
+    if not data:
+        frappe.throw(_("Veri gönderilmedi."))
+    if isinstance(data, str):
+        import json as _json
+        data = _json.loads(data)
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        frappe.throw(_("Satıcı profili bulunamadı."), frappe.DoesNotExistError)
+
+    allowed = {
+        "seller_name", "phone", "website", "city", "district", "postal_code",
+        "slogan", "description", "logo", "banner_image",
+        "company_name", "business_type", "founded_year", "staff_count",
+        "annual_revenue", "factory_size", "tax_id", "tax_office", "main_markets",
+        "address_line1", "address_line2", "iban",
+    }
+    doc = frappe.get_doc("Admin Seller Profile", profile_name)
+    for key, val in data.items():
+        if key in allowed:
+            doc.set(key, val)
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True}
+
+
+@frappe.whitelist()
+def become_seller(seller_name=None, seller_type="Corporate", company_name=None,
+                  tax_id=None, phone=None):
+    """Mevcut kullanıcıyı satıcı olarak kaydeder."""
+    user = frappe.session.user
+    if not user or user == "Guest":
+        frappe.throw(_("Giriş yapmalısınız."), frappe.PermissionError)
+
+    existing = frappe.db.get_value("Admin Seller Profile", {"user": user}, "name")
+    if existing:
+        frappe.throw(_("Zaten bir satıcı profiliniz var."))
+
+    doc = frappe.new_doc("Admin Seller Profile")
+    doc.user = user
+    doc.seller_name = seller_name or company_name or user
+    doc.seller_type = seller_type
+    doc.company_name = company_name or ""
+    doc.tax_id = tax_id or ""
+    doc.phone = phone or ""
+    doc.email = user
+    doc.status = "Pending"
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True, "seller_code": doc.name}
+
+
+# ─── Product CRUD ─────────────────────────────────────────────────────
+
+@frappe.whitelist()
+def get_products():
+    """Oturumdaki satıcının ürünlerini döndürür."""
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        return []
+    listings = frappe.get_all(
+        "Listing",
+        filters={"seller_profile": profile_name},
+        fields=["name", "title as product_name", "primary_image as image",
+                "selling_price as price_min", "base_price as price_max",
+                "min_order_qty as moq", "category", "short_description as description",
+                "status", "b2b_enabled as is_featured"],
+        order_by="creation desc",
+    )
+    for l in listings:
+        l["moq_unit"] = "Adet"
+    return listings
+
+
+@frappe.whitelist()
+def create_product(data=None):
+    """Yeni ürün listesi oluşturur."""
+    if not data:
+        frappe.throw(_("Veri gönderilmedi."))
+    if isinstance(data, str):
+        import json as _json
+        data = _json.loads(data)
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        frappe.throw(_("Satıcı profili bulunamadı."))
+
+    doc = frappe.new_doc("Listing")
+    doc.seller_profile = profile_name
+    doc.title = data.get("product_name", "")
+    doc.short_description = data.get("description", "")
+    doc.primary_image = data.get("image", "")
+    doc.selling_price = data.get("price_min", 0)
+    doc.base_price = data.get("price_max", 0)
+    doc.min_order_qty = data.get("moq", 1)
+    doc.category = data.get("category", "")
+    doc.status = data.get("status", "Draft")
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True, "name": doc.name}
+
+
+@frappe.whitelist()
+def update_product(product_id=None, data=None):
+    """Mevcut ürünü günceller."""
+    if not product_id or not data:
+        frappe.throw(_("Eksik parametre."))
+    if isinstance(data, str):
+        import json as _json
+        data = _json.loads(data)
+    profile_name = _get_seller_profile_for_session()
+    doc = frappe.get_doc("Listing", product_id)
+    if doc.seller_profile != profile_name:
+        frappe.throw(_("Bu ürün size ait değil."), frappe.PermissionError)
+
+    if "product_name" in data:
+        doc.title = data["product_name"]
+    if "description" in data:
+        doc.short_description = data["description"]
+    if "image" in data:
+        doc.primary_image = data["image"]
+    if "price_min" in data:
+        doc.selling_price = data["price_min"]
+    if "price_max" in data:
+        doc.base_price = data["price_max"]
+    if "moq" in data:
+        doc.min_order_qty = data["moq"]
+    if "category" in data:
+        doc.category = data["category"]
+    if "status" in data:
+        doc.status = data["status"]
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True}
+
+
+@frappe.whitelist()
+def delete_product(product_id=None):
+    """Ürünü siler."""
+    if not product_id:
+        frappe.throw(_("Ürün ID gerekli."))
+    profile_name = _get_seller_profile_for_session()
+    doc = frappe.get_doc("Listing", product_id)
+    if doc.seller_profile != profile_name:
+        frappe.throw(_("Bu ürün size ait değil."), frappe.PermissionError)
+    doc.delete(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True}
+
+
+# ─── Category CRUD ────────────────────────────────────────────────────
+
+@frappe.whitelist()
+def get_categories():
+    """Oturumdaki satıcının tüm kategorilerini döndürür."""
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        return []
+    cats = frappe.get_all(
+        "Seller Category",
+        filters={"seller": profile_name},
+        fields=["name", "category_name", "status", "description", "image",
+                "sort_order", "reject_reason"],
+        order_by="sort_order asc, category_name asc",
+    )
+    return cats
+
+
+@frappe.whitelist()
+def create_category(data=None):
+    """Yeni satıcı kategorisi oluşturur."""
+    if not data:
+        frappe.throw(_("Veri gönderilmedi."))
+    if isinstance(data, str):
+        import json as _json
+        data = _json.loads(data)
+    profile_name = _get_seller_profile_for_session()
+    if not profile_name:
+        frappe.throw(_("Satıcı profili bulunamadı."))
+    doc = frappe.get_doc({
+        "doctype": "Seller Category",
+        "seller": profile_name,
+        "category_name": data.get("category_name", ""),
+        "image": data.get("image", ""),
+        "sort_order": int(data.get("sort_order", 0)),
+        "status": "Pending",
+    })
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True, "name": doc.name}
+
+
+@frappe.whitelist()
+def update_category(category_id=None, data=None):
+    """Mevcut kategoriyi günceller."""
+    if not category_id or not data:
+        frappe.throw(_("Eksik parametre."))
+    if isinstance(data, str):
+        import json as _json
+        data = _json.loads(data)
+    profile_name = _get_seller_profile_for_session()
+    cat = frappe.get_doc("Seller Category", category_id)
+    if cat.seller != profile_name:
+        frappe.throw(_("Bu kategori size ait değil."), frappe.PermissionError)
+    if "category_name" in data:
+        cat.category_name = data["category_name"]
+    if "image" in data:
+        cat.image = data["image"]
+    if "sort_order" in data:
+        cat.sort_order = int(data["sort_order"])
+    cat.save(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True}
+
+
+@frappe.whitelist()
+def delete_category(category_id=None):
+    """Kategoriyi siler."""
+    if not category_id:
+        frappe.throw(_("Kategori ID gerekli."))
+    profile_name = _get_seller_profile_for_session()
+    cat = frappe.get_doc("Seller Category", category_id)
+    if cat.seller != profile_name:
+        frappe.throw(_("Bu kategori size ait değil."), frappe.PermissionError)
+    cat.delete(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True}

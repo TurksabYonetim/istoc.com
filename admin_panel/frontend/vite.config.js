@@ -7,7 +7,7 @@ export default defineConfig(({ command }) => {
   const frappeSocketio = process.env.VITE_FRAPPE_SOCKETIO || 'http://localhost:9000'
 
   return {
-    base: command === 'build' ? '/Frappe_Marketplace/' : '/',
+    base: '/',
     plugins: [vue()],
     resolve: {
       alias: {

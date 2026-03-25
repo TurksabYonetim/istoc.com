@@ -49,7 +49,6 @@ services:
       - ./tradehubback/frappe_wsgi.py:/home/frappe/frappe-bench/frappe_wsgi.py
       - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
       - backend-logs:/home/frappe/frappe-bench/logs
-      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
     depends_on:
       db:
         condition: service_healthy
@@ -106,7 +105,6 @@ services:
       - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
       - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
       - backend-logs:/home/frappe/frappe-bench/logs
-      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
     depends_on:
       - redis-queue
       - backend
@@ -140,7 +138,6 @@ services:
       - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
       - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
       - backend-logs:/home/frappe/frappe-bench/logs
-      - ./tradehubback/apps/tradehub_core:/home/frappe/frappe-bench/apps/tradehub_core
     depends_on:
       - redis-queue
       - backend
@@ -191,6 +188,20 @@ services:
       - "${REDIS_QUEUE_PORT:-11002}:6379"
     volumes:
       - redis-queue-data:/data
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
+  # Admin Panel — Vue.js SPA + Nginx
+  # ──────────────────────────────────────────────
+  admin-panel:
+    build:
+      context: ./admin_panel/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${ADMIN_PORT:-8082}:80"
+    depends_on:
+      - backend
+      - websocket
     restart: unless-stopped
 
   # ──────────────────────────────────────────────
