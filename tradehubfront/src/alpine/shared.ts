@@ -5,7 +5,7 @@ Alpine.data('floatingPanel', () => ({
   chatOpen: false,
   lensOpen: false,
   isSeller: false,
-  sellerPanelUrl: (import.meta as Record<string, unknown> & { env: Record<string, string> }).env.VITE_SELLER_PANEL_URL || 'http://localhost:8082/',
+  sellerPanelUrl: import.meta.env.VITE_SELLER_PANEL_URL || 'http://localhost:8082/',
 
   async init() {
     this.showScrollTop = window.scrollY > 300;

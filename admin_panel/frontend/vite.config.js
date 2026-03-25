@@ -2,12 +2,12 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
-export default defineConfig(({ command }) => {
+export default defineConfig(() => {
   const frappeBackend = process.env.VITE_FRAPPE_BACKEND || 'http://localhost:8000'
   const frappeSocketio = process.env.VITE_FRAPPE_SOCKETIO || 'http://localhost:9000'
 
   return {
-    base: command === 'build' ? '/Frappe_Marketplace/' : '/',
+    base: '/',
     plugins: [vue()],
     resolve: {
       alias: {

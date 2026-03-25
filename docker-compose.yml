@@ -17,6 +17,20 @@ services:
     restart: unless-stopped
 
   # ──────────────────────────────────────────────
+  # Admin Panel — Vue 3 Satıcı Paneli + Nginx
+  # ──────────────────────────────────────────────
+  admin-panel:
+    build:
+      context: ./admin_panel/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${ADMIN_PANEL_PORT:-8082}:80"
+    depends_on:
+      - backend
+      - websocket
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
   # Backend — Frappe Gunicorn (assets dahil)
   # ──────────────────────────────────────────────
   backend:
@@ -35,14 +49,14 @@ services:
       - SITES_PATH=sites
       - FRAPPE_STREAM_LOGGING=1
       - HOST_NAME=${HOST_NAME:-http://localhost:5500}
-      - MAIL_SERVER=${MAIL_SERVER:-mailpit}
-      - MAIL_PORT=${MAIL_PORT:-1025}
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.eu.mailgun.org}
+      - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USE_SSL=${MAIL_USE_SSL:-0}
-      - MAIL_USE_TLS=${MAIL_USE_TLS:-0}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-1}
       - MAIL_LOGIN=${MAIL_LOGIN:-}
       - MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@tradehub.localhost}
-      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-1}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@istoc.com}
+      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-0}
     volumes:
       - ./tradehubback/sites:/home/frappe/frappe-bench/sites
       - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -93,14 +107,14 @@ services:
     environment:
       - FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME:-tradehub.localhost}
       - HOST_NAME=${HOST_NAME:-http://localhost:5500}
-      - MAIL_SERVER=${MAIL_SERVER:-mailpit}
-      - MAIL_PORT=${MAIL_PORT:-1025}
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.eu.mailgun.org}
+      - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USE_SSL=${MAIL_USE_SSL:-0}
-      - MAIL_USE_TLS=${MAIL_USE_TLS:-0}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-1}
       - MAIL_LOGIN=${MAIL_LOGIN:-}
       - MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@tradehub.localhost}
-      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-1}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@istoc.com}
+      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-0}
     volumes:
       - ./tradehubback/sites:/home/frappe/frappe-bench/sites
       - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -127,14 +141,14 @@ services:
     environment:
       - FRAPPE_SITE_NAME=${FRAPPE_SITE_NAME:-tradehub.localhost}
       - HOST_NAME=${HOST_NAME:-http://localhost:5500}
-      - MAIL_SERVER=${MAIL_SERVER:-mailpit}
-      - MAIL_PORT=${MAIL_PORT:-1025}
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.eu.mailgun.org}
+      - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USE_SSL=${MAIL_USE_SSL:-0}
-      - MAIL_USE_TLS=${MAIL_USE_TLS:-0}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-1}
       - MAIL_LOGIN=${MAIL_LOGIN:-}
       - MAIL_PASSWORD=${MAIL_PASSWORD:-}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@tradehub.localhost}
-      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-1}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER:-noreply@istoc.com}
+      - MAIL_DISABLE_AUTH=${MAIL_DISABLE_AUTH:-0}
     volumes:
       - ./tradehubback/sites:/home/frappe/frappe-bench/sites
       - ./tradehubback/sites/common_site_config.docker.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -150,7 +164,7 @@ services:
   # MariaDB
   # ──────────────────────────────────────────────
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -191,16 +205,6 @@ services:
       - "${REDIS_QUEUE_PORT:-11002}:6379"
     volumes:
       - redis-queue-data:/data
-    restart: unless-stopped
-
-  # ──────────────────────────────────────────────
-  # Mailpit — Lokal SMTP test sunucusu
-  # ──────────────────────────────────────────────
-  mailpit:
-    image: axllent/mailpit:latest
-    ports:
-      - "8025:8025"   # Web UI
-      - "1025:1025"   # SMTP
     restart: unless-stopped
 
 volumes:
