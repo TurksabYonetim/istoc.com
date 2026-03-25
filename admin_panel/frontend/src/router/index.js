@@ -100,7 +100,7 @@ const router = createRouter({
 })
 
 // Storefront URL for redirect
-const STOREFRONT_URL = 'http://localhost:5173/'
+const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5500/'
 
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()

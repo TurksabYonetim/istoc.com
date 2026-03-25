@@ -59,7 +59,7 @@ const route = useRoute()
 const nav = useNavigationStore()
 const auth = useAuthStore()
 
-const storefrontUrl = import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173/'
+const storefrontUrl = import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5500/'
 const showStorefrontBtn = computed(() => auth.isSeller || auth.isAdmin)
 
 onMounted(() => {
