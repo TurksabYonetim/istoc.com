@@ -73,3 +73,13 @@ class SellerProfile(Document):
 			buyer_profile = frappe.db.get_value("Buyer Profile", {"user": self.user}, "name")
 			if buyer_profile:
 				frappe.db.set_value("Buyer Profile", buyer_profile, "country", self.country)
+
+		# ── Shared fields → Buyer Profile sync ──
+		shared_fields = ["avatar", "website", "job_title", "year_established",
+		                 "employee_count", "about_us", "selling_platforms",
+		                 "city", "postal_code"]
+		buyer_profile = frappe.db.get_value("Buyer Profile", {"user": self.user}, "name")
+		if buyer_profile:
+			for field in shared_fields:
+				if self.has_value_changed(field):
+					frappe.db.set_value("Buyer Profile", buyer_profile, field, self.get(field))

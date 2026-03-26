@@ -16,6 +16,11 @@
 			"label": "Hesap"
 		},
 		{
+			"fieldname": "avatar",
+			"fieldtype": "Attach Image",
+			"label": "Avatar"
+		},
+		{
 			"fieldname": "user",
 			"fieldtype": "Link",
 			"label": "User",
@@ -109,6 +114,47 @@
 			"options": "Country"
 		},
 		{
+			"fieldname": "sb_company",
+			"fieldtype": "Section Break",
+			"label": "Şirket Detayları"
+		},
+		{
+			"fieldname": "website",
+			"fieldtype": "Data",
+			"label": "Website",
+			"options": "URL"
+		},
+		{
+			"fieldname": "job_title",
+			"fieldtype": "Data",
+			"label": "Job Title"
+		},
+		{
+			"fieldname": "year_established",
+			"fieldtype": "Int",
+			"label": "Year Established"
+		},
+		{
+			"fieldname": "cb_company",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "employee_count",
+			"fieldtype": "Select",
+			"label": "Employee Count",
+			"options": "\n1-10\n11-50\n51-200\n201-500\n500+"
+		},
+		{
+			"fieldname": "about_us",
+			"fieldtype": "Small Text",
+			"label": "About Us"
+		},
+		{
+			"fieldname": "selling_platforms",
+			"fieldtype": "Small Text",
+			"label": "Selling Platforms"
+		},
+		{
 			"fieldname": "tab_tax",
 			"fieldtype": "Tab Break",
 			"label": "Vergi"
@@ -154,6 +200,11 @@
 			"fieldname": "city",
 			"fieldtype": "Data",
 			"label": "City"
+		},
+		{
+			"fieldname": "postal_code",
+			"fieldtype": "Data",
+			"label": "Postal Code"
 		},
 		{
 			"fieldname": "tab_bank",

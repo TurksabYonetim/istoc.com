@@ -17,6 +17,7 @@ import { SettingsChangePassword, initSettingsChangePassword } from './SettingsCh
 import { SettingsChangeEmail, initSettingsChangeEmail } from './SettingsChangeEmail';
 import { SettingsChangePhone, initSettingsChangePhone } from './SettingsChangePhone';
 import { SettingsDeleteAccount, initSettingsDeleteAccount } from './SettingsDeleteAccount';
+import { SettingsMyAccount, initSettingsMyAccount } from './SettingsMyAccount';
 
 // ── SVG Icons ────────────────────────────────────────────────────
 
@@ -126,7 +127,7 @@ function getAccountInfoCard(): SettingsCard {
     title: t('settings.accountInfoCardTitle'),
     items: [
       { label: t('settings.myProfile'), href: '#profilim' },
-      { label: t('settings.myMembership'), href: '#' },
+      { label: t('settings.myAccountNav') || t('settings.myMembership'), href: '#hesabim' },
       { label: t('settings.linkedAccountsNav'), href: '#bagli-hesaplar', rightIcon: ICONS.google },
       { label: t('settings.taxInfoNav'), href: '#vergi' },
     ],
@@ -191,6 +192,7 @@ function renderDefaultView(): string {
 function getSectionMap(): Record<string, { title: string; render: () => string }> {
   return {
     '#profilim': { title: t('settings.myProfile'), render: () => SettingsAccountEdit() },
+    '#hesabim': { title: t('settings.myAccountNav') || 'Hesabım', render: () => SettingsMyAccount() },
     '#vergi': { title: t('settings.taxInfoNav'), render: () => SettingsTaxInfo() },
     '#bagli-hesaplar': { title: t('settings.linkedAccountsNav'), render: () => SettingsLinkedAccounts() },
     '#gizlilik': { title: t('settings.privacySettingsNav'), render: () => SettingsPrivacy() },
@@ -205,6 +207,7 @@ function getSectionMap(): Record<string, { title: string; render: () => string }
 
 const INIT_MAP: Record<string, () => void> = {
   '#profilim': initSettingsAccountEdit,
+  '#hesabim': initSettingsMyAccount,
   '#vergi': initSettingsTaxInfo,
   '#bagli-hesaplar': initSettingsLinkedAccounts,
   '#gizlilik': initSettingsPrivacy,

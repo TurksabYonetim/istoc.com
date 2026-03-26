@@ -9,3 +9,4 @@ export { SettingsChangePassword, initSettingsChangePassword } from './SettingsCh
 export { SettingsChangeEmail, initSettingsChangeEmail } from './SettingsChangeEmail';
 export { SettingsChangePhone, initSettingsChangePhone } from './SettingsChangePhone';
 export { SettingsDeleteAccount, initSettingsDeleteAccount } from './SettingsDeleteAccount';
+export { SettingsMyAccount, initSettingsMyAccount } from './SettingsMyAccount';

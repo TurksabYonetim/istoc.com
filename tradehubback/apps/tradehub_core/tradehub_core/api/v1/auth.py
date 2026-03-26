@@ -182,7 +182,9 @@ def get_user_profile():
 			["seller_name", "seller_type", "business_name", "tax_id",
 			 "contact_phone", "country", "status",
 			 "tax_id_type", "tax_office", "address_line_1", "city",
-			 "bank_name", "iban", "account_holder_name"],
+			 "bank_name", "iban", "account_holder_name",
+			 "avatar", "website", "job_title", "year_established",
+			 "employee_count", "about_us", "selling_platforms", "postal_code"],
 			as_dict=True,
 		)
 		if sp:
@@ -200,6 +202,14 @@ def get_user_profile():
 				"bank_name": sp.bank_name or "",
 				"iban": sp.iban or "",
 				"account_holder_name": sp.account_holder_name or "",
+				"avatar": sp.avatar or "",
+				"website": sp.website or "",
+				"job_title": sp.job_title or "",
+				"year_established": sp.year_established or "",
+				"employee_count": sp.employee_count or "",
+				"about_us": sp.about_us or "",
+				"selling_platforms": sp.selling_platforms or "",
+				"postal_code": sp.postal_code or "",
 			})
 			return base
 
@@ -233,13 +243,32 @@ def get_user_profile():
 	base["account_type"] = "buyer"
 	buyer_data = frappe.db.get_value(
 		"Buyer Profile", {"user": user},
-		["country", "phone", "email_verified"],
+		["country", "phone", "email_verified", "avatar",
+		 "business_type", "company_name", "address", "job_title", "website",
+		 "selling_platforms", "year_established", "employee_count", "about_us",
+		 "industry_preferences", "sourcing_frequency", "annual_spending",
+		 "city", "postal_code"],
 		as_dict=True,
 	) or {}
 	base.update({
 		"email_verified": bool(buyer_data.get("email_verified")),
 		"phone": user_data.phone or buyer_data.get("phone", "") or "",
 		"country": buyer_data.get("country", "") or "",
+		"avatar": buyer_data.get("avatar", "") or "",
+		"business_type": buyer_data.get("business_type", "") or "",
+		"company_name": buyer_data.get("company_name", "") or "",
+		"address": buyer_data.get("address", "") or "",
+		"job_title": buyer_data.get("job_title", "") or "",
+		"website": buyer_data.get("website", "") or "",
+		"selling_platforms": buyer_data.get("selling_platforms", "") or "",
+		"year_established": buyer_data.get("year_established", "") or "",
+		"employee_count": buyer_data.get("employee_count", "") or "",
+		"about_us": buyer_data.get("about_us", "") or "",
+		"industry_preferences": buyer_data.get("industry_preferences", "") or "",
+		"sourcing_frequency": buyer_data.get("sourcing_frequency", "") or "",
+		"annual_spending": buyer_data.get("annual_spending", "") or "",
+		"city": buyer_data.get("city", "") or "",
+		"postal_code": buyer_data.get("postal_code", "") or "",
 	})
 	return base
 
@@ -258,6 +287,19 @@ def update_user_profile(
 	bank_name: str = None,
 	iban: str = None,
 	account_holder_name: str = None,
+	avatar: str = None,
+	business_type: str = None,
+	company_name: str = None,
+	job_title: str = None,
+	website: str = None,
+	selling_platforms: str = None,
+	year_established: str = None,
+	employee_count: str = None,
+	about_us: str = None,
+	industry_preferences: str = None,
+	sourcing_frequency: str = None,
+	annual_spending: str = None,
+	postal_code: str = None,
 ):
 	"""Update profile fields for the currently logged-in user.
 
@@ -305,6 +347,36 @@ def update_user_profile(
 			updates["phone"] = phone
 		if country is not None:
 			updates["country"] = country
+		if avatar is not None:
+			updates["avatar"] = avatar
+		if business_type is not None:
+			updates["business_type"] = business_type
+		if company_name is not None:
+			updates["company_name"] = company_name
+		if address is not None:
+			updates["address"] = address
+		if job_title is not None:
+			updates["job_title"] = job_title
+		if website is not None:
+			updates["website"] = website
+		if selling_platforms is not None:
+			updates["selling_platforms"] = selling_platforms
+		if year_established is not None:
+			updates["year_established"] = year_established
+		if employee_count is not None:
+			updates["employee_count"] = employee_count
+		if about_us is not None:
+			updates["about_us"] = about_us
+		if industry_preferences is not None:
+			updates["industry_preferences"] = industry_preferences
+		if sourcing_frequency is not None:
+			updates["sourcing_frequency"] = sourcing_frequency
+		if annual_spending is not None:
+			updates["annual_spending"] = annual_spending
+		if city is not None:
+			updates["city"] = city
+		if postal_code is not None:
+			updates["postal_code"] = postal_code
 		for field, value in updates.items():
 			frappe.db.set_value("Buyer Profile", buyer_profile, field, value)
 
@@ -334,6 +406,22 @@ def update_user_profile(
 			updates["iban"] = iban
 		if account_holder_name is not None:
 			updates["account_holder_name"] = account_holder_name
+		if avatar is not None:
+			updates["avatar"] = avatar
+		if website is not None:
+			updates["website"] = website
+		if job_title is not None:
+			updates["job_title"] = job_title
+		if year_established is not None:
+			updates["year_established"] = year_established
+		if employee_count is not None:
+			updates["employee_count"] = employee_count
+		if about_us is not None:
+			updates["about_us"] = about_us
+		if selling_platforms is not None:
+			updates["selling_platforms"] = selling_platforms
+		if postal_code is not None:
+			updates["postal_code"] = postal_code
 		for field, value in updates.items():
 			frappe.db.set_value("Seller Profile", seller_profile, field, value)
 
