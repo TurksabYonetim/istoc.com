@@ -9,15 +9,13 @@ import { t } from '../../i18n';
 
 /** Render a single category item as circular thumbnail + label */
 function CategoryItem(cat: { name: string; href: string; image: string }): string {
+  const imageContent = cat.image
+    ? `<img src="${cat.image}" alt="${cat.name}" class="w-full h-full object-cover" loading="lazy" />`
+    : `<span class="text-2xl sm:text-3xl select-none">${cat.name.charAt(0)}</span>`;
   return `
     <a href="${cat.href}" class="group flex flex-col items-center gap-2 text-center no-underline">
-      <div class="w-[68px] h-[68px] sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 rounded-full bg-gray-100 overflow-hidden border-2 border-transparent group-hover:border-(--primary) group-hover:shadow-lg transition-all duration-200 group-hover:scale-105">
-        <img
-          src="${cat.image}"
-          alt="${cat.name}"
-          class="w-full h-full object-cover"
-          loading="lazy"
-        />
+      <div class="w-[68px] h-[68px] sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 rounded-full bg-gray-100 overflow-hidden border-2 border-transparent group-hover:border-(--primary) group-hover:shadow-lg transition-all duration-200 group-hover:scale-105 flex items-center justify-center text-gray-400 font-bold">
+        ${imageContent}
       </div>
       <span class="text-xs sm:text-sm lg:text-sm xl:text-base font-medium text-gray-700 group-hover:text-(--primary) transition-colors duration-200 leading-tight max-w-[80px] sm:max-w-[100px] lg:max-w-[120px] xl:max-w-[140px] line-clamp-2">
         ${cat.name}

@@ -291,6 +291,34 @@ def get_reviews(seller_code, page=1, page_size=10):
 
 
 @frappe.whitelist()
+def submit_review(seller_code, rating, comment):
+    if frappe.session.user == "Guest":
+        frappe.throw(_("Yorum yapmak icin giris yapmaniz gerekiyor"), frappe.AuthenticationError)
+    if not frappe.db.exists("Admin Seller Profile", seller_code):
+        frappe.throw(_("Satici bulunamadi"), frappe.DoesNotExistError)
+    rating = float(rating)
+    if rating < 1 or rating > 5:
+        frappe.throw(_("Puan 1 ile 5 arasinda olmalidir"))
+    comment = (comment or "").strip()
+    if not comment:
+        frappe.throw(_("Yorum bos olamaz"))
+    user_data = frappe.db.get_value(
+        "User", frappe.session.user, ["full_name", "name"], as_dict=True
+    )
+    reviewer_name = user_data.full_name or user_data.name
+    doc = frappe.new_doc("Seller Review")
+    doc.seller = seller_code
+    doc.reviewer_name = reviewer_name
+    doc.rating = rating
+    doc.comment = comment
+    doc.status = "Published"
+    doc.date = frappe.utils.now()
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return {"success": True, "name": doc.name}
+
+
+@frappe.whitelist()
 def get_gallery():
     """Oturumdaki satıcının galeri fotoğraflarını döndürür."""
     user = frappe.session.user

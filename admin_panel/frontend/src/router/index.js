@@ -10,6 +10,7 @@ const DocTypeListView = () => import('@/views/doctype/DocTypeListView.vue')
 const SellerOrdersView = () => import('@/views/seller/SellerOrdersView.vue')
 const ListingModerationView = () => import('@/views/products/ListingModerationView.vue')
 const CategoryModerationView = () => import('@/views/products/CategoryModerationView.vue')
+const CategoryManagementView = () => import('@/views/products/CategoryManagementView.vue')
 const SellerListingsView = () => import('@/views/seller/SellerListingsView.vue')
 const SellerCategoriesView = () => import('@/views/seller/SellerCategoriesView.vue')
 const ListingFormView = () => import('@/views/seller/ListingFormView.vue')
@@ -61,6 +62,12 @@ const routes = [
         meta: { title: 'Kategori Moderasyonu', breadcrumb: 'Kategori Moderasyonu', section: 'catalog' },
       },
       {
+        path: 'category-management',
+        name: 'CategoryManagement',
+        component: CategoryManagementView,
+        meta: { title: 'Kategori Yönetimi', breadcrumb: 'Kategori Yönetimi', section: 'catalog' },
+      },
+      {
         path: 'seller-categories',
         name: 'SellerCategories',
         component: SellerCategoriesView,
@@ -99,9 +106,6 @@ const router = createRouter({
   routes,
 })
 
-// Storefront URL for redirect
-const STOREFRONT_URL = 'http://localhost:5173/'
-
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
   if (!auth.isAuthenticated && !to.meta.guest) {
@@ -111,12 +115,18 @@ router.beforeEach(async (to, from, next) => {
     return next({ path: '/login', query: { redirect: to.fullPath } })
   }
   if (to.meta.guest && auth.isAuthenticated) {
+    if (!auth.isAdmin && !auth.isSeller) {
+      await auth.logout()
+      auth.error = 'Bu panel yalnızca satıcı ve yöneticilere açıktır.'
+      return next('/login')
+    }
     return next('/dashboard')
   }
   // Admins and sellers can access the panel
   if (!to.meta.guest && auth.isAuthenticated && !auth.isAdmin && !auth.isSeller) {
-    window.location.href = STOREFRONT_URL
-    return
+    await auth.logout()
+    auth.error = 'Bu panel yalnızca satıcı ve yöneticilere açıktır.'
+    return next('/login')
   }
   next()
 })

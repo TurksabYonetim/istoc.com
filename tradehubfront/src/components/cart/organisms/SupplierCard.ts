@@ -41,7 +41,7 @@ export function SupplierCard({ supplier, isSingleSupplier = true }: SupplierCard
           <div onclick="event.stopPropagation()" class="shrink-0">
             ${Checkbox({ id: `supplier-checkbox-${supplier.id}`, checked: supplier.selected, indeterminate: supplierIndeterminate, onChange: `supplier-select-${supplier.id}` })}
           </div>
-          <a href="${escapeHtml(supplier.href)}" onclick="event.stopPropagation()" class="text-lg max-sm:text-sm font-semibold text-text-heading hover:text-cta-primary hover:underline truncate">${escapeHtml(supplier.name)}</a>
+          <span class="text-lg max-sm:text-sm font-semibold text-text-heading truncate">${escapeHtml(supplier.name)}</span>
           <svg class="sc-c-supplier-chevron w-5 h-5 max-sm:w-4 max-sm:h-4 text-text-tertiary transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180' : ''}"
             :class="{ 'rotate-180': expanded }"
             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

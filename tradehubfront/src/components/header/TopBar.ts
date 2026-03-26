@@ -16,6 +16,7 @@ import type { SupportedLang } from '../../i18n';
 import { getSelectedCurrency, setSelectedCurrency, getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatPrice, getSelectedCurrency as csGetSelectedCurrency } from '../../services/currencyService';
 import { getSearchSuggestions } from '../../services/listingService';
+import { apiRemoveCartItem, fetchCart } from '../../services/cartService';
 
 /** Default country options for the delivery selector */
 const countryOptions: LocaleOption[] = [
@@ -1255,10 +1256,7 @@ let _headerCartInitialized = false;
 export function initHeaderCart(): void {
   _headerCartInitialized = true; // auto-init'e "zaten çağrıldı" sinyali ver
 
-  // localStorage'dan sepet verisini yükle (her sayfada çalışır)
-  cartStore.load();
-
-  // Sync UI to store state
+  // Sepeti yükle: giriş yapılmışsa API'den, misafirse localStorage'dan
   const renderFromStore = () => {
     const suppliers = cartStore.getSuppliers();
     const count = cartStore.getTotalSkuCount();
@@ -1327,6 +1325,9 @@ export function initHeaderCart(): void {
                   <p class="text-[11px] text-gray-400">${sku.variantText || ''}</p>
                 </div>
                 <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                  <button type="button" data-delete-sku="${sku.id}" class="opacity-0 group-hover:opacity-100 transition-opacity w-5 h-5 flex items-center justify-center rounded-full hover:bg-red-50 text-gray-300 hover:text-red-400" aria-label="${t('cart.removeProduct')}">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
                   <span class="text-[13px] font-bold text-gray-900">${formatPrice(sku.unitPrice, sku.baseCurrency || 'USD')}</span>
                   <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">x${sku.quantity}</span>
                 </div>
@@ -1341,9 +1342,41 @@ export function initHeaderCart(): void {
     }
   };
 
+  // Sepeti yükle: oturum açıksa API'den (kullanıcıya özel), misafirse localStorage'dan
+  (async () => {
+    const sessionUser = getUser() ?? await getSessionUser();
+    if (sessionUser) {
+      try {
+        const apiCart = await fetchCart();
+        const sym = getCurrencySymbol();
+        cartStore.init(apiCart.suppliers, 0, sym, 0);
+      } catch {
+        cartStore.load();
+      }
+    } else {
+      cartStore.load();
+    }
+  })();
+
   // Initial read and subscribe to future cart metadata
   renderFromStore();
   cartStore.subscribe(renderFromStore);
+
+  // Mini cart item silme — event delegation (innerHTML her yenilendiği için)
+  const cartBodyEl = document.getElementById('header-cart-body');
+  if (cartBodyEl) {
+    cartBodyEl.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-delete-sku]');
+      if (!btn) return;
+      const skuId = btn.dataset.deleteSku;
+      if (!skuId) return;
+      e.stopPropagation();
+      cartStore.deleteSku(skuId);
+      if (isLoggedIn()) {
+        apiRemoveCartItem(skuId).catch(() => {});
+      }
+    });
+  }
 
   document.addEventListener('cart-add', ((e: CustomEvent) => {
     // If we're relying on legacy data injection, we can manually parse e.detail here

@@ -8,8 +8,8 @@ import { initFlowbite } from 'flowbite'
 import { t } from '../i18n'
 import { getBaseUrl } from '../utils/url'
 import { initCurrency } from '../services/currencyService'
-import { isLoggedIn } from '../utils/auth'
-import { apiCreateOrder, apiValidateCoupon, fetchShippingMethodsForListing } from '../services/cartService'
+import { isLoggedIn, getSessionUser } from '../utils/auth'
+import { apiCreateOrder, apiValidateCoupon, fetchShippingMethodsForListing, fetchCart } from '../services/cartService'
 import type { ListingShippingMethod } from '../services/cartService'
 import { showToast } from '../utils/toast'
 
@@ -70,13 +70,8 @@ if (isSampleMode) {
   }
 }
 
-// CartStore'dan checkout order summary oluştur
-cartStore.load();
-if (cartStore.hasSelectedSkuMoqViolation()) {
-  window.location.replace('/pages/cart.html');
-}
-
-const cartSummary = cartStore.getSummary();
+// cartSummary — renderCheckout içinde async olarak doldurulur
+let cartSummary: ReturnType<typeof cartStore.getSummary> | null = null;
 
 function formatMonthDay(date: Date): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
@@ -241,7 +236,7 @@ function buildDeliveryOrders(): CheckoutDeliveryOrderGroup[] {
       methods = fetchedMethods;
     } else {
       // Fallback: listing'de kargo tanımlanmamışsa hesaplanmış tahmini değerler
-      const shippingShare = subtotalTotal > 0 ? (cartSummary.shippingFee * row.subtotal) / subtotalTotal : 0;
+      const shippingShare = subtotalTotal > 0 ? ((cartSummary?.shippingFee ?? 0) * row.subtotal) / subtotalTotal : 0;
       const method1Fee = Number(Math.max(5, shippingShare).toFixed(2));
       const method2Fee = Number(Math.max(method1Fee + 5, shippingShare * 1.35).toFixed(2));
       const start1 = addDays(now, 10 + (index * 2));
@@ -537,9 +532,40 @@ window.addEventListener('checkout:confirm-order', () => {
 async function renderCheckout() {
 await initCurrency();
 
+// Cart yükleme: oturumu async kontrol et, giriş yapmış → API, misafir → localStorage
+{
+  const { symbol: sym } = getSelectedCurrencyInfo();
+  try {
+    const sessionUser = await getSessionUser();
+    if (sessionUser) {
+      const apiCart = await fetchCart();
+      cartStore.init(apiCart.suppliers, 0, sym, 0);
+
+      // URL'deki ?suppliers=ID1,ID2 parametresine göre seçimi filtrele
+      const suppliersParam = new URLSearchParams(window.location.search).get('suppliers');
+      if (suppliersParam) {
+        const allowedIds = new Set(suppliersParam.split(',').map((id) => id.trim()).filter(Boolean));
+        for (const supplier of cartStore.getSuppliers()) {
+          const isAllowed = allowedIds.has(supplier.id);
+          cartStore.toggleSupplierSelection(supplier.id, isAllowed);
+        }
+      }
+    } else {
+      cartStore.load();
+    }
+  } catch {
+    cartStore.load();
+  }
+}
+
+if (!isSampleMode && cartStore.hasSelectedSkuMoqViolation()) {
+  window.location.replace('/pages/cart.html');
+  return;
+}
+cartSummary = cartStore.getSummary();
+
 // Auth kontrolü: giriş yapmamış kullanıcıları login sayfasına yönlendir
 if (!isLoggedIn()) {
-  const { getSessionUser } = await import('../utils/auth');
   const sessionUser = await getSessionUser().catch(() => null);
   if (!sessionUser) {
     window.location.replace(`/pages/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);

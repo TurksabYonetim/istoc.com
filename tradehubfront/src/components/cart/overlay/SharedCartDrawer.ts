@@ -5,7 +5,8 @@ import { t } from '../../../i18n';
 import { getCurrencySymbol } from '../../../utils/currency';
 import { formatCurrency, getSelectedCurrency } from '../../../services/currencyService';
 import { isLoggedIn } from '../../../utils/auth';
-import { apiCheckStock } from '../../../services/cartService';
+import { apiCheckStock, apiAddToCart, fetchCart } from '../../../services/cartService';
+import { getCurrencySymbol as _getCurrencySymbolForCart } from '../../../utils/currency';
 import { showCartError } from '../page/CartPage';
 
 export interface CartDrawerTierModel {
@@ -476,7 +477,7 @@ function syncToCartStore(item: CartDrawerItemModel, colorQuantities: Map<string,
     const supplier: CartSupplier = {
       id: supplierId,
       name: item.supplierName,
-      href: `/supplier/${supplierId}`,
+      href: `/pages/seller.html?id=${supplierId}`,
       selected: true,
       products: [],
     };
@@ -489,7 +490,7 @@ function syncToCartStore(item: CartDrawerItemModel, colorQuantities: Map<string,
     const product: CartProduct = {
       id: productId,
       title: item.title,
-      href: `/product/${productId}`,
+      href: `/pages/product-detail.html?id=${productId}`,
       tags: [],
       moqLabel: `${t('product.minOrderLabel')}: ${item.moq} ${item.unit}`,
       favoriteIcon: '♡',
@@ -514,18 +515,19 @@ function syncToCartStore(item: CartDrawerItemModel, colorQuantities: Map<string,
       cartStore.updateSkuQuantity(skuId, existing.sku.quantity + qty);
     } else {
       const isFallbackColor = colorId.startsWith('fallback-');
+      const effectivePrice = (color.rawPrice != null && color.rawPrice > 0) ? color.rawPrice : unitPrice;
       const sku: CartSku = {
         id: skuId,
         skuImage: color.imageUrl || 'https://placehold.co/120x120/f5f5f5/999?text=SKU',
         variantText: `${t('cart.colorLabel')}: ${color.label}`,
-        unitPrice,
+        unitPrice: effectivePrice,
         currency: getCurrencySymbol(),
         unit: item.unit,
         quantity: qty,
         minQty: item.moq,
         maxQty: 9999,
         selected: true,
-        baseUnitPrice: unitPrice,
+        baseUnitPrice: effectivePrice,
         basePriceAddon: 0,
         baseCurrency: getSelectedCurrency(),
         ...(isFallbackColor ? {} : { listingVariant: colorId }),
@@ -553,10 +555,40 @@ async function dispatchCartAdd(): Promise<boolean> {
       showCartError(msg || t('cart.stockError'));
       return false;
     }
+
+    // Backend'e her varyant için ekle
+    try {
+      let lastResponse = null;
+      for (const [colorId, qty] of state.colorQuantities) {
+        if (qty <= 0) continue;
+        const isFallback = colorId.startsWith('fallback-') || colorId === '__no_variant__';
+        lastResponse = await apiAddToCart(
+          state.item.id,
+          qty,
+          isFallback ? undefined : colorId
+        );
+      }
+      // Backend'den dönen güncel sepeti store'a yaz
+      if (lastResponse) {
+        const sym = _getCurrencySymbolForCart();
+        cartStore.init(lastResponse.suppliers, 0, sym, 0);
+      } else {
+        // Tüm qty 0 idiyse son durumu çek
+        const refreshed = await fetchCart();
+        const sym = _getCurrencySymbolForCart();
+        cartStore.init(refreshed.suppliers, 0, sym, 0);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showCartError(msg || t('cart.stockError'));
+      return false;
+    }
   }
 
-  // CartStore'a kaydet
-  syncToCartStore(state.item, state.colorQuantities, totals.activePrice);
+  // Misafir kullanıcı için CartStore'a kaydet (localStorage)
+  if (!isLoggedIn()) {
+    syncToCartStore(state.item, state.colorQuantities, totals.activePrice);
+  }
 
   const existing = cartMemory.get(state.item.id);
   if (existing) {

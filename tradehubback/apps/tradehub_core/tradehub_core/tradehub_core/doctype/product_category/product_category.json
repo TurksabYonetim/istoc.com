@@ -1,14 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:category_name",
+ "autoname": "field:external_id",
  "creation": "2024-01-01 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "external_id",
   "category_name",
   "parent_product_category",
   "is_active",
+  "sort_order",
   "column_break_1",
   "image",
   "icon_class",
@@ -24,12 +26,25 @@
  ],
  "fields": [
   {
+   "fieldname": "external_id",
+   "fieldtype": "Data",
+   "label": "External ID",
+   "reqd": 1,
+   "unique": 1,
+   "hidden": 1
+  },
+  {
    "fieldname": "category_name",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Category Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   },
   {
    "fieldname": "parent_product_category",
