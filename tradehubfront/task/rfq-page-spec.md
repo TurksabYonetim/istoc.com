@@ -98,8 +98,8 @@ Roboto Variable font is loaded via Google Fonts in `index.html` with `preconnect
 | Property       | Value                        |
 | -------------- | ---------------------------- |
 | **Command**    | `npm run dev`                |
-| **URL**        | `http://localhost:5173`      |
-| **RFQ Page**   | `http://localhost:5173` (SPA — single page, no router) |
+| **URL**        | `http://localhost:5500`      |
+| **RFQ Page**   | `http://localhost:5500` (SPA — single page, no router) |
 | **Hot Reload** | Enabled (Vite HMR)          |
 
 ---

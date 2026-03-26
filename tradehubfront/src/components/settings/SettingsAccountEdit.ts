@@ -6,6 +6,7 @@
 
 import { t } from '../../i18n';
 import { api } from '../../utils/api';
+import { validatePhone } from '../../utils/tr-validation';
 
 const ICONS = {
   verified: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="#22c55e"/><path d="M4.5 7l2 2 3.5-3.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -102,19 +103,6 @@ function viewRow(label: string, value: string, extra?: string): string {
   `;
 }
 
-function statusBadge(status: string): string {
-  const colors: Record<string, string> = {
-    'Active': 'color:#22c55e; background:#f0fdf4',
-    'Submitted': 'color:#f59e0b; background:#fffbeb',
-    'Under Review': 'color:#3b82f6; background:#eff6ff',
-    'Draft': 'color:#6b7280; background:#f3f4f6',
-    'Approved': 'color:#22c55e; background:#f0fdf4',
-    'Rejected': 'color:#ef4444; background:#fef2f2',
-  };
-  const style = colors[status] || 'color:#6b7280; background:#f3f4f6';
-  return `<span class="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full" style="${style}">${status}</span>`;
-}
-
 // ── Buyer: View ──────────────────────────────────────────────────
 
 function buyerView(d: ProfileData): string {
@@ -171,30 +159,15 @@ function buyerEdit(d: ProfileData): string {
 
 function sellerView(d: ProfileData): string {
   const fullName = `${d.first_name} ${d.last_name}`.trim();
-  const status = d.seller_status || d.application_status || '';
-
-  const sellerTypeMap: Record<string, string> = {
-    'Individual': t('settings.sellerTypeIndividual') || 'Bireysel',
-    'Business': t('settings.sellerTypeBusiness') || 'İşletme',
-    'Enterprise': t('settings.sellerTypeEnterprise') || 'Kurumsal',
-  };
 
   return `
     <div class="flex flex-col">
       ${viewRow(t('settings.accountNumber'), d.member_id)}
-      ${status ? viewRow(t('settings.applicationStatus'), statusBadge(status)) : ''}
       ${viewRow(t('settings.fullName'), fullName)}
       ${viewRow(t('settings.emailAddressField'), d.email)}
-      ${viewRow(t('settings.sellerTypeLabel'), sellerTypeMap[d.seller_type || ''] || d.seller_type || '')}
       ${viewRow(t('settings.businessNameLabel'), d.business_name || '')}
       ${viewRow(t('settings.phoneLabel'), d.phone)}
       ${viewRow(t('settings.countryRegion'), d.country)}
-      ${d.tax_id ? viewRow(t('settings.taxIdLabel'), `${d.tax_id_type || ''} ${d.tax_id}`.trim()) : ''}
-      ${d.tax_office ? viewRow(t('settings.taxOfficeLabel'), d.tax_office) : ''}
-      ${d.address || d.city ? viewRow(t('settings.addressLabel'), [d.address, d.city].filter(Boolean).join(', ')) : ''}
-      ${d.bank_name ? viewRow(t('settings.bankNameLabel'), d.bank_name) : ''}
-      ${d.iban ? viewRow('IBAN', d.iban) : ''}
-      ${d.account_holder_name ? viewRow(t('settings.accountHolderLabel'), d.account_holder_name) : ''}
     </div>
   `;
 }
@@ -229,17 +202,9 @@ function sellerEdit(d: ProfileData): string {
       <label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.phoneLabel')}</label>
       <input type="tel" class="${inputCls} max-w-[300px]" data-field="phone" value="${d.phone}" placeholder="+90 5XX XXX XX XX" />
     </div>
-    <div class="mb-5">
+    <div class="mb-6">
       <label class="${labelCls}" style="color:var(--color-text-muted)">${req}${t('settings.countryRegion')}</label>
       <select class="${inputCls} bg-white cursor-pointer" data-field="country">${countryOptions(d.country)}</select>
-    </div>
-    <div class="mb-5">
-      <label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.addressLabel')}</label>
-      <input type="text" class="${inputCls}" data-field="address" value="${d.address || ''}" placeholder="${t('settings.addressPlaceholder') || 'Açık adres'}" />
-    </div>
-    <div class="mb-6">
-      <label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.cityLabel')}</label>
-      <input type="text" class="${inputCls} max-w-[300px]" data-field="city" value="${d.city || ''}" placeholder="${t('settings.cityPlaceholder') || 'Şehir'}" />
     </div>
   `;
 }
@@ -334,6 +299,10 @@ export function initSettingsAccountEdit(): void {
       const data = collectFormData();
       if (!data.first_name?.trim() || !data.last_name?.trim()) {
         showMessage(t('settings.nameRequired'), 'error');
+        return;
+      }
+      if (data.phone?.trim() && !validatePhone(data.phone)) {
+        showMessage(t('settings.invalidPhone'), 'error');
         return;
       }
       submitBtn.setAttribute('disabled', 'true');

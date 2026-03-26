@@ -41,6 +41,8 @@ export interface AccountSetupFormData {
   firstName: string;
   /** Last name */
   lastName: string;
+  /** Phone number (optional) */
+  phone: string;
   /** Password */
   password: string;
 }
@@ -202,6 +204,22 @@ export function AccountSetupForm(defaultCountry: string = 'TR'): string {
           </div>
         </div>
 
+        <!-- Phone Field -->
+        <div class="auth-form-field relative">
+          <label for="phone-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            ${t('auth.setup.phone') || 'Telefon'}
+          </label>
+          <input
+            type="tel"
+            id="phone-input"
+            name="phone"
+            placeholder="05XX XXX XX XX"
+            autocomplete="tel"
+            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 dark:focus:border-orange-400 transition-all"
+          />
+          <p id="phone-error" class="text-xs text-red-500 mt-1 hidden"></p>
+        </div>
+
         <!-- Password Field -->
         <div class="auth-form-field relative">
           <label for="password-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" data-i18n="auth.setup.password">
@@ -350,6 +368,7 @@ export function initAccountSetupForm(options: AccountSetupFormOptions = {}): Acc
       country: getCountryByCode(defaultCountry) || countryOptions[0],
       firstName: '',
       lastName: '',
+      phone: '',
       password: '',
     },
     passwordRequirements: {
@@ -476,6 +495,32 @@ export function initAccountSetupForm(options: AccountSetupFormOptions = {}): Acc
     });
   }
 
+  // Phone input handler
+  const phoneInput = document.getElementById('phone-input') as HTMLInputElement | null;
+  const phoneError = document.getElementById('phone-error');
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      state.data.phone = phoneInput.value.trim();
+      // Validate only if user has typed something
+      if (state.data.phone) {
+        const cleaned = state.data.phone.replace(/[\s\-\(\)]/g, '');
+        const isValid = /^(\+90|0)?5\d{9}$/.test(cleaned);
+        if (phoneError) {
+          if (!isValid) {
+            phoneError.textContent = t('auth.supplierSetup.invalidPhone') || 'Geçerli bir telefon numarası girin (05XX XXX XX XX)';
+            phoneError.classList.remove('hidden');
+          } else {
+            phoneError.classList.add('hidden');
+          }
+        }
+      } else if (phoneError) {
+        phoneError.classList.add('hidden');
+      }
+      updateFormValidity();
+    });
+  }
+
   // Password input handler
   if (passwordInput) {
     passwordInput.addEventListener('input', () => {
@@ -538,8 +583,10 @@ export function initAccountSetupForm(options: AccountSetupFormOptions = {}): Acc
     const hasLastName = state.data.lastName.length > 0;
     const hasCountry = state.data.country !== null;
     const hasAcceptedTerms = termsCheckbox?.checked ?? false;
+    // Phone is optional but if entered must be valid
+    const phoneOk = !state.data.phone || /^(\+90|0)?5\d{9}$/.test(state.data.phone.replace(/[\s\-\(\)]/g, ''));
 
-    state.isValid = hasValidPassword && hasFirstName && hasLastName && hasCountry && hasAcceptedTerms;
+    state.isValid = hasValidPassword && hasFirstName && hasLastName && hasCountry && hasAcceptedTerms && phoneOk;
 
     if (submitBtn) {
       submitBtn.disabled = !state.isValid;
@@ -559,6 +606,7 @@ export function getAccountSetupFormData(): AccountSetupFormData | null {
   const countryInput = document.getElementById('country-input') as HTMLInputElement | null;
   const firstNameInput = document.getElementById('first-name-input') as HTMLInputElement | null;
   const lastNameInput = document.getElementById('last-name-input') as HTMLInputElement | null;
+  const phoneInput = document.getElementById('phone-input') as HTMLInputElement | null;
   const passwordInput = document.getElementById('password-input') as HTMLInputElement | null;
 
   const countryCode = countryInput?.value || 'TR';
@@ -568,6 +616,7 @@ export function getAccountSetupFormData(): AccountSetupFormData | null {
     country,
     firstName: firstNameInput?.value.trim() || '',
     lastName: lastNameInput?.value.trim() || '',
+    phone: phoneInput?.value.trim() || '',
     password: passwordInput?.value || '',
   };
 }

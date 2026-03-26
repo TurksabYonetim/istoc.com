@@ -12,7 +12,7 @@
           <AppIcon name="refresh-cw" :size="14" />
           <span>Yenile</span>
         </button>
-        <button class="hdr-btn-primary" @click="createNew">
+        <button v-if="canCreate" class="hdr-btn-primary" @click="createNew">
           <AppIcon name="plus" :size="14" />
           <span>Yeni Ekle</span>
         </button>
@@ -68,8 +68,8 @@
         <AppIcon name="inbox" :size="24" class="text-gray-400 dark:text-gray-500" />
       </div>
       <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Henüz kayıt yok</h3>
-      <p class="text-xs text-gray-400 mb-4">İlk {{ doctypeLabel }} kaydınızı oluşturun</p>
-      <button class="hdr-btn-primary" @click="createNew">
+      <p class="text-xs text-gray-400 mb-4">{{ canCreate ? `İlk ${doctypeLabel} kaydınızı oluşturun` : `Henüz ${doctypeLabel} kaydı yok` }}</p>
+      <button v-if="canCreate" class="hdr-btn-primary" @click="createNew">
         <AppIcon name="plus" :size="14" />
         <span>Yeni Ekle</span>
       </button>
@@ -295,6 +295,18 @@ const ADMIN_ONLY_DOCTYPES = new Set([
   'Buyer Profile', 'Cart', 'Admin Seller Profile', 'Supplier Profile',
   'Currency Rate', 'Seller Application',
 ])
+
+// Satıcının yeni kayıt oluşturamayacağı doctype'lar (sistem tarafından yönetilir)
+const NO_CREATE_FOR_SELLER = new Set([
+  'Seller Profile', 'Seller Balance', 'Seller Application',
+  'Buyer Profile', 'Admin Seller Profile',
+])
+
+const canCreate = computed(() => {
+  if (auth.isAdmin) return true
+  if (NO_CREATE_FOR_SELLER.has(doctype.value)) return false
+  return true
+})
 
 function getSellerAutoFilter() {
   if (auth.isAdmin || !auth.isSeller) return []

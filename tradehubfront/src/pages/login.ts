@@ -7,9 +7,13 @@ import '../style.css'
 import { initFlowbite } from 'flowbite'
 import { startAlpine } from '../alpine'
 import { t } from '../i18n'
+import { requireGuest } from '../utils/auth-guard'
 
 // Auth components
 import { AuthLayout, initAuthLayout, LoginPage, initLoginPage } from '../components/auth'
+
+// If already logged in, redirect away from login page
+await requireGuest()
 
 /* ── App Setup ───────────────────────────────────────── */
 

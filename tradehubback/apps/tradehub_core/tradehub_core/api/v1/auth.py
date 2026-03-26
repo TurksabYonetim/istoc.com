@@ -1,4 +1,5 @@
 import hashlib
+import re
 
 import frappe
 from frappe import _
@@ -147,11 +148,11 @@ def get_user_profile():
 
 	roles = frappe.get_roles(user)
 
-	# Detect seller: has Seller role, Seller Profile, or Seller Application
+	# Detect approved seller: has Seller role AND active Seller Profile
+	# Pending applications don't make a user a "seller" for profile purposes
 	is_seller = (
 		"Seller" in roles
-		or frappe.db.exists("Seller Profile", {"user": user})
-		or frappe.db.exists("Seller Application", {"applicant_user": user})
+		and frappe.db.exists("Seller Profile", {"user": user})
 	)
 
 	# Read member_id from DB; fallback to computed value for legacy users
@@ -179,7 +180,9 @@ def get_user_profile():
 		sp = frappe.db.get_value(
 			"Seller Profile", {"user": user},
 			["seller_name", "seller_type", "business_name", "tax_id",
-			 "contact_phone", "country", "status"],
+			 "contact_phone", "country", "status",
+			 "tax_id_type", "tax_office", "address_line_1", "city",
+			 "bank_name", "iban", "account_holder_name"],
 			as_dict=True,
 		)
 		if sp:
@@ -190,10 +193,17 @@ def get_user_profile():
 				"phone": sp.contact_phone or user_data.phone or "",
 				"country": sp.country or "",
 				"seller_status": sp.status or "",
+				"tax_id_type": sp.tax_id_type or "",
+				"tax_office": sp.tax_office or "",
+				"address": sp.address_line_1 or "",
+				"city": sp.city or "",
+				"bank_name": sp.bank_name or "",
+				"iban": sp.iban or "",
+				"account_holder_name": sp.account_holder_name or "",
 			})
 			return base
 
-		# Fallback: Seller Application (pending sellers)
+		# Fallback: Seller Application only (pending sellers)
 		sa = frappe.db.get_value(
 			"Seller Application", {"applicant_user": user},
 			["seller_type", "business_name", "contact_phone", "tax_id",
@@ -243,16 +253,33 @@ def update_user_profile(
 	business_name: str = None,
 	address: str = None,
 	city: str = None,
+	tax_id_type: str = None,
+	tax_office: str = None,
+	bank_name: str = None,
+	iban: str = None,
+	account_holder_name: str = None,
 ):
 	"""Update profile fields for the currently logged-in user.
 
-	Updates User doc + Buyer Profile (buyers) or Seller Application (sellers).
+	Updates User doc + all related profiles (Buyer, Seller, Application).
 	"""
 	user = frappe.session.user
 	if user == "Guest":
 		frappe.throw(_("Not logged in."), frappe.AuthenticationError)
 
 	doc = frappe.get_doc("User", user)
+
+	# ── Validate phone format (if provided) ──
+	if phone is not None:
+		phone = phone.strip()
+		if phone:
+			cleaned = re.sub(r"[\s\-\(\)]", "", phone)
+			if not re.match(r"^(\+90|0)?5\d{9}$", cleaned):
+				frappe.local.response["http_status_code"] = 400
+				frappe.throw(
+					_("Please enter a valid Turkish phone number."),
+					frappe.ValidationError,
+				)
 
 	if first_name is not None:
 		doc.first_name = first_name
@@ -263,26 +290,56 @@ def update_user_profile(
 
 	doc.save(ignore_permissions=True)
 
-	# ── Seller: update Seller Application or Seller Profile ──
-	seller_app = frappe.db.get_value("Seller Application", {"applicant_user": user}, "name")
-	seller_profile = frappe.db.get_value("Seller Profile", {"user": user}, "name")
+	# ── Update ALL related profiles independently ──
+	fn = first_name if first_name is not None else doc.first_name
+	ln = last_name if last_name is not None else doc.last_name
+	full_name = f"{fn} {ln}".strip()
 
+	# Buyer Profile
+	buyer_profile = frappe.db.get_value("Buyer Profile", {"user": user}, "name")
+	if buyer_profile:
+		updates = {}
+		if first_name is not None or last_name is not None:
+			updates["buyer_name"] = full_name
+		if phone is not None:
+			updates["phone"] = phone
+		if country is not None:
+			updates["country"] = country
+		for field, value in updates.items():
+			frappe.db.set_value("Buyer Profile", buyer_profile, field, value)
+
+	# Seller Profile
+	seller_profile = frappe.db.get_value("Seller Profile", {"user": user}, "name")
 	if seller_profile:
 		updates = {}
 		if first_name is not None or last_name is not None:
-			fn = first_name if first_name is not None else doc.first_name
-			ln = last_name if last_name is not None else doc.last_name
-			updates["seller_name"] = f"{fn} {ln}".strip()
+			updates["seller_name"] = full_name
 		if business_name is not None:
 			updates["business_name"] = business_name
 		if phone is not None:
 			updates["contact_phone"] = phone
 		if country is not None:
 			updates["country"] = country
+		if address is not None:
+			updates["address_line_1"] = address
+		if city is not None:
+			updates["city"] = city
+		if tax_id_type is not None:
+			updates["tax_id_type"] = tax_id_type
+		if tax_office is not None:
+			updates["tax_office"] = tax_office
+		if bank_name is not None:
+			updates["bank_name"] = bank_name
+		if iban is not None:
+			updates["iban"] = iban
+		if account_holder_name is not None:
+			updates["account_holder_name"] = account_holder_name
 		for field, value in updates.items():
 			frappe.db.set_value("Seller Profile", seller_profile, field, value)
 
-	elif seller_app:
+	# Seller Application
+	seller_app = frappe.db.get_value("Seller Application", {"applicant_user": user}, "name")
+	if seller_app:
 		updates = {}
 		if business_name is not None:
 			updates["business_name"] = business_name
@@ -294,24 +351,18 @@ def update_user_profile(
 			updates["address_line_1"] = address
 		if city is not None:
 			updates["city"] = city
+		if tax_id_type is not None:
+			updates["tax_id_type"] = tax_id_type
+		if tax_office is not None:
+			updates["tax_office"] = tax_office
+		if bank_name is not None:
+			updates["bank_name"] = bank_name
+		if iban is not None:
+			updates["iban"] = iban
+		if account_holder_name is not None:
+			updates["account_holder_name"] = account_holder_name
 		for field, value in updates.items():
 			frappe.db.set_value("Seller Application", seller_app, field, value)
-
-	else:
-		# ── Buyer: update Buyer Profile ──
-		buyer_profile = frappe.db.get_value("Buyer Profile", {"user": user}, "name")
-		if buyer_profile:
-			updates = {}
-			if first_name is not None or last_name is not None:
-				fn = first_name if first_name is not None else doc.first_name
-				ln = last_name if last_name is not None else doc.last_name
-				updates["buyer_name"] = f"{fn} {ln}".strip()
-			if phone is not None:
-				updates["phone"] = phone
-			if country is not None:
-				updates["country"] = country
-			for field, value in updates.items():
-				frappe.db.set_value("Buyer Profile", buyer_profile, field, value)
 
 	frappe.db.commit()
 

@@ -11,6 +11,7 @@
  */
 
 import { t } from '../../i18n';
+import { callMethod } from '../../utils/api';
 import {
   TR_CITIES, TR_TAX_OFFICES,
   validatePhone, validateIBAN, validateTCKN, getCityForTaxOffice,
@@ -145,7 +146,7 @@ export function SupplierSetupForm(): string {
           <!-- IBAN -->
           <div>
             <label for="ss-iban" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">${t('auth.supplierSetup.iban')}</label>
-            <input type="text" id="ss-iban" maxlength="26" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all" placeholder="TR..." required />
+            <input type="text" id="ss-iban" maxlength="32" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all" placeholder="TR..." required />
             <p id="ss-iban-error" class="text-xs text-red-500 mt-1 hidden"></p>
             <p id="ss-iban-bank" class="text-xs text-green-600 mt-1 hidden"></p>
           </div>
@@ -240,6 +241,7 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
 
   let currentStep = 1;
   let uploadedFileUrl = '';
+  let lastAutoFilledBank = '';
 
   // DOM refs
   const steps = container.querySelectorAll<HTMLElement>('.supplier-step');
@@ -336,9 +338,13 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
         showFieldError(ibanError, ibanVal.length >= 5 && !ibanResult.valid ? t('auth.supplierSetup.invalidIBAN') : '');
         showFieldError(ibanBank, ibanResult.valid && ibanResult.bankName ? ibanResult.bankName : '');
         if (ibanBank) ibanBank.classList.toggle('hidden', !ibanResult.bankName);
-        // Auto-fill bank name from IBAN
-        if (ibanResult.valid && ibanResult.bankName && bankName) {
+        // Auto-fill bank name from IBAN only when bank changes
+        if (ibanResult.valid && ibanResult.bankName && bankName && ibanResult.bankName !== lastAutoFilledBank) {
           bankName.value = ibanResult.bankName;
+          lastAutoFilledBank = ibanResult.bankName;
+        }
+        if (!ibanResult.valid || !ibanResult.bankName) {
+          lastAutoFilledBank = '';
         }
         valid = !!bankName.value.trim() && !!ibanVal && ibanResult.valid && !!accountHolder.value.trim();
         break;
@@ -383,7 +389,7 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
     };
   }
 
-  // ── File upload ──
+  // ── File upload (base64 JSON — same auth pattern as all other API calls) ──
 
   if (fileInput) {
     fileInput.addEventListener('change', async () => {
@@ -392,35 +398,22 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
 
       if (fileNameEl) fileNameEl.textContent = `${t('common.loading')}...`;
 
-      // Read CSRF token from cookie
-      const csrfToken = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('csrf_token='))
-        ?.split('=')[1] || 'Guest';
-
-      // Upload to Frappe
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('is_private', '1');
-
       try {
-        const BASE_URL = import.meta.env.VITE_API_URL || '';
-        const res = await fetch(`${BASE_URL}/method/upload_file`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'X-Frappe-CSRF-Token': csrfToken,
-          },
-          body: formData,
+        // Read file as base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
         });
-        if (res.ok) {
-          const json = await res.json();
-          uploadedFileUrl = json.message?.file_url || '';
-          if (fileNameEl) fileNameEl.textContent = file.name;
-        } else {
-          uploadedFileUrl = '';
-          if (fileNameEl) fileNameEl.textContent = t('auth.supplierSetup.uploadFailed') || 'Yukleme basarisiz. Tekrar deneyin.';
-        }
+
+        const result = await callMethod<{ file_url: string }>(
+          'tradehub_core.api.v1.identity.upload_private_file',
+          { filename: file.name, filedata: base64 },
+          true,
+        );
+        uploadedFileUrl = result.file_url || '';
+        if (fileNameEl) fileNameEl.textContent = file.name;
       } catch {
         uploadedFileUrl = '';
         if (fileNameEl) fileNameEl.textContent = t('auth.supplierSetup.uploadFailed') || 'Yukleme basarisiz. Tekrar deneyin.';
@@ -444,6 +437,15 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
   });
 
   // ── Event listeners ──
+
+  // Handle IBAN paste: strip spaces and non-alphanumeric chars, then validate
+  iban.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData?.getData('text') || '';
+    const cleaned = pasted.replace(/\s/g, '').toUpperCase();
+    iban.value = cleaned;
+    validateCurrentStep();
+  });
 
   // Validation on input for all steps
   const allInputs = container.querySelectorAll('input, select');

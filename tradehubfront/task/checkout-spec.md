@@ -74,7 +74,7 @@ npm install
 npm run dev
 ```
 
-**Port:** 5173 (Vite default)
+**Port:** 5500 (Docker)
 
 ## Files to Create
 
@@ -296,7 +296,7 @@ npm run dev
 ```
 
 ### Service URLs
-- Checkout Page: http://localhost:5173/checkout (or http://localhost:5173/ if single page)
+- Checkout Page: http://localhost:5500/checkout (or http://localhost:5500/ if single page)
 
 ### Required Environment Variables
 - None — static frontend, no API keys needed
@@ -1541,7 +1541,7 @@ The task is complete when:
 ### Browser Verification
 | Page/Component | URL | Checks |
 |----------------|-----|--------|
-| Full page layout | `http://localhost:5173/` | Two columns, proper spacing, correct font (Roboto) |
+| Full page layout | `http://localhost:5500/` | Two columns, proper spacing, correct font (Roboto) |
 | Country dropdown | Same URL | Flag emojis display, scroll works, selection works |
 | Validation states | Same URL | Red borders and "Required" text appear on submit |
 | Modal | Same URL | Opens centered, scrolls, has all 6 sections, 11 payment icons |

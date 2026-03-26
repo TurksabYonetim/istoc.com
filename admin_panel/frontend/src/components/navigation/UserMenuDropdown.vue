@@ -7,18 +7,18 @@
     >
       <div class="p-4 flex items-center gap-3 border-b border-gray-100">
         <div class="w-11 h-11 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-          {{ tenant.activeTenant?.initials || 'AK' }}
+          {{ tenant.activeTenant?.initials || '??' }}
         </div>
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
-            <p class="text-sm font-semibold text-gray-800 truncate">{{ tenant.activeTenant?.name || 'Admin' }}</p>
-            <span class="text-[9px] font-bold uppercase bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded flex-shrink-0">Pro</span>
+            <p class="text-sm font-semibold text-gray-800 truncate">{{ tenant.activeTenant?.name || '' }}</p>
+            <span v-if="tenant.activeTenant?.role" class="text-[9px] font-bold uppercase bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded flex-shrink-0">{{ tenant.activeTenant.role }}</span>
           </div>
-          <p class="text-[11px] text-gray-400 truncate mt-0.5">{{ auth.user?.email || 'admin@tradehub.com' }}</p>
+          <p class="text-[11px] text-gray-400 truncate mt-0.5">{{ auth.user?.email || '' }}</p>
         </div>
       </div>
       <div class="py-1.5">
-        <a href="#" class="dd-item" @click.prevent="emit('navigate', '/settings/profile')">Profilim</a>
+        <a href="#" class="dd-item" @click.prevent="goToProfile">Profilim</a>
         <a href="#" class="dd-item" @click.prevent="emit('navigate', '/settings')">Hesabım</a>
         <a href="#" class="dd-item" @click.prevent="emit('navigate', '/subscription')">Aboneliğim</a>
       </div>
@@ -67,4 +67,8 @@ const emit = defineEmits(['navigate', 'logout', 'set-theme'])
 
 const tenant = useTenantStore()
 const auth = useAuthStore()
+
+function goToProfile() {
+  emit('navigate', '/app/Seller Profile')
+}
 </script>

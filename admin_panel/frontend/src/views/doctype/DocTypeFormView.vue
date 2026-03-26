@@ -53,16 +53,35 @@
     <!-- Document Fields -->
     <div v-else class="space-y-5">
 
-      <!-- Field Sections (split by Section Break) -->
-      <div v-for="(section, si) in fieldSections" :key="section.id" class="card">
-        <!-- Section header -->
-        <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2" :class="si > 0 ? 'pb-3 border-b border-gray-100 dark:border-white/5' : ''">
-          <AppIcon :name="si === 0 ? 'file-text' : 'layout-list'" :size="14" class="text-violet-500" />
-          {{ section.label || (si === 0 ? 'Döküman Bilgileri' : 'Detaylar') }}
-        </h3>
+      <!-- Tab Navigation (only if doctype has tabs) -->
+      <div v-if="formTabs.length > 1" class="card !p-0 overflow-hidden">
+        <div class="flex border-b border-gray-100 dark:border-white/10 overflow-x-auto">
+          <button
+            v-for="tab in formTabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="px-5 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-all flex-shrink-0"
+            :class="activeTab === tab.id
+              ? 'border-violet-500 text-violet-600 dark:text-violet-400 bg-violet-50/50 dark:bg-violet-500/5'
+              : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+      </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <template v-for="field in section.fields" :key="field.fieldname">
+      <!-- Tab Content -->
+      <template v-for="tab in formTabs" :key="tab.id">
+        <template v-if="formTabs.length <= 1 || activeTab === tab.id">
+          <div v-for="section in tab.sections" :key="section.id" class="card">
+            <!-- Section header -->
+            <h3 v-if="section.label" class="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 pb-3 border-b border-gray-100 dark:border-white/5">
+              <AppIcon name="layout-list" :size="14" class="text-violet-500" />
+              {{ section.label }}
+            </h3>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <template v-for="field in section.fields" :key="field.fieldname">
             <!-- Column Break → next field starts in right column -->
             <div v-if="field.fieldtype === 'Column Break'" class="hidden lg:block" aria-hidden="true"></div>
 
@@ -242,9 +261,11 @@
           </template>
         </div>
       </div>
+        </template>
+      </template>
 
       <!-- Fallback: meta yüklenemezse ham veriler -->
-      <div v-if="fieldSections.length === 0 && !isNew" class="card">
+      <div v-if="formTabs.length === 0 && !isNew" class="card">
         <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4">
           <AppIcon name="file-text" :size="14" class="text-violet-500 inline mr-2" />
           Döküman Bilgileri
@@ -358,45 +379,72 @@ const doctypeLabel = computed(() => doctype.value || 'Döküman')
 const docName      = computed(() => decodeURIComponent(route.params.name || ''))
 const isNew        = computed(() => docName.value === 'new')
 
+const activeTab = ref('')
+
 /**
- * Alanları Section Break'e göre gruplara böler.
- * Column Break alanları grubun içinde bırakılır (grid sütun ayırıcı olarak).
+ * Alanları Tab Break → Section Break → Field hiyerarşisine böler.
+ * Her tab birden fazla section içerebilir.
  */
-const fieldSections = computed(() => {
-  const sections = []
-  let current = { id: 'section-0', label: '', fields: [], isFirst: true }
+const formTabs = computed(() => {
+  const tabs = []
+  let currentTab = { id: 'tab-default', label: '', sections: [] }
+  let currentSection = { id: 'section-0', label: '', fields: [] }
+  let sectionIdx = 0
 
   for (const field of metaFields.value) {
     if (field.hidden) continue
     if (!field.fieldname) continue
 
-    if (field.fieldtype === 'Section Break') {
-      if (current.fields.length > 0) sections.push(current)
-      current = {
-        id: `section-${sections.length}`,
-        label: field.label || '',
-        fields: [],
-        isFirst: false,
+    if (field.fieldtype === 'Tab Break') {
+      // Mevcut section'ı tab'a ekle
+      if (currentSection.fields.length > 0) {
+        currentTab.sections.push(currentSection)
       }
-    } else if (field.fieldtype === 'Tab Break') {
-      // Tab break'ler bölüm olarak kabul edilir
-      if (current.fields.length > 0) sections.push(current)
-      current = {
-        id: `tab-${sections.length}`,
+      // Mevcut tab'ı listeye ekle
+      if (currentTab.sections.length > 0) {
+        tabs.push(currentTab)
+      }
+      // Yeni tab başlat
+      currentTab = {
+        id: `tab-${field.fieldname}`,
+        label: field.label || '',
+        sections: [],
+      }
+      sectionIdx++
+      currentSection = { id: `section-${sectionIdx}`, label: '', fields: [] }
+    } else if (field.fieldtype === 'Section Break') {
+      if (currentSection.fields.length > 0) {
+        currentTab.sections.push(currentSection)
+      }
+      sectionIdx++
+      currentSection = {
+        id: `section-${sectionIdx}`,
         label: field.label || '',
         fields: [],
-        isFirst: false,
       }
     } else if (SKIP_FIELDTYPES.includes(field.fieldtype)) {
-      // Skip these
+      // Skip
     } else if (field.fieldtype === 'Table' || field.fieldtype === 'Table MultiSelect') {
-      // Child tables are handled separately
+      // Child tables handled separately
     } else {
-      current.fields.push(field)
+      currentSection.fields.push(field)
     }
   }
-  if (current.fields.length > 0) sections.push(current)
-  return sections
+
+  // Son section ve tab'ı ekle
+  if (currentSection.fields.length > 0) {
+    currentTab.sections.push(currentSection)
+  }
+  if (currentTab.sections.length > 0) {
+    tabs.push(currentTab)
+  }
+
+  // İlk tab'ı aktif yap
+  if (tabs.length > 0 && !activeTab.value) {
+    activeTab.value = tabs[0].id
+  }
+
+  return tabs
 })
 
 /** Child table alanları (Table ve Table MultiSelect) */
@@ -530,6 +578,8 @@ function isReadOnly(field) {
   if (READONLY_FIELDS.includes(field.fieldname)) return true
   // Admin kullanıcılar quick-action alanlarını düzenleyebilir
   if (field.read_only && !authStore.isAdmin) return true
+  // permlevel > 0 alanlar sadece admin düzenleyebilir
+  if (field.permlevel && field.permlevel > 0 && !authStore.isAdmin) return true
   return false
 }
 
@@ -728,8 +778,9 @@ async function saveDoc() {
       if (!f.fieldname || SKIP_FIELDTYPES.includes(f.fieldtype)) continue
       if (f.fieldtype === 'Table' || f.fieldtype === 'Table MultiSelect') continue
       if (READONLY_FIELDS.includes(f.fieldname)) continue
-      // Admin olmayan kullanıcılar read_only alanları göndermesin
+      // Admin olmayan kullanıcılar read_only ve permlevel > 0 alanları göndermesin
       if (f.read_only && !authStore.isAdmin) continue
+      if (f.permlevel && f.permlevel > 0 && !authStore.isAdmin) continue
       payload[f.fieldname] = formData.value[f.fieldname]
     }
 
@@ -758,6 +809,6 @@ async function saveDoc() {
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
-watch(() => route.params.name, loadDoc)
+watch(() => route.params.name, () => { activeTab.value = ''; loadDoc() })
 onMounted(loadDoc)
 </script>

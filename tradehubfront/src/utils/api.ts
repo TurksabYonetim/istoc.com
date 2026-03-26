@@ -36,8 +36,16 @@ export async function api<T>(
   })
 
   if (res.status === 401 || res.status === 403) {
-    window.location.href = `${getBaseUrl()}pages/auth/login.html`
-    throw new Error('Unauthorized')
+    // Pre-auth endpoint'lerde (kayıt, OTP, şifre sıfırlama) login'e yönlendirme
+    const isPreAuth = endpoint.includes('.identity.') || endpoint.includes('.auth.check_email')
+    if (!isPreAuth) {
+      window.location.href = `${getBaseUrl()}pages/auth/login.html`
+      throw new Error('Unauthorized')
+    }
+    // Pre-auth endpoint'lerde hatayı çağıran koda dönder
+    const raw = await res.text()
+    const msg = extractFrappeError(raw)
+    throw new Error(msg || `HTTP ${res.status}`)
   }
 
   if (res.status === 429) {

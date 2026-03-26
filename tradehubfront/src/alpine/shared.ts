@@ -18,8 +18,8 @@ Alpine.data('floatingPanel', () => ({
         credentials: 'include',
       });
       if (res.ok) {
-        const data = await res.json() as { message?: { logged_in?: boolean; user?: { is_seller?: boolean } } };
-        if (data.message?.logged_in && data.message?.user?.is_seller) {
+        const data = await res.json() as { message?: { logged_in?: boolean; user?: { has_seller_profile?: boolean } } };
+        if (data.message?.logged_in && data.message?.user?.has_seller_profile) {
           this.isSeller = true;
         }
       }

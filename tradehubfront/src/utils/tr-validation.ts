@@ -107,7 +107,8 @@ export function validateIBAN(value: string): { valid: boolean; bankName?: string
   }
   if (remainder !== 1n) return { valid: false };
 
-  const bankCode = iban.slice(4, 8);
+  // Turkish IBAN bank code is 5 digits at positions 4-8; dictionary uses last 4 digits
+  const bankCode = iban.slice(5, 9);
   const bankName = TR_BANK_CODES[bankCode];
   return { valid: true, bankName };
 }

@@ -20,12 +20,20 @@ class SellerApplication(Document):
 		# Fields to sync from application to profile
 		profile_data = {
 			"seller_name": seller_name,
+			"member_id": self.member_id,
 			"seller_type": self.seller_type,
 			"application": self.name,
 			"business_name": self.business_name,
 			"tax_id": self.tax_id,
 			"contact_phone": self.contact_phone,
 			"country": self.country,
+			"tax_id_type": self.tax_id_type,
+			"tax_office": self.tax_office,
+			"address_line_1": self.address_line_1,
+			"city": self.city,
+			"bank_name": self.bank_name,
+			"iban": self.iban,
+			"account_holder_name": self.account_holder_name,
 		}
 
 		# Create or update Seller Profile
@@ -34,11 +42,15 @@ class SellerApplication(Document):
 			# Update fields but do NOT touch status — admin manages it from Seller Profile
 			for field, value in profile_data.items():
 				frappe.db.set_value("Seller Profile", existing, field, value)
+			# Ensure owner is the user (for if_owner permissions)
+			frappe.db.set_value("Seller Profile", existing, "owner", user)
 		else:
-			# New profile starts as Active
+			# New profile starts as Active — owner must be the user for if_owner permissions
 			profile = frappe.new_doc("Seller Profile")
 			profile.user = user
 			profile.status = "Active"
+			profile.flags.ignore_permissions = True
+			profile.owner = user
 			for field, value in profile_data.items():
 				profile.set(field, value)
 			profile.insert(ignore_permissions=True)

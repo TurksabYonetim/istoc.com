@@ -6,7 +6,6 @@
 import { api } from './api';
 
 const FRAPPE_BASE = import.meta.env.VITE_FRAPPE_BASE || '';
-const SELLER_PANEL_URL = import.meta.env.VITE_SELLER_PANEL_URL || 'http://localhost:8082/';
 
 /* ── Types ──────────────────────────────────────────── */
 
@@ -177,12 +176,7 @@ export function getRedirectUrl(user: AuthUser): string {
   if (user.is_admin) {
     return `${FRAPPE_BASE}/app`;
   }
-  if (user.is_seller && user.has_seller_profile) {
-    return SELLER_PANEL_URL;
-  }
-  if (user.pending_seller_application) {
-    return '/pages/seller/application-pending.html';
-  }
+  // All users (buyers and sellers) go to storefront home after login
   return '/';
 }
 

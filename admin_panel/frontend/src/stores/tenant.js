@@ -1,28 +1,45 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useAuthStore } from './auth'
 
 export const useTenantStore = defineStore('tenant', () => {
-  const tenants = ref([
-    { id: 'anadolu', initials: 'AK', name: 'Anadolu Kimya Ltd.', role: 'Ana Hesap · Admin', gradient: 'from-violet-500 to-indigo-600' },
-    { id: 'delta', initials: 'DK', name: 'Delta Kimya A.Ş.', role: 'Yönetici', gradient: 'from-blue-500 to-cyan-500' },
-    { id: 'mega', initials: 'MY', name: 'Mega Yapı San.', role: 'Editör', gradient: 'from-amber-500 to-orange-500' },
-    { id: 'atlas', initials: 'AM', name: 'Atlas Metal San.', role: 'Görüntüleyici', gradient: 'from-emerald-500 to-teal-500' },
-  ])
-
-  const activeTenantId = ref('anadolu')
   const dropdownOpen = ref(false)
 
-  const activeTenant = computed(() =>
-    tenants.value.find(t => t.id === activeTenantId.value)
-  )
+  const activeTenant = computed(() => {
+    const auth = useAuthStore()
+    const user = auth.user
+    if (!user) return null
+
+    const name = user.full_name || user.email || 'Kullanıcı'
+    const initials = name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2)
+
+    return {
+      id: user.email,
+      initials,
+      name,
+      role: user.is_admin ? 'Admin' : user.is_seller ? 'Satıcı' : 'Alıcı',
+      gradient: 'from-violet-500 to-indigo-600',
+    }
+  })
+
+  const tenants = computed(() => {
+    const active = activeTenant.value
+    return active ? [active] : []
+  })
+
+  const activeTenantId = computed(() => activeTenant.value?.id || '')
 
   const shortName = computed(() => {
     const name = activeTenant.value?.name || ''
     return name.length > 10 ? name.substring(0, 9) + '.' : name
   })
 
-  function switchTenant(tenantId) {
-    activeTenantId.value = tenantId
+  function switchTenant() {
     dropdownOpen.value = false
   }
 

@@ -226,7 +226,11 @@ export function initEmailVerification(options: EmailVerificationOptions = {}): E
       } catch (err) {
         // Verification failed — show error, clear inputs
         const rawMsg = err instanceof Error ? err.message : '';
-        showOTPError(rawMsg || t('auth.otpInvalidCode'));
+        // Rate limit (429) mesajını backend'den al, diğerlerinde frontend i18n kullan
+        const displayMsg = rawMsg === 'RATE_LIMIT'
+          ? t('auth.otpTooManyAttempts')
+          : t('auth.otpInvalidCode');
+        showOTPError(displayMsg);
         clearOTPInputs();
         state.otp = ['', '', '', '', '', ''];
         updateContinueButton(state, continueBtn);

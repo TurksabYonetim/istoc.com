@@ -455,12 +455,16 @@ Alpine.data('applicationPendingPage', () => ({
       return;
     }
 
+    // Approved seller with active profile → redirect to seller panel
+    if (user.has_seller_profile) {
+      const panelUrl = import.meta.env.VITE_SELLER_PANEL_URL || 'http://localhost:8082/';
+      window.location.href = panelUrl;
+      return;
+    }
+
     // Show the application status dynamically
-    // Pending application takes priority over profile status
     if (user.pending_seller_application) {
       this.status = user.seller_application_status || 'Under Review';
-    } else if (user.has_seller_profile) {
-      this.status = 'Approved';
     } else {
       this.status = user.seller_application_status || 'Draft';
     }

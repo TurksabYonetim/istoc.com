@@ -145,10 +145,10 @@ def verify_registration_otp(email: str, code: str):
 			json.dumps(otp_data),
 			expires_in_sec=600,
 		)
-		frappe.local.response["http_status_code"] = 401
+		frappe.local.response["http_status_code"] = 422
 		frappe.throw(
 			_("Wrong verification code."),
-			frappe.AuthenticationError,
+			frappe.ValidationError,
 		)
 
 	# Code matches — generate registration_token
@@ -246,6 +246,7 @@ def register_user(
 	buyer.country = country
 	buyer.phone = phone
 	buyer.status = "Active"
+	buyer.owner = email
 	buyer.insert(ignore_permissions=True)
 
 	# ── Background email verification ──
@@ -358,11 +359,13 @@ def register_supplier(
 	buyer.country = country
 	buyer.phone = phone or contact_phone
 	buyer.status = "Active"
+	buyer.owner = email
 	buyer.insert(ignore_permissions=True)
 
 	# ── Create Seller Application (Submitted) ──
 	app = frappe.new_doc("Seller Application")
 	app.applicant_user = email
+	app.owner = email
 	app.member_id = member_id
 	app.contact_email = email
 	app.status = "Submitted"
@@ -637,6 +640,48 @@ def delete_account(password: str, reason: str = ""):
 	frappe.db.commit()
 
 	return {"success": True, "message": _("Your account has been deleted.")}
+
+
+@frappe.whitelist(methods=["POST"])
+def upload_private_file(filename: str = "", filedata: str = ""):
+	"""Upload a file as private (e.g. identity documents).
+
+	Accepts base64-encoded file content via JSON body.
+	Requires an authenticated user. Files are stored in the private
+	directory and are only accessible to the uploader and administrators.
+	"""
+	import base64
+
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw(_("Not logged in."), frappe.AuthenticationError)
+
+	if not filename or not filedata:
+		frappe.throw(_("No file uploaded."))
+
+	# Validate file type
+	allowed_ext = (".pdf", ".jpg", ".jpeg", ".png")
+	if not filename.lower().endswith(allowed_ext):
+		frappe.throw(_("Only PDF, JPG, and PNG files are allowed."))
+
+	# Strip data URI prefix if present (e.g. "data:image/png;base64,...")
+	if "," in filedata:
+		filedata = filedata.split(",", 1)[1]
+
+	content = base64.b64decode(filedata)
+
+	file_doc = frappe.get_doc(
+		{
+			"doctype": "File",
+			"file_name": filename,
+			"content": content,
+			"is_private": 1,
+		}
+	)
+	file_doc.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	return {"file_url": file_doc.file_url}
 
 
 @frappe.whitelist(methods=["POST"])
