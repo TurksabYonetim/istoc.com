@@ -39,7 +39,6 @@ import type { CartProduct, CartSku, CartShippingMethod } from '../types/cart'
 import type { CheckoutDeliveryOrderGroup, CheckoutDeliveryMethod } from '../components/checkout'
 import { initStickyHeights } from '../utils/stickyHeights'
 import { orderStore } from '../components/orders/state/OrderStore'
-import type { Order } from '../types/order'
 
 // Expose coupon validator for Alpine component
 (window as unknown as Record<string, unknown>).__validateCoupon = apiValidateCoupon;
@@ -302,80 +301,6 @@ window.addEventListener('checkout:notes-updated', (e: Event) => {
   if (detail?.notesByOrderId) currentSupplierNotes = { ...detail.notesByOrderId };
 });
 
-// Build Order objects from checkout data
-function buildOrdersFromCheckout(
-  paymentMethod: string,
-  shippingAddressStr = '',
-  backendOrderNumbers: string[] = [],
-): Order[] {
-  const now = Date.now();
-  const dateStr = new Date().toLocaleDateString('tr-TR', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  });
-
-  return checkoutDeliveryOrders.map((deliveryOrder, idx) => {
-    const supplier = cartStore.getSupplier(deliveryOrder.sellerId);
-    const selectedMethodId = selectedShippingMethodByOrderId[deliveryOrder.orderId];
-    const selectedMethod = (selectedMethodId
-      ? deliveryOrder.methods.find((m) => m.id === selectedMethodId)
-      : null) ?? deliveryOrder.methods.find((m) => m.isDefault) ?? deliveryOrder.methods[0];
-    const shippingFee = selectedMethod?.shippingFee ?? 0;
-
-    const products = deliveryOrder.products.map((p) => {
-      const totalQty = p.skuLines.reduce((sum, sku) => sum + sku.quantity, 0);
-      const totalPrice = p.skuLines.reduce((sum, sku) => sum + sku.unitPrice * sku.quantity, 0);
-      return {
-        name: p.title,
-        variation: p.skuLines.map((s) => s.variantText).filter(Boolean).join(', '),
-        unitPrice: (totalPrice / totalQty).toFixed(2),
-        quantity: totalQty,
-        totalPrice: totalPrice.toFixed(2),
-        image: p.image,
-      };
-    });
-
-    const subtotal = products.reduce((sum, p) => sum + Number(p.totalPrice), 0);
-    const grandTotal = subtotal + shippingFee;
-    const orderNumber = backendOrderNumbers[idx] ?? `ORD-${(now + idx).toString(36).toUpperCase()}`;
-
-    return {
-      id: `ord-${now}-${idx}`,
-      orderNumber,
-      orderDate: dateStr,
-      total: grandTotal.toFixed(2),
-      currency: getSelectedCurrencyInfo().code,
-      seller: supplier?.name ?? deliveryOrder.sellerName,
-      status: 'Waiting for payment',
-      statusColor: 'text-amber-600',
-      statusDescription: 'Ödemenizi tamamlayın.',
-      products,
-      shipping: {
-        trackingStatus: 'Pending',
-        address: shippingAddressStr,
-        shipFrom: '',
-        method: selectedMethod?.etaLabel ?? '',
-        incoterms: '',
-      },
-      payment: {
-        status: 'Unpaid',
-        hasRecord: false,
-        subtotal: subtotal.toFixed(2),
-        shippingFee: shippingFee.toFixed(2),
-        grandTotal: grandTotal.toFixed(2),
-      },
-      supplier: {
-        name: supplier?.name ?? deliveryOrder.sellerName,
-        contact: '',
-        phone: '',
-        email: '',
-      },
-      paymentMethod,
-      createdAt: now,
-    } as Order;
-  });
-}
 
 // Gather review data from DOM + module-level state
 function gatherReviewData() {
@@ -498,10 +423,7 @@ window.addEventListener('checkout:confirm-order', () => {
   }
 
   if (!isLoggedIn()) {
-    // Misafir: frontend üretilen numaralarla devam et
-    const newOrders = buildOrdersFromCheckout(paymentMethod, shippingAddress);
-    orderStore.load();
-    redirectToSuccess(newOrders.map((o) => o.orderNumber).join(','));
+    window.location.replace(`/pages/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
     return;
   }
 

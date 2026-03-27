@@ -64,7 +64,8 @@ function escapeHtml(str: string): string {
 
 /* ── Read URL parameters ── */
 const urlParams = new URLSearchParams(window.location.search);
-const categoryParam = urlParams.get('category');
+// Both ?category= (MegaMenu) and ?cat= (categories page) are supported
+const categoryParam = urlParams.get('category') || urlParams.get('cat');
 const queryParam = urlParams.get('q');
 
 /** Resolve display keyword from URL params */

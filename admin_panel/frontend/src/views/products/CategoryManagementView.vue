@@ -78,7 +78,7 @@
                 class="transition-colors"
                 :title="node.is_active ? 'Aktif — tıkla pasife al' : 'Pasif — tıkla aktife al'"
               >
-                <AppIcon :name="node.is_active ? 'check-circle' : 'circle'" :size="14" />
+                <AppIcon :name="node.is_active ? 'circle-check' : 'circle'" :size="14" />
               </button>
             </td>
             <!-- Child count -->
@@ -135,6 +135,10 @@
           <div>
             <label class="form-label">URL Slug <span class="text-gray-400 font-normal">(boş bırakırsanız otomatik)</span></label>
             <input v-model="formModal.url_slug" class="form-input" placeholder="ör: elektronik" />
+          </div>
+          <div>
+            <label class="form-label">Icon Class <span class="text-gray-400 font-normal">(ör: bi bi-laptop)</span></label>
+            <input v-model="formModal.icon_class" class="form-input" placeholder="ör: bi bi-laptop" />
           </div>
           <!-- Image upload -->
           <div>
@@ -224,7 +228,7 @@
             @dragover.prevent
             @drop.prevent="handleFileDrop"
           >
-            <AppIcon :name="importModal.data ? 'check-circle' : 'upload-cloud'" :size="28"
+            <AppIcon :name="importModal.data ? 'circle-check' : 'upload-cloud'" :size="28"
               :class="importModal.data ? 'text-violet-500' : 'text-gray-300'"
               class="mx-auto mb-2" />
             <p class="text-sm" :class="importModal.data ? 'text-violet-700 dark:text-violet-400 font-medium' : 'text-gray-500'">
@@ -249,7 +253,7 @@
 
         <!-- Result -->
         <div v-else class="text-center py-2">
-          <AppIcon name="check-circle" :size="36" class="text-emerald-400 mx-auto mb-3" />
+          <AppIcon name="circle-check" :size="36" class="text-emerald-400 mx-auto mb-3" />
           <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">İçe aktarma tamamlandı</p>
           <div class="grid grid-cols-3 gap-3 text-center mb-5">
             <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3">
@@ -290,6 +294,7 @@ function toNode(c, depth) {
     name: c.category_name,
     url_slug: c.url_slug || '',
     image: c.image || '',
+    icon_class: c.icon_class || '',
     is_active: !!c.is_active,
     sort_order: c.sort_order || 0,
     child_count: c.child_count || 0,
@@ -348,7 +353,7 @@ const catImageInput = ref(null)
 const formModal = ref({
   show: false, isEdit: false, saving: false,
   id: null, parentId: null, parentName: null,
-  name: '', url_slug: '', sort_order: 0, is_active: true,
+  name: '', url_slug: '', icon_class: '', sort_order: 0, is_active: true,
   image: '', imageUploading: false,
 })
 
@@ -358,16 +363,19 @@ function openAddModal(parentId) {
     show: true, isEdit: false, saving: false,
     id: null, parentId,
     parentName: parentNode?.name || null,
-    name: '', url_slug: '', sort_order: 0, is_active: true,
+    name: '', url_slug: '', icon_class: '', sort_order: 0, is_active: true,
     image: '', imageUploading: false,
   }
 }
 
 function openEditModal(node) {
+  const parentNode = node.parent_id ? nodes.value.find(n => n.id === node.parent_id) : null
   formModal.value = {
     show: true, isEdit: true, saving: false,
-    id: node.id, parentId: node.parent_id, parentName: null,
-    name: node.name, url_slug: node.url_slug, sort_order: node.sort_order, is_active: node.is_active,
+    id: node.id, parentId: node.parent_id,
+    parentName: parentNode?.name || null,
+    name: node.name, url_slug: node.url_slug, icon_class: node.icon_class || '',
+    sort_order: node.sort_order, is_active: node.is_active,
     image: node.image || '', imageUploading: false,
   }
 }
@@ -377,22 +385,11 @@ async function handleCatImageUpload(e) {
   if (!file) return
   formModal.value.imageUploading = true
   try {
-    const fd = new FormData()
-    fd.append('file', file)
-    fd.append('is_private', '0')
-    fd.append('folder', 'Home/Category Images')
-    const csrfToken = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('csrf_token='))?.split('=')[1] || 'None'
-    const res = await fetch('/api/method/upload_file', {
-      method: 'POST',
-      body: fd,
-      headers: { 'X-Frappe-CSRF-Token': csrfToken },
-      credentials: 'include',
-    })
-    const data = await res.json()
-    formModal.value.image = data.message?.file_url || ''
+    const fileUrl = await api.uploadFile(file, 'Home')
+    formModal.value.image = fileUrl
     toast.success('Resim yüklendi')
   } catch (err) {
-    toast.error('Resim yüklenemedi')
+    toast.error('Resim yüklenemedi: ' + (err.message || ''))
   } finally {
     formModal.value.imageUploading = false
     e.target.value = ''
@@ -409,6 +406,7 @@ async function saveCategory() {
         name: fm.id,
         category_name: fm.name,
         url_slug: fm.url_slug || null,
+        icon_class: fm.icon_class || null,
         sort_order: fm.sort_order,
         is_active: fm.is_active ? 1 : 0,
         image: fm.image || null,
@@ -417,6 +415,7 @@ async function saveCategory() {
       if (node) {
         node.name = fm.name
         node.url_slug = fm.url_slug
+        node.icon_class = fm.icon_class
         node.sort_order = fm.sort_order
         node.is_active = fm.is_active
         node.image = fm.image
@@ -427,6 +426,7 @@ async function saveCategory() {
         category_name: fm.name,
         parent_id: fm.parentId || null,
         url_slug: fm.url_slug || null,
+        icon_class: fm.icon_class || null,
         sort_order: fm.sort_order,
         is_active: fm.is_active ? 1 : 0,
         image: fm.image || null,
@@ -542,6 +542,9 @@ async function runImport() {
       json_data: JSON.stringify(im.data),
     }, true)
     im.result = res.message
+    if (res.message?.warning) {
+      toast.error(res.message.warning)
+    }
   } catch (err) {
     toast.error(err.message || 'İçe aktarma başarısız')
     im.importing = false

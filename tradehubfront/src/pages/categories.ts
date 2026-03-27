@@ -44,6 +44,7 @@ interface ApiCat {
 function mapApiToSections(cats: ApiCat[]): CategorySection[] {
   return cats.map(cat => ({
     title: cat.name,
+    slug: cat.slug,
     categories: cat.children.map(ch => ({
       id: ch.id,
       name: ch.name,

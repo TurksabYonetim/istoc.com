@@ -826,7 +826,7 @@ export function initMegaMenu(): void {
           : (image ? `<img src="${image}" alt="${name}" class="w-full h-full object-cover" loading="lazy" />` : placeholderSvg);
         const borderStyle = isViewAll ? 'border-2 border-dashed;border-color:var(--mega-border-color)' : '';
         return `
-          <a href="/pages/products.html?category=${slug}" class="flex flex-col items-center gap-1.5 sm:gap-2 group/product min-h-[44px]">
+          <a href="/pages/products.html?cat=${slug}" class="flex flex-col items-center gap-1.5 sm:gap-2 group/product min-h-[44px]">
             <div class="relative w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center overflow-hidden group-hover/product:ring-2 transition-all" style="background:var(--card-bg);--tw-ring-color:var(--nav-hover-color);${borderStyle}">
               ${inner}
             </div>
@@ -837,7 +837,7 @@ export function initMegaMenu(): void {
       sidebarUl.innerHTML = cats.map((cat, index) => `
         <li>
           <a
-            href="/pages/products.html?category=${cat.slug}"
+            href="/pages/products.html?cat=${cat.slug}"
             class="th-mega-sidebar-item mega-cat-btn flex items-center gap-2 sm:gap-3 w-full px-3 sm:px-4 py-3 sm:py-2.5 text-sm text-left transition-colors border-l-2 border-transparent ${index === 0 ? 'th-mega-sidebar-item--active' : ''}"
             data-category="${cat.id}"
           >

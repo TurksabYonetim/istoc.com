@@ -20,6 +20,7 @@ import { startAlpine } from '../alpine'
 
 // Utilities
 import { initAnimatedPlaceholder } from '../utils/animatedPlaceholder'
+import { initCurrency } from '../services/currencyService'
 
 // Manufacturers specific components
 import { ManufacturersLayout, initHorizontalCategoryBar, initCategoryFlyout, initFactorySliders } from '../components/manufacturers'
@@ -69,6 +70,7 @@ initMegaMenu();
 initFlowbite();
 
 // Initialize Alpine.js (FloatingPanel is now Alpine-driven)
+initCurrency();
 startAlpine();
 
 // Initialize remaining custom behaviors

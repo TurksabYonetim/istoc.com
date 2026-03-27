@@ -8,7 +8,7 @@
 import type { LocaleOption, CurrencyOption } from '../../types/navigation';
 import { megaCategories } from './MegaMenu';
 import { cartStore } from '../cart/state/CartStore';
-import { isLoggedIn, getUser, getSessionUser, logout } from '../../utils/auth';
+import { isLoggedIn, getUser, getSessionUser, waitForAuth, logout } from '../../utils/auth';
 import { getSellerStoreUrl } from '../../utils/seller';
 import { mockConversations } from '../../data/mockMessages';
 import { t, getCurrentLang, updatePageTranslations } from '../../i18n';
@@ -1492,33 +1492,44 @@ document.addEventListener('click', async (e) => {
  * and updates mobile drawer profile section.
  */
 export async function initAuthState(): Promise<void> {
-  const user = await getSessionUser();
+  // waitForAuth() modül yüklenince başlatılan promise'i bekler —
+  // çoğunlukla DOM render'dan önce cevap gelmiş olur, bu yüzden gecikme olmaz.
+  const wasLoggedIn = isLoggedIn();
+  const user = await waitForAuth();
+  const isNowLoggedIn = user !== null;
 
-  // Update all desktop auth areas
-  const authAreas = document.querySelectorAll<HTMLElement>('[data-auth-area]');
-  authAreas.forEach(container => {
-    container.innerHTML = user ? renderUserButton() : renderAuthButtons();
-  });
+  // Auth state değiştiyse DOM'u güncelle; değişmediyse mevcut Flowbite
+  // dropdown instance'larını korumak için innerHTML'e dokunma.
+  const domChanged = wasLoggedIn !== isNowLoggedIn;
 
-  // Update mobile drawer profile
-  const mobileProfile = document.getElementById('mobile-drawer-profile');
-  if (mobileProfile && user) {
-    const initials = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
-    const escapedName = (user.full_name || user.email).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const escapedEmail = user.email.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    mobileProfile.innerHTML = `
-      <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center flex-shrink-0">
-        <span class="text-sm font-bold text-orange-600 dark:text-orange-300">${initials}</span>
-      </div>
-      <div>
-        <p class="text-sm font-medium text-gray-900 dark:text-white">${escapedName}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapedEmail}</p>
-      </div>
-    `;
+  if (domChanged) {
+    const authAreas = document.querySelectorAll<HTMLElement>('[data-auth-area]');
+    authAreas.forEach(container => {
+      container.innerHTML = user ? renderUserButton() : renderAuthButtons();
+    });
   }
 
-  // Re-initialize Flowbite dropdowns for dynamically inserted elements
-  if (user) {
+  // Update mobile drawer profile
+  if (isNowLoggedIn && user) {
+    const mobileProfile = document.getElementById('mobile-drawer-profile');
+    if (mobileProfile) {
+      const initials = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
+      const escapedName = (user.full_name || user.email).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const escapedEmail = user.email.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      mobileProfile.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center flex-shrink-0">
+          <span class="text-sm font-bold text-orange-600 dark:text-orange-300">${initials}</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">${escapedName}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapedEmail}</p>
+        </div>
+      `;
+    }
+  }
+
+  // DOM değiştiyse Flowbite dropdown'larını yeniden başlat
+  if (domChanged) {
     try {
       const { initDropdowns } = await import('flowbite');
       initDropdowns();

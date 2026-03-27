@@ -196,9 +196,9 @@ function renderProductListingCard(card: ProductListingCard): string {
   return `
     <div class="fy26-product-card-wrapper flex flex-col justify-between w-full rounded-xl overflow-hidden bg-white pb-2 border-0">
       <!-- Image area -->
-      <div class="searchx-img-area relative mb-2">
+      <a href="${card.href}" class="searchx-img-area relative mb-2 block">
         ${renderImageSlider(card)}
-      </div>
+      </a>
 
       <!-- Content area -->
       <div class="fy26-product-card-content flex-1 flex flex-col">

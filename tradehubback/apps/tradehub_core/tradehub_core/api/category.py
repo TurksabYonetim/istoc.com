@@ -66,6 +66,67 @@ def get_mega_menu():
     return result
 
 
+# ──────────────────────────── Seller / Public ─────────────────────────────────
+
+@frappe.whitelist()
+def get_platform_category_tree(parent=None):
+    """
+    Satıcıların ürün yüklerken platform kategorisi seçmesi için.
+    Giriş yapmış herkes (satıcı dahil) çağırabilir; yalnızca aktif kategoriler döner.
+    parent=None → kök kategoriler; parent=<id> → o kategorinin aktif çocukları.
+    """
+    if frappe.session.user == "Guest":
+        frappe.throw(_("Giriş yapmanız gerekiyor"), frappe.AuthenticationError)
+
+    filters = {"is_active": 1}
+    if parent:
+        filters["parent_product_category"] = parent
+    else:
+        filters["parent_product_category"] = ["is", "not set"]
+
+    cats = frappe.get_all(
+        "Product Category",
+        filters=filters,
+        fields=["name", "category_name", "parent_product_category", "url_slug", "sort_order", "image", "icon_class"],
+        order_by="sort_order asc, lft asc",
+    )
+    for c in cats:
+        c["child_count"] = frappe.db.count(
+            "Product Category",
+            {"parent_product_category": c.name, "is_active": 1},
+        )
+    return cats
+
+
+@frappe.whitelist()
+def get_category_ancestors(name):
+    """
+    Verilen kategori ID'si için kök'e kadar tüm ata listesini döndürür.
+    Satıcının seçtiği kategorinin tam yolunu (breadcrumb) göstermek için kullanılır.
+    Döner: [{ name, category_name }, ...] — kökten yaprağa sıralı
+    """
+    if frappe.session.user == "Guest":
+        frappe.throw(_("Giriş yapmanız gerekiyor"), frappe.AuthenticationError)
+
+    path = []
+    current = name
+    seen = set()
+    while current and current not in seen:
+        seen.add(current)
+        row = frappe.db.get_value(
+            "Product Category", current,
+            ["name", "category_name", "parent_product_category"],
+            as_dict=True,
+        )
+        if not row:
+            break
+        path.append({"name": row.name, "category_name": row.category_name})
+        current = row.parent_product_category
+
+    path.reverse()
+    return path
+
+
 # ──────────────────────────── Admin CRUD ──────────────────────────────────────
 
 @frappe.whitelist()
@@ -93,7 +154,14 @@ def create_category(category_name, parent_id=None, sort_order=0, is_active=1, ic
     _require_admin()
     import uuid
     ext_id = str(uuid.uuid4())
-    slug = url_slug or _slugify(category_name)
+    base_slug = url_slug or _slugify(category_name)
+
+    # Slug unique kontrolü — çakışırsa sona sayaç ekle
+    slug = base_slug
+    counter = 1
+    while frappe.db.exists("Product Category", {"url_slug": slug}):
+        slug = f"{base_slug}-{counter}"
+        counter += 1
 
     doc = frappe.new_doc("Product Category")
     doc.external_id = ext_id
@@ -107,7 +175,7 @@ def create_category(category_name, parent_id=None, sort_order=0, is_active=1, ic
         doc.image = image
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
-    return {"name": doc.name, "external_id": ext_id}
+    return {"name": doc.name, "external_id": ext_id, "url_slug": slug}
 
 
 @frappe.whitelist()
@@ -125,6 +193,10 @@ def update_category(name, category_name=None, parent_id=None, sort_order=None, i
     if icon_class is not None:
         doc.icon_class = icon_class
     if url_slug is not None:
+        # Başka bir kategoride aynı slug var mı?
+        existing = frappe.db.get_value("Product Category", {"url_slug": url_slug}, "name")
+        if existing and existing != name:
+            frappe.throw(_("Bu URL slug başka bir kategoride kullanılıyor: {0}").format(existing))
         doc.url_slug = url_slug
     if image is not None:
         doc.image = image
@@ -256,18 +328,23 @@ def import_categories(json_data):
     frappe.db.commit()
 
     # NSM ağacını yeniden oluştur
+    rebuild_warning = None
     try:
         frappe.utils.nestedset.rebuild_tree("Product Category", "parent_product_category")
         frappe.db.commit()
     except Exception as e:
         frappe.log_error(f"rebuild_tree error: {e}")
+        rebuild_warning = _("Kategori ağacı yeniden oluşturulurken hata oluştu. Kategori sıralaması bozuk olabilir, lütfen sayfayı yenileyin.")
 
-    return {
+    result = {
         "inserted": inserted,
         "updated": updated,
         "skipped": skipped,
         "total": len(items),
     }
+    if rebuild_warning:
+        result["warning"] = rebuild_warning
+    return result
 
 
 # ──────────────────────────── Helper ──────────────────────────────────────────
@@ -277,5 +354,5 @@ def _require_admin():
     if user == "Guest":
         frappe.throw(_("Giriş yapmanız gerekiyor"), frappe.AuthenticationError)
     roles = frappe.get_roles(user)
-    if "System Manager" not in roles and "Administrator" not in user:
+    if "System Manager" not in roles and user != "Administrator":
         frappe.throw(_("Bu işlem için yönetici yetkisi gerekiyor"), frappe.PermissionError)

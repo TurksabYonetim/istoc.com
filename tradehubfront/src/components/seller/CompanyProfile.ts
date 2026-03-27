@@ -115,7 +115,9 @@ function OverviewTab(): string {
           sellerCode: new URLSearchParams(window.location.search).get('seller') || '',
           products: [],
           loading: true,
+          _cv: 0,
           async init() {
+            document.addEventListener('currency-changed', () => { this._cv++; });
             if (!this.sellerCode) { this.loading = false; return; }
             const apiBase = window.API_BASE || '/api';
             const res = await fetch(
@@ -126,11 +128,13 @@ function OverviewTab(): string {
             this.loading = false;
           },
           formatPrice(p) {
+            void this._cv;
             if (!p.price_min) return '';
             const min = parseFloat(p.price_min);
             const max = p.price_max ? parseFloat(p.price_max) : 0;
-            if (max > min) return window.csFormatPriceRange(min, max, 'USD');
-            return window.csFormatPrice(min, 'USD');
+            const cur = p.currency || 'USD';
+            if (max > min) return window.csFormatPriceRange(min, max, cur);
+            return window.csFormatPrice(min, cur);
           }
         }"
       >
@@ -434,7 +438,9 @@ function ProductsTab(): string {
         categories: [],
         products: [],
         loading: true,
+        _cv: 0,
         async init() {
+          document.addEventListener('currency-changed', () => { this._cv++; });
           const apiBase = window.API_BASE || '/api';
           const [catRes, prodRes] = await Promise.all([
             fetch(apiBase + '/method/tradehub_core.api.seller.get_seller_categories?seller_code=' + this.sellerCode, {credentials:'omit'}).then(r=>r.json()),
@@ -450,11 +456,13 @@ function ProductsTab(): string {
           return this.products.filter(p => String(p.category) === String(this.prodCat));
         },
         formatPrice(p) {
+          void this._cv;
           if (!p.price_min) return '';
           const min = parseFloat(p.price_min);
           const max = p.price_max ? parseFloat(p.price_max) : 0;
-          if (max > min) return window.csFormatPriceRange(min, max, 'USD');
-          return window.csFormatPrice(min, 'USD');
+          const cur = p.currency || 'USD';
+          if (max > min) return window.csFormatPriceRange(min, max, cur);
+          return window.csFormatPrice(min, cur);
         }
       }"
     >

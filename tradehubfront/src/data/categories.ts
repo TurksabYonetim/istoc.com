@@ -23,6 +23,7 @@ export interface FilterGroup {
 
 export interface CategorySection {
   title: string;
+  slug?: string;
   categories: CategoryItem[];
   filters?: FilterGroup[];
 }
