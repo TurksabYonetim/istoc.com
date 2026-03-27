@@ -6,7 +6,9 @@ export function ManufacturerList(): string {
       x-data="{
         sellers: [],
         loading: true,
+        _cv: 0,
         async init() {
+          document.addEventListener('currency-changed', () => { this._cv++; });
           const apiBase = window.API_BASE || '/api';
           const res = await fetch(
             apiBase + '/method/tradehub_core.api.seller.get_sellers?page_size=20',
@@ -123,7 +125,7 @@ export function ManufacturerList(): string {
                       </div>
                       <div class="p-2 flex-shrink-0">
                         <p class="text-[12px] text-gray-800 font-medium leading-tight line-clamp-2 mb-1" x-text="p.product_name"></p>
-                        <p x-show="p.price_min" class="text-[12px] font-bold text-gray-900" x-text="p.price_max && p.price_max > p.price_min ? window.csFormatPriceRange(parseFloat(p.price_min), parseFloat(p.price_max), 'USD') : window.csFormatPrice(parseFloat(p.price_min), 'USD')"></p>
+                        <p x-show="p.price_min" class="text-[12px] font-bold text-gray-900" x-text="(_cv, p.price_max && p.price_max > p.price_min ? window.csFormatPriceRange(parseFloat(p.price_min), parseFloat(p.price_max), p.currency || 'USD') : window.csFormatPrice(parseFloat(p.price_min), p.currency || 'USD'))"></p>
                         <p x-show="p.moq" class="text-[11px] text-gray-400 mt-0.5" x-text="p.moq + ' ' + (p.moq_unit || 'Adet')"></p>
                       </div>
                     </div>

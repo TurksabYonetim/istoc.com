@@ -127,10 +127,10 @@ export function CartSummary(
         <span class="text-[14px] leading-[18px] text-[#4B1D1F]">${t('cart.savedOnOrder', { amount: '<strong class="text-[#FF6600]"></strong>' })}</span>
       </div>`}
 
-      <a href="/pages/order/checkout.html" class="sc-summary-checkout-btn flex items-center justify-center w-full mt-4 th-btn-dark th-btn-pill h-12 no-underline text-center">
+      <button type="button" class="sc-summary-checkout-btn flex items-center justify-center w-full mt-4 th-btn-dark th-btn-pill h-12 text-center" @click="$dispatch('checkout-global')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block align-middle mr-2 flex-shrink-0"><g clip-path="url(#clip0_cart_cta)"><path d="M16.4861 8.48611L15.5139 7.51384L10.5 12.5277L8.48614 10.5138L7.51386 11.4861L10.5 14.4722L16.4861 8.48611Z" fill="white"/><path d="M3.5 5.06115C3.5 4.72844 3.71919 4.4355 4.03838 4.34163L11.7884 2.06221C11.9265 2.02158 12.0735 2.02158 12.2116 2.06221L19.9616 4.34163C20.2808 4.4355 20.5 4.72844 20.5 5.06115V16.1114C20.5 16.355 20.3816 16.5835 20.1825 16.7241L12.4325 22.1947C12.1732 22.3777 11.8268 22.3777 11.5675 22.1947L3.81749 16.7241C3.6184 16.5835 3.5 16.355 3.5 16.1114V5.06115ZM4.875 15.7875L12 20.8169L19.125 15.7875V5.5288L12 3.43321L4.875 5.5288V15.7875Z" fill="white"/></g><defs><clipPath id="clip0_cart_cta"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
         <span data-i18n="cart.checkout">${t('cart.checkout')}</span>
-      </a>
+      </button>
       <p class="sc-summary-checkout-warning mt-2 text-[13px] leading-[18px] text-[#dc2626] hidden"></p>
 
       ${renderAssurance(assuranceItems)}

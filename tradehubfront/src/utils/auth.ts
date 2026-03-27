@@ -105,6 +105,31 @@ export function getUser(): AuthUser | null {
   return _cachedUser;
 }
 
+/* ── Early session init (module-level singleton) ────── */
+
+// Modül yüklenince hemen oturum kontrolü başlatılır.
+// initAuthState() ve diğer çağrılar bu promise'i bekler;
+// API cevabı çoğunlukla DOM render edilmeden önce gelir.
+let _sessionPromise: Promise<AuthUser | null> | null = null;
+
+function _startSession(): Promise<AuthUser | null> {
+  if (!_sessionPromise) {
+    _sessionPromise = getSessionUser();
+  }
+  return _sessionPromise;
+}
+
+/** Auth durumu hazır olana kadar bekler. Birden fazla kez çağrıldığında aynı promise'i döner. */
+export function waitForAuth(): Promise<AuthUser | null> {
+  return _startSession();
+}
+
+/** Logout sonrası veya yeniden kontrol için session promise'i sıfırla. */
+export function invalidateAuthCache(): void {
+  _cachedUser = null;
+  _sessionPromise = null;
+}
+
 /* ── Login / Logout ─────────────────────────────────── */
 
 /** Login with email and password via Frappe */
@@ -148,7 +173,7 @@ export async function logout(): Promise<void> {
   } catch {
     // Network errors are fine — session cookie is already cleared by the server
   }
-  _cachedUser = null;
+  invalidateAuthCache();
 }
 
 /* ── Session ────────────────────────────────────────── */
@@ -170,6 +195,9 @@ export async function getSessionUser(): Promise<AuthUser | null> {
     return null;
   }
 }
+
+// getSessionUser tanımlandıktan sonra hemen başlat
+_startSession();
 
 /** Get redirect URL based on user role */
 export function getRedirectUrl(user: AuthUser): string {

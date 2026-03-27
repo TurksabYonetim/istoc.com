@@ -45,7 +45,7 @@ export const adminPanelSections = {
         { label: 'Listinglar',       icon: 'list',         doctype: 'Listing' },
         { label: 'Ürün Moderasyonu',     icon: 'shield-check', route: '/listing-moderation' },
         { label: 'Kategori Moderasyonu', icon: 'folder-check', route: '/category-moderation' },
-        { label: 'Product Category', icon: 'folder-tree',  doctype: 'Product Category' },
+        { label: 'Kategori Yönetimi',   icon: 'folder-tree',  route: '/category-management' },
       ],
     },
     {

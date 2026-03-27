@@ -73,21 +73,97 @@
               </div>
             </td>
             <td class="px-4 py-3 text-center">
-              <button
-                v-if="cat.status !== 'Active'"
-                @click="deleteCategory(cat)"
-                :disabled="deletingId === cat.name"
-                class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-60"
-              >
-                <AppIcon v-if="deletingId === cat.name" name="loader" :size="11" class="animate-spin" />
-                <AppIcon v-else name="trash-2" :size="11" />
-                Sil
-              </button>
-              <span v-else class="text-xs text-gray-400">—</span>
+              <div class="flex items-center justify-center gap-1.5">
+                <!-- Düzenle -->
+                <button
+                  @click="openEditModal(cat)"
+                  title="Düzenle"
+                  class="inline-flex items-center justify-center w-7 h-7 text-violet-600 border border-violet-200 bg-violet-50 hover:bg-violet-100 rounded-lg transition-colors"
+                >
+                  <AppIcon name="pencil" :size="12" />
+                </button>
+                <!-- Pasife Al / Aktife Al -->
+                <button
+                  v-if="cat.is_enabled"
+                  @click="toggleCategory(cat, 0)"
+                  :disabled="togglingId === cat.name"
+                  title="Pasife Al"
+                  class="inline-flex items-center justify-center w-7 h-7 text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-60"
+                >
+                  <AppIcon v-if="togglingId === cat.name" name="loader" :size="12" class="animate-spin" />
+                  <AppIcon v-else name="trash-2" :size="12" />
+                </button>
+                <button
+                  v-else
+                  @click="toggleCategory(cat, 1)"
+                  :disabled="togglingId === cat.name"
+                  title="Aktife Al"
+                  class="inline-flex items-center justify-center w-7 h-7 text-green-600 border border-green-200 bg-green-50 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-60"
+                >
+                  <AppIcon v-if="togglingId === cat.name" name="loader" :size="12" class="animate-spin" />
+                  <AppIcon v-else name="eye" :size="12" />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40" @click="closeEditModal"></div>
+      <div class="relative bg-white dark:bg-[#1e1e2a] rounded-xl shadow-xl p-6 w-[460px] max-w-[calc(100vw-32px)]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100">Kategoriyi Düzenle</h3>
+          <button @click="closeEditModal" class="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+            <AppIcon name="x" :size="18" />
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
+              Kategori Adı <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="editForm.category_name"
+              type="text"
+              class="w-full border border-gray-200 dark:border-[#2a2a35] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#16161f] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Açıklama</label>
+            <textarea
+              v-model="editForm.description"
+              rows="3"
+              class="w-full border border-gray-200 dark:border-[#2a2a35] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#16161f] text-gray-800 dark:text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300"
+            ></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sıralama</label>
+            <input
+              v-model.number="editForm.sort_order"
+              type="number"
+              min="0"
+              class="w-full border border-gray-200 dark:border-[#2a2a35] rounded-lg px-3 py-2 text-sm bg-white dark:bg-[#16161f] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+          </div>
+          <p class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            Düzenleme sonrası kategori tekrar admin onayına düşecektir.
+          </p>
+        </div>
+        <div class="flex gap-3 justify-end mt-5">
+          <button @click="closeEditModal" class="hdr-btn-outlined">İptal</button>
+          <button
+            @click="saveEdit"
+            :disabled="editSubmitting || !editForm.category_name.trim()"
+            class="hdr-btn-primary disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <AppIcon v-if="editSubmitting" name="loader" :size="13" class="animate-spin" />
+            Kaydet
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Add Category Modal -->
@@ -162,10 +238,14 @@ import AppIcon from '@/components/common/AppIcon.vue'
 const toast = useToast()
 const categories = ref([])
 const loading = ref(false)
-const deletingId = ref(null)
+const togglingId = ref(null)
 const showAddModal = ref(false)
 const submitting = ref(false)
 const form = ref({ category_name: '', description: '', sort_order: 0 })
+
+const showEditModal = ref(false)
+const editSubmitting = ref(false)
+const editForm = ref({ name: '', category_name: '', description: '', sort_order: 0 })
 
 function statusLabel(status) {
   return { Pending: 'Onay Bekliyor', Active: 'Onaylandı', Rejected: 'Reddedildi' }[status] || status
@@ -209,19 +289,56 @@ async function addCategory() {
   }
 }
 
-async function deleteCategory(cat) {
-  if (!confirm(`"${cat.category_name}" kategorisini silmek istediğinize emin misiniz?`)) return
-  deletingId.value = cat.name
+async function toggleCategory(cat, isEnabled) {
+  const msg = isEnabled ? `"${cat.category_name}" aktife alınacak. Emin misiniz?` : `"${cat.category_name}" pasife alınacak. Emin misiniz?`
+  if (!confirm(msg)) return
+  togglingId.value = cat.name
   try {
-    await api.callMethod('tradehub_core.api.seller.delete_seller_category', {
+    await api.callMethod('tradehub_core.api.seller.toggle_seller_category', {
       category_name: cat.name,
+      is_enabled: isEnabled,
     }, true)
-    toast.success('Kategori silindi.')
+    toast.success(isEnabled ? 'Kategori aktife alındı.' : 'Kategori pasife alındı.')
     await loadCategories()
   } catch (err) {
-    toast.error(err.message || 'Silinemedi')
+    toast.error(err.message || 'İşlem başarısız')
   } finally {
-    deletingId.value = null
+    togglingId.value = null
+  }
+}
+
+function openEditModal(cat) {
+  editForm.value = {
+    name: cat.name,
+    category_name: cat.category_name,
+    description: cat.description || '',
+    sort_order: cat.sort_order || 0,
+  }
+  showEditModal.value = true
+}
+
+function closeEditModal() {
+  showEditModal.value = false
+  editForm.value = { name: '', category_name: '', description: '', sort_order: 0 }
+}
+
+async function saveEdit() {
+  if (!editForm.value.category_name.trim()) return
+  editSubmitting.value = true
+  try {
+    await api.callMethod('tradehub_core.api.seller.update_seller_category', {
+      category_name: editForm.value.name,
+      new_name: editForm.value.category_name.trim(),
+      description: editForm.value.description,
+      sort_order: editForm.value.sort_order || 0,
+    }, true)
+    toast.success('Kategori güncellendi, admin onayı bekleniyor.')
+    closeEditModal()
+    await loadCategories()
+  } catch (err) {
+    toast.error(err.message || 'Güncellenemedi')
+  } finally {
+    editSubmitting.value = false
   }
 }
 

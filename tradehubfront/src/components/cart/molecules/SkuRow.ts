@@ -8,10 +8,12 @@ import type { CartSku } from '../../../types/cart';
 import { Checkbox } from '../atoms/Checkbox';
 import { PriceDisplay } from '../atoms/PriceDisplay';
 import { QuantityInput } from '../atoms/QuantityInput';
+import { formatPrice } from '../../../services/currencyService';
 import trashIcon from '../../../assets/images/trash.png';
 
 export interface SkuRowProps {
   sku: CartSku;
+  productHref?: string;
 }
 
 function escapeHtml(value: string): string {
@@ -22,8 +24,12 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
-export function SkuRow({ sku }: SkuRowProps): string {
+export function SkuRow({ sku, productHref }: SkuRowProps): string {
   const unavailable = sku.isAvailable === false;
+  const imgContent = `<img src="${escapeHtml(sku.skuImage)}" alt="SKU ${escapeHtml(sku.id)}" class="w-full h-full object-cover" loading="lazy" />`;
+  const imgWrapper = productHref
+    ? `<a href="${escapeHtml(productHref)}" class="block w-full h-full">${imgContent}</a>`
+    : imgContent;
 
   return `
     <article class="sc-c-sku-container-new rounded-xl grid grid-cols-[auto_92px_minmax(0,1fr)] gap-3 items-start p-3 max-sm:p-2 max-sm:grid-cols-[auto_72px_minmax(0,1fr)] max-sm:gap-2 transition-colors${unavailable ? ' opacity-60 bg-surface-muted' : ''}" data-sku-id="${escapeHtml(sku.id)}" x-data>
@@ -32,7 +38,7 @@ export function SkuRow({ sku }: SkuRowProps): string {
       </div>
 
       <div class="w-[92px] h-[92px] max-sm:w-[72px] max-sm:h-[72px] rounded-lg border border-border-default overflow-hidden bg-surface-muted${unavailable ? ' grayscale' : ''}">
-        <img src="${escapeHtml(sku.skuImage)}" alt="SKU ${escapeHtml(sku.id)}" class="w-full h-full object-cover" loading="lazy" />
+        ${imgWrapper}
       </div>
 
       <div class="min-w-0">
@@ -60,6 +66,7 @@ export function SkuRow({ sku }: SkuRowProps): string {
           ${PriceDisplay({ amount: sku.unitPrice, fromCurrency: sku.baseCurrency || 'USD', unit: `/${sku.unit}` })}
           <div class="flex flex-col items-end ${unavailable ? 'pointer-events-none opacity-50' : ''}">
             ${QuantityInput({ id: `sku-qty-${sku.id}`, value: sku.quantity, min: 1, max: sku.maxQty })}
+            ${!unavailable ? `<span class="sc-c-sku-line-total mt-1 text-[12px] font-semibold text-[#555]">${formatPrice(sku.unitPrice * sku.quantity, sku.baseCurrency || 'USD')}</span>` : ''}
             ${!unavailable ? `<div class="sc-c-sku-moq-warning mt-2 text-right text-[14px] leading-[20px] text-[#dc2626] hidden">
               <span class="sc-c-sku-moq-missing">0</span> more required to check out
               <button

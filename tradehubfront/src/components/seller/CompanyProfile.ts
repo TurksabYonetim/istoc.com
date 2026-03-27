@@ -115,7 +115,9 @@ function OverviewTab(): string {
           sellerCode: new URLSearchParams(window.location.search).get('seller') || '',
           products: [],
           loading: true,
+          _cv: 0,
           async init() {
+            document.addEventListener('currency-changed', () => { this._cv++; });
             if (!this.sellerCode) { this.loading = false; return; }
             const apiBase = window.API_BASE || '/api';
             const res = await fetch(
@@ -126,11 +128,13 @@ function OverviewTab(): string {
             this.loading = false;
           },
           formatPrice(p) {
+            void this._cv;
             if (!p.price_min) return '';
             const min = parseFloat(p.price_min);
             const max = p.price_max ? parseFloat(p.price_max) : 0;
-            if (max > min) return window.csFormatPriceRange(min, max, 'USD');
-            return window.csFormatPrice(min, 'USD');
+            const cur = p.currency || 'USD';
+            if (max > min) return window.csFormatPriceRange(min, max, cur);
+            return window.csFormatPrice(min, cur);
           }
         }"
       >
@@ -191,17 +195,60 @@ function ReviewsTab(): string {
         reviews: [],
         total: 0,
         loading: true,
+        sessionUser: null,
+        reviewRating: 0,
+        reviewHover: 0,
+        reviewComment: '',
+        submitting: false,
+        submitSuccess: false,
+        submitError: '',
         async init() {
           if (!this.sellerCode) { this.loading = false; return; }
           const apiBase = window.API_BASE || '/api';
-          const [sellerRes, reviewRes] = await Promise.all([
+          const [sellerRes, reviewRes, sessionRes] = await Promise.all([
             fetch(apiBase + '/method/tradehub_core.api.seller.get_seller?slug=' + this.sellerCode, {credentials:'omit'}).then(r=>r.json()),
-            fetch(apiBase + '/method/tradehub_core.api.seller.get_reviews?seller_code=' + this.sellerCode + '&page_size=10', {credentials:'omit'}).then(r=>r.json())
+            fetch(apiBase + '/method/tradehub_core.api.seller.get_reviews?seller_code=' + this.sellerCode + '&page_size=10', {credentials:'omit'}).then(r=>r.json()),
+            fetch('/api/method/tradehub_core.api.v1.auth.get_session_user', {credentials:'include'}).then(r=>r.json()).catch(()=>null)
           ]);
           this.seller = sellerRes.message || null;
           this.reviews = reviewRes.message?.reviews || [];
           this.total = reviewRes.message?.total || 0;
+          this.sessionUser = sessionRes?.message?.logged_in ? sessionRes.message.user : null;
           this.loading = false;
+        },
+        async reloadReviews() {
+          const apiBase = window.API_BASE || '/api';
+          const reviewRes = await fetch(apiBase + '/method/tradehub_core.api.seller.get_reviews?seller_code=' + this.sellerCode + '&page_size=10', {credentials:'omit'}).then(r=>r.json());
+          this.reviews = reviewRes.message?.reviews || [];
+          this.total = reviewRes.message?.total || 0;
+        },
+        async submitReview() {
+          if (!this.reviewRating) { this.submitError = '${t('seller.sf.reviewRatingRequired')}'; return; }
+          if (!this.reviewComment.trim()) { this.submitError = '${t('seller.sf.reviewCommentRequired')}'; return; }
+          this.submitting = true;
+          this.submitError = '';
+          try {
+            const apiBase = window.API_BASE || '/api';
+            const csrf = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || 'None';
+            const res = await fetch(apiBase + '/method/tradehub_core.api.seller.submit_review', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {'Content-Type': 'application/json', 'X-Frappe-CSRF-Token': csrf},
+              body: JSON.stringify({seller_code: this.sellerCode, rating: this.reviewRating, comment: this.reviewComment})
+            }).then(r=>r.json());
+            if (res.message?.success) {
+              this.submitSuccess = true;
+              this.reviewRating = 0;
+              this.reviewComment = '';
+              await this.reloadReviews();
+            } else {
+              this.submitError = res.message || 'Bir hata oluştu.';
+            }
+          } catch {
+            this.submitError = 'Yorum gönderilemedi. Lütfen tekrar deneyin.';
+          } finally {
+            this.submitting = false;
+          }
         },
         formatDate(d) {
           if (!d) return '';
@@ -244,6 +291,81 @@ function ReviewsTab(): string {
                   Henüz değerlendirme yok.
                 </div>
               </div>
+            </div>
+
+            <!-- Write Review Form -->
+            <div class="mb-10 pb-10 border-b border-gray-100">
+              <!-- Logged in: show form -->
+              <template x-if="sessionUser">
+                <div>
+                  <h4 class="text-[15px] font-semibold text-gray-800 mb-4">${t('seller.sf.writeReview')}</h4>
+
+                  <!-- Success message -->
+                  <div x-show="submitSuccess" class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-[13px] text-green-700">
+                    ${t('seller.sf.reviewSuccess')}
+                  </div>
+
+                  <template x-if="!submitSuccess">
+                    <div class="space-y-4">
+                      <!-- Star Rating -->
+                      <div>
+                        <label class="block text-[12px] font-medium text-gray-600 mb-2">${t('seller.sf.reviewRatingLabel')}</label>
+                        <div class="flex gap-1">
+                          <template x-for="i in 5" :key="i">
+                            <button type="button"
+                              @click="reviewRating = i"
+                              @mouseenter="reviewHover = i"
+                              @mouseleave="reviewHover = 0"
+                              class="focus:outline-none"
+                            >
+                              <svg :class="(reviewHover || reviewRating) >= i ? 'text-yellow-400' : 'text-gray-200'" class="w-7 h-7 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                              </svg>
+                            </button>
+                          </template>
+                        </div>
+                      </div>
+
+                      <!-- Comment -->
+                      <div>
+                        <label class="block text-[12px] font-medium text-gray-600 mb-2">${t('seller.sf.reviewCommentLabel')}</label>
+                        <textarea
+                          x-model="reviewComment"
+                          rows="4"
+                          placeholder="${t('seller.sf.reviewCommentPlaceholder')}"
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[var(--color-brand)] resize-none"
+                        ></textarea>
+                      </div>
+
+                      <!-- Error -->
+                      <p x-show="submitError" x-text="submitError" class="text-[12px] text-red-500"></p>
+
+                      <!-- Submit -->
+                      <button
+                        type="button"
+                        @click="submitReview()"
+                        :disabled="submitting"
+                        class="px-6 py-2.5 bg-[var(--color-brand)] text-white text-[13px] font-semibold rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span x-show="!submitting">${t('seller.sf.reviewSubmit')}</span>
+                        <span x-show="submitting" class="flex items-center gap-2">
+                          <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>
+                          Gönderiliyor...
+                        </span>
+                      </button>
+                    </div>
+                  </template>
+                </div>
+              </template>
+
+              <!-- Not logged in: prompt -->
+              <template x-if="!sessionUser">
+                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <p class="text-[13px] text-gray-600">${t('seller.sf.reviewLoginPrompt')}</p>
+                  <a href="/pages/auth/login.html" class="ml-auto text-[13px] font-semibold text-[var(--color-brand)] hover:underline whitespace-nowrap">${t('seller.sf.reviewLoginBtn')}</a>
+                </div>
+              </template>
             </div>
 
             <!-- Empty state -->
@@ -316,7 +438,9 @@ function ProductsTab(): string {
         categories: [],
         products: [],
         loading: true,
+        _cv: 0,
         async init() {
+          document.addEventListener('currency-changed', () => { this._cv++; });
           const apiBase = window.API_BASE || '/api';
           const [catRes, prodRes] = await Promise.all([
             fetch(apiBase + '/method/tradehub_core.api.seller.get_seller_categories?seller_code=' + this.sellerCode, {credentials:'omit'}).then(r=>r.json()),
@@ -332,11 +456,13 @@ function ProductsTab(): string {
           return this.products.filter(p => String(p.category) === String(this.prodCat));
         },
         formatPrice(p) {
+          void this._cv;
           if (!p.price_min) return '';
           const min = parseFloat(p.price_min);
           const max = p.price_max ? parseFloat(p.price_max) : 0;
-          if (max > min) return window.csFormatPriceRange(min, max, 'USD');
-          return window.csFormatPrice(min, 'USD');
+          const cur = p.currency || 'USD';
+          if (max > min) return window.csFormatPriceRange(min, max, cur);
+          return window.csFormatPrice(min, cur);
         }
       }"
     >

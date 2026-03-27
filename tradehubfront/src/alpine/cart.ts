@@ -16,6 +16,7 @@ Alpine.data('cartPage', () => ({
       this.syncBatchBar();
       this.syncSupplierTotals();
       this.syncMoqRestrictions();
+      this.syncLineTotals();
       this.checkEmptyCart();
     });
 
@@ -24,6 +25,7 @@ Alpine.data('cartPage', () => ({
     this.syncBatchBar();
     this.syncSupplierTotals();
     this.syncMoqRestrictions();
+    this.syncLineTotals();
 
     // Thumbnail slider for summary section
     this.initThumbnailSlider();
@@ -296,18 +298,25 @@ Alpine.data('cartPage', () => ({
     }
   },
 
+  handleCheckoutGlobal() {
+    const suppliers = cartStore.getSuppliers();
+    const selectedSuppliers = suppliers.filter((s) =>
+      s.products.some((p) => p.skus.some((sku) => sku.selected))
+    );
+
+    if (selectedSuppliers.length === 0) return;
+
+    // Seçili satıcı ID'lerini URL'e geçir
+    const ids = selectedSuppliers.map((s) => s.id).join(',');
+    window.location.href = `${getBaseUrl()}pages/order/checkout.html?suppliers=${encodeURIComponent(ids)}`;
+  },
+
   handleCheckoutSupplier(event: CustomEvent) {
     const supplierId = event.detail?.supplierId as string | undefined;
     if (!supplierId) return;
 
-    // First, uncheck all selected skus globally
-    cartStore.toggleAll(false);
-
-    // Then, select only the specific supplier
-    cartStore.toggleSupplierSelection(supplierId, true);
-
-    // Finally, redirect to checkout with supplier flag
-    window.location.href = `${getBaseUrl()}pages/order/checkout.html?supplier=1`;
+    // Sadece bu satıcının ID'sini URL'e geçir
+    window.location.href = `${getBaseUrl()}pages/order/checkout.html?suppliers=${encodeURIComponent(supplierId)}`;
   },
 
   updateParentCheckboxStates(skuRow: Element) {
@@ -496,6 +505,20 @@ Alpine.data('cartPage', () => ({
     if (selectAll) {
       this.syncCheckbox(selectAll, total > 0 && selected === total, selected > 0 && selected < total);
     }
+  },
+
+  syncLineTotals() {
+    const el = this.$el as HTMLElement;
+    el.querySelectorAll<HTMLElement>('[data-sku-id]').forEach((skuRow) => {
+      const skuId = skuRow.dataset.skuId;
+      if (!skuId) return;
+      const found = cartStore.getSku(skuId);
+      if (!found) return;
+      const lineEl = skuRow.querySelector<HTMLElement>('.sc-c-sku-line-total');
+      if (!lineEl) return;
+      const { sku } = found;
+      lineEl.textContent = formatPrice(sku.unitPrice * sku.quantity, sku.baseCurrency || 'USD');
+    });
   },
 
   updateThumbnailGrid(items: { image: string; quantity: number }[]) {

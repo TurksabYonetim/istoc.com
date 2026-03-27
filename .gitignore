@@ -3,6 +3,10 @@ Frappe_Marketplace/
 Frappe_Marketplace-main/
 SELLER_MODULE_STATUS.md
 
+# ── Yerel Analiz & Notlar (commit'e gitmesin) ──────────────────────────────────
+analiz.md
+*.local.md
+
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]

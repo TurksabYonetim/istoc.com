@@ -28,7 +28,7 @@ function renderTag(tag: CartProductTag): string {
 }
 
 export function ProductItem({ product }: ProductItemProps): string {
-  const skus = product.skus.map((sku) => SkuRow({ sku })).join('');
+  const skus = product.skus.map((sku) => SkuRow({ sku, productHref: product.href })).join('');
 
   const selectedSkuCount = product.skus.filter((s) => s.selected).length;
   const totalSkuCount = product.skus.length;

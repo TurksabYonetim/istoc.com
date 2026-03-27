@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -79,22 +79,30 @@ const email = ref('')
 const password = ref('')
 const remember = ref(false)
 const loading = ref(false)
-const error = ref('')
+const localError = ref('')
+
+const error = computed(() => localError.value || auth.error || '')
 
 async function handleLogin() {
   if (!email.value || !password.value) {
-    error.value = 'E-posta ve şifre gereklidir'
+    localError.value = 'E-posta ve şifre gereklidir'
     return
   }
   loading.value = true
-  error.value = ''
+  localError.value = ''
+  auth.error = null
   try {
     await auth.login(email.value, password.value)
+    if (!auth.isAdmin && !auth.isSeller) {
+      await auth.logout()
+      localError.value = 'Bu panel yalnızca satıcı ve yöneticilere açıktır.'
+      return
+    }
     // Navigate to the redirect target or dashboard
     const redirectTo = route.query.redirect || '/dashboard'
     router.push(redirectTo)
   } catch (err) {
-    error.value = err.message || 'Giriş başarısız. Bilgilerinizi kontrol edin.'
+    localError.value = err.message || 'Giriş başarısız. Bilgilerinizi kontrol edin.'
   } finally {
     loading.value = false
   }

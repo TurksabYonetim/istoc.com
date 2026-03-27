@@ -8,8 +8,8 @@ import { initFlowbite } from 'flowbite'
 import { t } from '../i18n'
 import { getBaseUrl } from '../utils/url'
 import { initCurrency } from '../services/currencyService'
-import { isLoggedIn } from '../utils/auth'
-import { apiCreateOrder, apiValidateCoupon, fetchShippingMethodsForListing } from '../services/cartService'
+import { isLoggedIn, getSessionUser } from '../utils/auth'
+import { apiCreateOrder, apiValidateCoupon, fetchShippingMethodsForListing, fetchCart } from '../services/cartService'
 import type { ListingShippingMethod } from '../services/cartService'
 import { showToast } from '../utils/toast'
 
@@ -39,7 +39,6 @@ import type { CartProduct, CartSku, CartShippingMethod } from '../types/cart'
 import type { CheckoutDeliveryOrderGroup, CheckoutDeliveryMethod } from '../components/checkout'
 import { initStickyHeights } from '../utils/stickyHeights'
 import { orderStore } from '../components/orders/state/OrderStore'
-import type { Order } from '../types/order'
 
 // Expose coupon validator for Alpine component
 (window as unknown as Record<string, unknown>).__validateCoupon = apiValidateCoupon;
@@ -70,13 +69,8 @@ if (isSampleMode) {
   }
 }
 
-// CartStore'dan checkout order summary oluştur
-cartStore.load();
-if (cartStore.hasSelectedSkuMoqViolation()) {
-  window.location.replace('/pages/cart.html');
-}
-
-const cartSummary = cartStore.getSummary();
+// cartSummary — renderCheckout içinde async olarak doldurulur
+let cartSummary: ReturnType<typeof cartStore.getSummary> | null = null;
 
 function formatMonthDay(date: Date): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
@@ -241,7 +235,7 @@ function buildDeliveryOrders(): CheckoutDeliveryOrderGroup[] {
       methods = fetchedMethods;
     } else {
       // Fallback: listing'de kargo tanımlanmamışsa hesaplanmış tahmini değerler
-      const shippingShare = subtotalTotal > 0 ? (cartSummary.shippingFee * row.subtotal) / subtotalTotal : 0;
+      const shippingShare = subtotalTotal > 0 ? ((cartSummary?.shippingFee ?? 0) * row.subtotal) / subtotalTotal : 0;
       const method1Fee = Number(Math.max(5, shippingShare).toFixed(2));
       const method2Fee = Number(Math.max(method1Fee + 5, shippingShare * 1.35).toFixed(2));
       const start1 = addDays(now, 10 + (index * 2));
@@ -307,80 +301,6 @@ window.addEventListener('checkout:notes-updated', (e: Event) => {
   if (detail?.notesByOrderId) currentSupplierNotes = { ...detail.notesByOrderId };
 });
 
-// Build Order objects from checkout data
-function buildOrdersFromCheckout(
-  paymentMethod: string,
-  shippingAddressStr = '',
-  backendOrderNumbers: string[] = [],
-): Order[] {
-  const now = Date.now();
-  const dateStr = new Date().toLocaleDateString('tr-TR', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  });
-
-  return checkoutDeliveryOrders.map((deliveryOrder, idx) => {
-    const supplier = cartStore.getSupplier(deliveryOrder.sellerId);
-    const selectedMethodId = selectedShippingMethodByOrderId[deliveryOrder.orderId];
-    const selectedMethod = (selectedMethodId
-      ? deliveryOrder.methods.find((m) => m.id === selectedMethodId)
-      : null) ?? deliveryOrder.methods.find((m) => m.isDefault) ?? deliveryOrder.methods[0];
-    const shippingFee = selectedMethod?.shippingFee ?? 0;
-
-    const products = deliveryOrder.products.map((p) => {
-      const totalQty = p.skuLines.reduce((sum, sku) => sum + sku.quantity, 0);
-      const totalPrice = p.skuLines.reduce((sum, sku) => sum + sku.unitPrice * sku.quantity, 0);
-      return {
-        name: p.title,
-        variation: p.skuLines.map((s) => s.variantText).filter(Boolean).join(', '),
-        unitPrice: (totalPrice / totalQty).toFixed(2),
-        quantity: totalQty,
-        totalPrice: totalPrice.toFixed(2),
-        image: p.image,
-      };
-    });
-
-    const subtotal = products.reduce((sum, p) => sum + Number(p.totalPrice), 0);
-    const grandTotal = subtotal + shippingFee;
-    const orderNumber = backendOrderNumbers[idx] ?? `ORD-${(now + idx).toString(36).toUpperCase()}`;
-
-    return {
-      id: `ord-${now}-${idx}`,
-      orderNumber,
-      orderDate: dateStr,
-      total: grandTotal.toFixed(2),
-      currency: getSelectedCurrencyInfo().code,
-      seller: supplier?.name ?? deliveryOrder.sellerName,
-      status: 'Waiting for payment',
-      statusColor: 'text-amber-600',
-      statusDescription: 'Ödemenizi tamamlayın.',
-      products,
-      shipping: {
-        trackingStatus: 'Pending',
-        address: shippingAddressStr,
-        shipFrom: '',
-        method: selectedMethod?.etaLabel ?? '',
-        incoterms: '',
-      },
-      payment: {
-        status: 'Unpaid',
-        hasRecord: false,
-        subtotal: subtotal.toFixed(2),
-        shippingFee: shippingFee.toFixed(2),
-        grandTotal: grandTotal.toFixed(2),
-      },
-      supplier: {
-        name: supplier?.name ?? deliveryOrder.sellerName,
-        contact: '',
-        phone: '',
-        email: '',
-      },
-      paymentMethod,
-      createdAt: now,
-    } as Order;
-  });
-}
 
 // Gather review data from DOM + module-level state
 function gatherReviewData() {
@@ -503,10 +423,7 @@ window.addEventListener('checkout:confirm-order', () => {
   }
 
   if (!isLoggedIn()) {
-    // Misafir: frontend üretilen numaralarla devam et
-    const newOrders = buildOrdersFromCheckout(paymentMethod, shippingAddress);
-    orderStore.load();
-    redirectToSuccess(newOrders.map((o) => o.orderNumber).join(','));
+    window.location.replace(`/pages/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);
     return;
   }
 
@@ -537,9 +454,40 @@ window.addEventListener('checkout:confirm-order', () => {
 async function renderCheckout() {
 await initCurrency();
 
+// Cart yükleme: oturumu async kontrol et, giriş yapmış → API, misafir → localStorage
+{
+  const { symbol: sym } = getSelectedCurrencyInfo();
+  try {
+    const sessionUser = await getSessionUser();
+    if (sessionUser) {
+      const apiCart = await fetchCart();
+      cartStore.init(apiCart.suppliers, 0, sym, 0);
+
+      // URL'deki ?suppliers=ID1,ID2 parametresine göre seçimi filtrele
+      const suppliersParam = new URLSearchParams(window.location.search).get('suppliers');
+      if (suppliersParam) {
+        const allowedIds = new Set(suppliersParam.split(',').map((id) => id.trim()).filter(Boolean));
+        for (const supplier of cartStore.getSuppliers()) {
+          const isAllowed = allowedIds.has(supplier.id);
+          cartStore.toggleSupplierSelection(supplier.id, isAllowed);
+        }
+      }
+    } else {
+      cartStore.load();
+    }
+  } catch {
+    cartStore.load();
+  }
+}
+
+if (!isSampleMode && cartStore.hasSelectedSkuMoqViolation()) {
+  window.location.replace('/pages/cart.html');
+  return;
+}
+cartSummary = cartStore.getSummary();
+
 // Auth kontrolü: giriş yapmamış kullanıcıları login sayfasına yönlendir
 if (!isLoggedIn()) {
-  const { getSessionUser } = await import('../utils/auth');
   const sessionUser = await getSessionUser().catch(() => null);
   if (!sessionUser) {
     window.location.replace(`/pages/auth/login.html?redirect=${encodeURIComponent(window.location.href)}`);

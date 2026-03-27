@@ -7,6 +7,7 @@ import '../styles/seller/seller-storefront.css';
 import { initFlowbite } from 'flowbite';
 import 'swiper/swiper-bundle.css';
 import { startAlpine } from '../alpine';
+import { initCurrency } from '../services/currencyService';
 
 // Components
 import { TopBar } from '../components/header';
@@ -39,6 +40,7 @@ appEl.innerHTML = `
 initFlowbite();
 initLanguageSelector();
 initSellerStorefront();
+initCurrency();
 
 // Start Alpine.js (must be called AFTER innerHTML is set)
 startAlpine();

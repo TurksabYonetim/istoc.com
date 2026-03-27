@@ -7,6 +7,7 @@
 import type { CartSupplier, CartProduct, CartSku, CartSummaryData } from '../../../types/cart';
 import { getSelectedCurrencyInfo, convertPrice } from '../../../services/currencyService';
 import { getCurrencySymbol } from '../../../utils/currency';
+import { isLoggedIn } from '../../../utils/auth';
 
 export class CartStore {
   private static STORAGE_KEY = 'tradehub_cart';
@@ -61,8 +62,9 @@ export class CartStore {
     }
   }
 
-  /** Mevcut durumu localStorage'a kaydet */
+  /** Mevcut durumu localStorage'a kaydet (sadece misafir kullanıcılar için) */
   private save(): void {
+    if (isLoggedIn()) return; // Giriş yapmış kullanıcılar için localStorage kullanma
     try {
       localStorage.setItem(
         CartStore.STORAGE_KEY,

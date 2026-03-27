@@ -9,6 +9,7 @@
 		"seller",
 		"category_name",
 		"status",
+		"is_enabled",
 		"description",
 		"image",
 		"sort_order",
@@ -44,6 +45,12 @@
 			"label": "Durum",
 			"options": "Pending\nActive\nRejected",
 			"reqd": 1
+		},
+		{
+			"default": "1",
+			"fieldname": "is_enabled",
+			"fieldtype": "Check",
+			"label": "Etkin"
 		},
 		{
 			"fieldname": "description",

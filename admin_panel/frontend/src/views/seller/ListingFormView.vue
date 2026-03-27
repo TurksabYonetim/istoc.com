@@ -90,6 +90,27 @@
               Onaylanmış kategoriniz yok. Önce <a @click.prevent="$router.push('/seller-categories')" href="#" class="underline">kategori ekleyin</a>.
             </p>
           </div>
+          <!-- Platform Kategorisi -->
+          <div class="lg:col-span-2">
+            <label class="form-label">Platform Kategorisi</label>
+            <div class="flex items-center gap-2">
+              <button type="button" @click="openCategoryPicker"
+                class="flex-1 form-input text-left flex items-center gap-2 min-h-[38px] hover:border-violet-400 transition-colors cursor-pointer"
+                :class="categoryPickerPath.length ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'">
+                <AppIcon name="folder-tree" :size="14" class="flex-shrink-0 text-violet-500" />
+                <span v-if="categoryPickerPath.length" class="text-xs truncate">
+                  {{ categoryPickerPath.map(c => c.category_name).join(' › ') }}
+                </span>
+                <span v-else class="text-xs">Kategori seçmek için tıklayın...</span>
+              </button>
+              <button v-if="categoryPickerPath.length" type="button" @click="clearProductCategory"
+                class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 dark:bg-white/8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                title="Temizle">
+                <AppIcon name="x" :size="14" />
+              </button>
+            </div>
+          </div>
+
           <div>
             <label class="form-label">Marka</label>
             <input v-model="form.brand" type="text" class="form-input" placeholder="Marka" />
@@ -523,6 +544,115 @@
       </div>
     </div>
   </div>
+
+  <!-- ── Platform Kategori Seçici Modal ───────────────────────────────────── -->
+  <Teleport to="body">
+    <div v-if="categoryPicker.show"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      @click.self="categoryPicker.show = false">
+      <div class="bg-white dark:bg-[#1a1a24] rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] flex flex-col">
+
+        <!-- Modal başlık -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-white/8 flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <AppIcon name="folder-tree" :size="16" class="text-violet-500" />
+            <h2 class="text-sm font-bold text-gray-900 dark:text-gray-100">Platform Kategorisi Seç</h2>
+          </div>
+          <button @click="categoryPicker.show = false"
+            class="w-7 h-7 rounded-lg bg-gray-100 dark:bg-white/8 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+            <AppIcon name="x" :size="14" />
+          </button>
+        </div>
+
+        <!-- Breadcrumb navigasyon -->
+        <div class="flex items-center gap-1 px-5 py-2.5 border-b border-gray-100 dark:border-white/5 flex-shrink-0 overflow-x-auto">
+          <button @click="categoryPickerGoTo(-1)"
+            class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors flex-shrink-0"
+            :class="categoryPicker.path.length === 0 ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5'">
+            <AppIcon name="home" :size="11" />
+            <span>Kök</span>
+          </button>
+          <template v-for="(crumb, idx) in categoryPicker.path" :key="crumb.name">
+            <AppIcon name="chevron-right" :size="11" class="text-gray-300 dark:text-gray-600 flex-shrink-0" />
+            <button @click="categoryPickerGoTo(idx)"
+              class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors flex-shrink-0 max-w-[120px]"
+              :class="idx === categoryPicker.path.length - 1 ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5'">
+              <span class="truncate">{{ crumb.category_name }}</span>
+            </button>
+          </template>
+        </div>
+
+        <!-- Kategori listesi -->
+        <div class="flex-1 overflow-y-auto py-2">
+          <!-- Yükleniyor -->
+          <div v-if="categoryPicker.loading" class="flex items-center justify-center py-10 gap-2 text-gray-400">
+            <AppIcon name="loader" :size="18" class="animate-spin text-violet-500" />
+            <span class="text-sm">Yükleniyor...</span>
+          </div>
+
+          <!-- Boş -->
+          <div v-else-if="categoryPicker.items.length === 0" class="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+            <AppIcon name="folder-open" :size="28" />
+            <p class="text-sm">Bu seviyede kategori yok</p>
+          </div>
+
+          <!-- Liste -->
+          <div v-else class="px-2 space-y-0.5">
+            <div v-for="cat in categoryPicker.items" :key="cat.name"
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-white/4 transition-colors"
+              @click="selectCategoryItem(cat)">
+              <!-- İkon -->
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                :class="cat.child_count > 0 ? 'bg-violet-100 dark:bg-violet-900/40' : 'bg-gray-100 dark:bg-white/8'">
+                <AppIcon :name="cat.child_count > 0 ? 'folder' : 'tag'" :size="14"
+                  :class="cat.child_count > 0 ? 'text-violet-600 dark:text-violet-400' : 'text-gray-400'" />
+              </div>
+
+              <!-- İsim ve alt sayı -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{{ cat.category_name }}</p>
+                <p v-if="cat.child_count > 0" class="text-[10px] text-gray-400">{{ cat.child_count }} alt kategori</p>
+              </div>
+
+              <!-- Aksiyon -->
+              <div class="flex items-center gap-1 flex-shrink-0">
+                <!-- Yaprak → Seç butonu -->
+                <button v-if="cat.child_count === 0" type="button"
+                  @click.stop="confirmCategory(cat)"
+                  class="opacity-0 group-hover:opacity-100 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-violet-600 text-white hover:bg-violet-700 transition-all">
+                  Seç
+                </button>
+                <!-- Alt kategori varsa hem seç hem drill-down ok -->
+                <template v-else>
+                  <button type="button"
+                    @click.stop="confirmCategory(cat)"
+                    class="opacity-0 group-hover:opacity-100 px-2 py-1 rounded-lg text-[11px] font-semibold border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/30 transition-all">
+                    Seç
+                  </button>
+                  <div class="w-6 h-6 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-violet-500 transition-colors">
+                    <AppIcon name="chevron-right" :size="16" />
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal alt -->
+        <div class="flex items-center justify-between px-5 py-3 border-t border-gray-200 dark:border-white/8 flex-shrink-0">
+          <button type="button" @click="clearProductCategory(); categoryPicker.show = false"
+            class="text-xs text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
+            <AppIcon name="trash-2" :size="12" />
+            Seçimi Temizle
+          </button>
+          <button type="button" @click="categoryPicker.show = false"
+            class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 dark:bg-white/8 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/12 transition-colors">
+            Kapat
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -589,6 +719,8 @@ const form = reactive({
   listing_type: 'Fixed Price',
   category: '',
   category_name: '',
+  product_category: '',
+  product_category_name: '',
   brand: '',
   condition: 'New',
   short_description: '',
@@ -724,6 +856,84 @@ async function loadSellerCategories() {
   }
 }
 
+// ── Platform Kategori Cascade Picker ─────────────────────────────────────────
+const categoryPickerPath = ref([]) // Seçilen kategorinin tam yolu (breadcrumb gösterimi)
+
+const categoryPicker = ref({
+  show: false,
+  loading: false,
+  items: [],
+  path: [], // Navigasyon geçmişi (modal içi breadcrumb)
+})
+
+async function openCategoryPicker() {
+  categoryPicker.value.show = true
+  categoryPicker.value.path = []
+  await loadCategoryChildren(null)
+}
+
+async function loadCategoryChildren(parentId) {
+  categoryPicker.value.loading = true
+  try {
+    const res = await api.callMethod('tradehub_core.api.category.get_platform_category_tree', {
+      parent: parentId || '',
+    })
+    categoryPicker.value.items = res.message || []
+  } catch (err) {
+    toast.error('Kategoriler yüklenemedi: ' + (err.message || ''))
+    categoryPicker.value.items = []
+  } finally {
+    categoryPicker.value.loading = false
+  }
+}
+
+async function drillDown(cat) {
+  categoryPicker.value.path.push({ name: cat.name, category_name: cat.category_name })
+  await loadCategoryChildren(cat.name)
+}
+
+async function categoryPickerGoTo(idx) {
+  if (idx === -1) {
+    categoryPicker.value.path = []
+    await loadCategoryChildren(null)
+  } else {
+    categoryPicker.value.path = categoryPicker.value.path.slice(0, idx + 1)
+    await loadCategoryChildren(categoryPicker.value.path[idx].name)
+  }
+}
+
+function selectCategoryItem(cat) {
+  if (cat.child_count > 0) {
+    drillDown(cat)
+  } else {
+    confirmCategory(cat)
+  }
+}
+
+function confirmCategory(cat) {
+  form.product_category = cat.name
+  categoryPickerPath.value = [
+    ...categoryPicker.value.path,
+    { name: cat.name, category_name: cat.category_name },
+  ]
+  categoryPicker.value.show = false
+}
+
+function clearProductCategory() {
+  form.product_category = ''
+  categoryPickerPath.value = []
+}
+
+async function loadCategoryPath(categoryId) {
+  if (!categoryId) { categoryPickerPath.value = []; return }
+  try {
+    const res = await api.callMethod('tradehub_core.api.category.get_category_ancestors', { name: categoryId })
+    categoryPickerPath.value = res.message || []
+  } catch {
+    categoryPickerPath.value = []
+  }
+}
+
 // ── Veri yükleme ──────────────────────────────────────────────────────────────
 async function loadDoc() {
   if (isNew.value) return
@@ -735,6 +945,11 @@ async function loadDoc() {
     Object.keys(form).forEach(k => {
       if (data[k] !== undefined) form[k] = data[k]
     })
+
+    // Seçili platform kategorisinin tam yolunu yükle
+    if (form.product_category) {
+      await loadCategoryPath(form.product_category)
+    }
 
     // Child tablelara doldur (Frappe child tableları parent doc içinde gelir)
     childData.pricing_tiers = (data.pricing_tiers || []).map(clean)
@@ -794,7 +1009,7 @@ async function saveDoc() {
 
   saving.value = true
   try {
-    const READONLY = ['listing_code', 'supplier_display_name', 'category_name', 'reserved_qty', 'available_qty',
+    const READONLY = ['listing_code', 'supplier_display_name', 'category_name', 'product_category_name', 'reserved_qty', 'available_qty',
       'view_count', 'wishlist_count', 'order_count', 'average_rating', 'review_count', 'erpnext_item', 'published_at', 'creation', 'modified']
 
     const payload = {}

@@ -142,6 +142,35 @@ export default {
   async getSessionUser() {
     return request('GET', '/api/method/tradehub_core.api.v1.auth.get_session_user')
   },
+  async getCsrfToken() {
+    try {
+      const res = await fetch('/api/method/frappe.auth.get_logged_user', { credentials: 'include' })
+      return res.headers.get('X-Frappe-CSRF-Token') || getCookie('csrf_token') || 'None'
+    } catch {
+      return getCookie('csrf_token') || 'None'
+    }
+  },
+  async uploadFile(file, folder = 'Home') {
+    const csrfToken = await this.getCsrfToken()
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('is_private', '0')
+    fd.append('folder', folder)
+    const res = await fetch('/api/method/upload_file', {
+      method: 'POST',
+      body: fd,
+      headers: { 'X-Frappe-CSRF-Token': csrfToken },
+      credentials: 'include',
+    })
+    const data = await res.json()
+    if (!res.ok) {
+      const msg = data._server_messages
+        ? JSON.parse(JSON.parse(data._server_messages)[0])?.message
+        : data.message || `HTTP ${res.status}`
+      throw new Error(msg)
+    }
+    return data.message?.file_url || ''
+  },
   async getMeta(doctype) {
     // frappe.desk.form.load.getdoctype — tüm authenticated user'lar için çalışır
     // Yanıt formatı: { "docs": [{ name, fields, ... }], "message": null }

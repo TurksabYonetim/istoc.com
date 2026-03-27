@@ -70,7 +70,9 @@ def get_session_user():
 
 	is_admin = "System Manager" in roles or "Administrator" in roles
 	is_buyer = "Buyer" in roles
-	is_seller = "Seller" in roles
+	is_seller = "Seller" in roles or bool(
+		frappe.db.exists("Seller Profile", {"user": frappe.session.user})
+	)
 
 	has_seller_profile = bool(
 		frappe.db.exists(

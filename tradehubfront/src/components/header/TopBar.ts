@@ -8,7 +8,7 @@
 import type { LocaleOption, CurrencyOption } from '../../types/navigation';
 import { megaCategories } from './MegaMenu';
 import { cartStore } from '../cart/state/CartStore';
-import { isLoggedIn, getUser, getSessionUser, logout } from '../../utils/auth';
+import { isLoggedIn, getUser, getSessionUser, waitForAuth, logout } from '../../utils/auth';
 import { getSellerStoreUrl } from '../../utils/seller';
 import { mockConversations } from '../../data/mockMessages';
 import { t, getCurrentLang, updatePageTranslations } from '../../i18n';
@@ -16,6 +16,7 @@ import type { SupportedLang } from '../../i18n';
 import { getSelectedCurrency, setSelectedCurrency, getCurrencySymbol } from '../../utils/currency';
 import { formatCurrency, formatPrice, getSelectedCurrency as csGetSelectedCurrency } from '../../services/currencyService';
 import { getSearchSuggestions } from '../../services/listingService';
+import { apiRemoveCartItem, fetchCart } from '../../services/cartService';
 
 /** Default country options for the delivery selector */
 const countryOptions: LocaleOption[] = [
@@ -1255,10 +1256,7 @@ let _headerCartInitialized = false;
 export function initHeaderCart(): void {
   _headerCartInitialized = true; // auto-init'e "zaten çağrıldı" sinyali ver
 
-  // localStorage'dan sepet verisini yükle (her sayfada çalışır)
-  cartStore.load();
-
-  // Sync UI to store state
+  // Sepeti yükle: giriş yapılmışsa API'den, misafirse localStorage'dan
   const renderFromStore = () => {
     const suppliers = cartStore.getSuppliers();
     const count = cartStore.getTotalSkuCount();
@@ -1327,6 +1325,9 @@ export function initHeaderCart(): void {
                   <p class="text-[11px] text-gray-400">${sku.variantText || ''}</p>
                 </div>
                 <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                  <button type="button" data-delete-sku="${sku.id}" class="opacity-0 group-hover:opacity-100 transition-opacity w-5 h-5 flex items-center justify-center rounded-full hover:bg-red-50 text-gray-300 hover:text-red-400" aria-label="${t('cart.removeProduct')}">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
                   <span class="text-[13px] font-bold text-gray-900">${formatPrice(sku.unitPrice, sku.baseCurrency || 'USD')}</span>
                   <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">x${sku.quantity}</span>
                 </div>
@@ -1341,9 +1342,41 @@ export function initHeaderCart(): void {
     }
   };
 
+  // Sepeti yükle: oturum açıksa API'den (kullanıcıya özel), misafirse localStorage'dan
+  (async () => {
+    const sessionUser = getUser() ?? await getSessionUser();
+    if (sessionUser) {
+      try {
+        const apiCart = await fetchCart();
+        const sym = getCurrencySymbol();
+        cartStore.init(apiCart.suppliers, 0, sym, 0);
+      } catch {
+        cartStore.load();
+      }
+    } else {
+      cartStore.load();
+    }
+  })();
+
   // Initial read and subscribe to future cart metadata
   renderFromStore();
   cartStore.subscribe(renderFromStore);
+
+  // Mini cart item silme — event delegation (innerHTML her yenilendiği için)
+  const cartBodyEl = document.getElementById('header-cart-body');
+  if (cartBodyEl) {
+    cartBodyEl.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-delete-sku]');
+      if (!btn) return;
+      const skuId = btn.dataset.deleteSku;
+      if (!skuId) return;
+      e.stopPropagation();
+      cartStore.deleteSku(skuId);
+      if (isLoggedIn()) {
+        apiRemoveCartItem(skuId).catch(() => {});
+      }
+    });
+  }
 
   document.addEventListener('cart-add', ((e: CustomEvent) => {
     // If we're relying on legacy data injection, we can manually parse e.detail here
@@ -1459,33 +1492,44 @@ document.addEventListener('click', async (e) => {
  * and updates mobile drawer profile section.
  */
 export async function initAuthState(): Promise<void> {
-  const user = await getSessionUser();
+  // waitForAuth() modül yüklenince başlatılan promise'i bekler —
+  // çoğunlukla DOM render'dan önce cevap gelmiş olur, bu yüzden gecikme olmaz.
+  const wasLoggedIn = isLoggedIn();
+  const user = await waitForAuth();
+  const isNowLoggedIn = user !== null;
 
-  // Update all desktop auth areas
-  const authAreas = document.querySelectorAll<HTMLElement>('[data-auth-area]');
-  authAreas.forEach(container => {
-    container.innerHTML = user ? renderUserButton() : renderAuthButtons();
-  });
+  // Auth state değiştiyse DOM'u güncelle; değişmediyse mevcut Flowbite
+  // dropdown instance'larını korumak için innerHTML'e dokunma.
+  const domChanged = wasLoggedIn !== isNowLoggedIn;
 
-  // Update mobile drawer profile
-  const mobileProfile = document.getElementById('mobile-drawer-profile');
-  if (mobileProfile && user) {
-    const initials = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
-    const escapedName = (user.full_name || user.email).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const escapedEmail = user.email.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    mobileProfile.innerHTML = `
-      <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center flex-shrink-0">
-        <span class="text-sm font-bold text-orange-600 dark:text-orange-300">${initials}</span>
-      </div>
-      <div>
-        <p class="text-sm font-medium text-gray-900 dark:text-white">${escapedName}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapedEmail}</p>
-      </div>
-    `;
+  if (domChanged) {
+    const authAreas = document.querySelectorAll<HTMLElement>('[data-auth-area]');
+    authAreas.forEach(container => {
+      container.innerHTML = user ? renderUserButton() : renderAuthButtons();
+    });
   }
 
-  // Re-initialize Flowbite dropdowns for dynamically inserted elements
-  if (user) {
+  // Update mobile drawer profile
+  if (isNowLoggedIn && user) {
+    const mobileProfile = document.getElementById('mobile-drawer-profile');
+    if (mobileProfile) {
+      const initials = (user.full_name || user.email || 'U').charAt(0).toUpperCase();
+      const escapedName = (user.full_name || user.email).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const escapedEmail = user.email.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      mobileProfile.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center flex-shrink-0">
+          <span class="text-sm font-bold text-orange-600 dark:text-orange-300">${initials}</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">${escapedName}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapedEmail}</p>
+        </div>
+      `;
+    }
+  }
+
+  // DOM değiştiyse Flowbite dropdown'larını yeniden başlat
+  if (domChanged) {
     try {
       const { initDropdowns } = await import('flowbite');
       initDropdowns();

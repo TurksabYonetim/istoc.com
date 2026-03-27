@@ -1,6 +1,20 @@
 services:
 
   # ──────────────────────────────────────────────
+  # Admin Panel — Vue.js + Nginx
+  # ──────────────────────────────────────────────
+  admin-panel:
+    build:
+      context: ./admin_panel/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${ADMIN_PANEL_PORT:-8082}:80"
+    depends_on:
+      - backend
+      - websocket
+    restart: unless-stopped
+
+  # ──────────────────────────────────────────────
   # Frontend — Vite statik site + Nginx
   # ──────────────────────────────────────────────
   frontend:
@@ -80,7 +94,11 @@ services:
     build:
       context: ./tradehubback
       dockerfile: Dockerfile
-    command: node apps/frappe/socketio.js
+    command: >
+      /bin/bash -c "
+        until nc -z redis-queue 6379 2>/dev/null; do echo 'redis-queue bekleniyor...'; sleep 2; done &&
+        node apps/frappe/socketio.js
+      "
     ports:
       - "${SOCKETIO_PORT:-9001}:9000"
     volumes:
@@ -101,6 +119,7 @@ services:
       dockerfile: Dockerfile
     command: >
       /bin/bash -c "
+        until nc -z redis-queue 6379 2>/dev/null; do echo 'redis-queue bekleniyor...'; sleep 2; done &&
         /home/frappe/frappe-bench/env/bin/pip install --quiet -e /home/frappe/frappe-bench/apps/tradehub_core &&
         exec bench worker
       "
@@ -135,6 +154,7 @@ services:
       dockerfile: Dockerfile
     command: >
       /bin/bash -c "
+        until nc -z redis-queue 6379 2>/dev/null; do echo 'redis-queue bekleniyor...'; sleep 2; done &&
         /home/frappe/frappe-bench/env/bin/pip install --quiet -e /home/frappe/frappe-bench/apps/tradehub_core &&
         exec bench schedule
       "
