@@ -85,6 +85,42 @@ class SellerApplication(Document):
 			user_doc = frappe.get_doc("User", user)
 			user_doc.add_roles("Seller")
 
+		# Create or update KYB Verification record pre-filled from application data
+		seller_type_map = {
+			"Individual": "Şahıs",
+			"Business": "Limited Şirket",
+			"Enterprise": "Anonim Şirket",
+		}
+		kyb_data = {
+			"company_title": self.business_name or seller_name,
+			"business_type": seller_type_map.get(self.seller_type, "") or self.seller_type or "",
+			"authorized_person": seller_name,
+			"tax_id_type": self.tax_id_type or "TCKN",
+			"tax_id": self.tax_id or "",
+			"tax_office": self.tax_office or "",
+		}
+
+		existing_kyb = frappe.db.get_value("KYB Verification", {"user": user}, "name")
+		if existing_kyb:
+			for field, value in kyb_data.items():
+				frappe.db.set_value("KYB Verification", existing_kyb, field, value)
+			frappe.db.set_value("KYB Verification", existing_kyb, "status", "Pending")
+			frappe.db.set_value("KYB Verification", existing_kyb, "owner", user)
+		else:
+			kyb = frappe.new_doc("KYB Verification")
+			kyb.user = user
+			kyb.owner = user
+			kyb.status = "Pending"
+			for field, value in kyb_data.items():
+				kyb.set(field, value)
+			kyb.flags.ignore_permissions = True
+			kyb.insert(ignore_permissions=True)
+			# Ensure owner is the user (Frappe may override during insert)
+			frappe.db.set_value("KYB Verification", kyb.name, "owner", user)
+
+		# Set kyb_status on Seller Profile
+		frappe.db.set_value("Seller Profile", {"user": user}, "kyb_status", "Pending")
+
 		# Record review metadata
 		self.db_set("reviewed_by", frappe.session.user)
 		self.db_set("reviewed_on", now_datetime())

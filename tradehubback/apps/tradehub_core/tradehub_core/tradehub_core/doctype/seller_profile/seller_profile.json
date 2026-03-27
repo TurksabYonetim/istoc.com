@@ -63,6 +63,16 @@
 			"permlevel": 1
 		},
 		{
+			"fieldname": "kyb_status",
+			"fieldtype": "Select",
+			"label": "KYB Status",
+			"options": "\nPending\nUnder Review\nVerified\nRejected\nExpired",
+			"read_only": 1,
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"permlevel": 1
+		},
+		{
 			"fieldname": "tab_business",
 			"fieldtype": "Tab Break",
 			"label": "İş Bilgileri"
@@ -114,9 +124,14 @@
 			"options": "Country"
 		},
 		{
+			"fieldname": "tab_company",
+			"fieldtype": "Tab Break",
+			"label": "Şirket Detayları"
+		},
+		{
 			"fieldname": "sb_company",
 			"fieldtype": "Section Break",
-			"label": "Şirket Detayları"
+			"label": "Şirket Bilgileri"
 		},
 		{
 			"fieldname": "website",
@@ -132,7 +147,8 @@
 		{
 			"fieldname": "year_established",
 			"fieldtype": "Int",
-			"label": "Year Established"
+			"label": "Year Established",
+			"default": "0"
 		},
 		{
 			"fieldname": "cb_company",
@@ -153,6 +169,37 @@
 			"fieldname": "selling_platforms",
 			"fieldtype": "Small Text",
 			"label": "Selling Platforms"
+		},
+		{
+			"fieldname": "tab_sourcing",
+			"fieldtype": "Tab Break",
+			"label": "Tedarik Tercihleri"
+		},
+		{
+			"fieldname": "sb_sourcing",
+			"fieldtype": "Section Break",
+			"label": "Tercihler"
+		},
+		{
+			"fieldname": "industry_preferences",
+			"fieldtype": "Small Text",
+			"label": "Industry Preferences"
+		},
+		{
+			"fieldname": "sourcing_frequency",
+			"fieldtype": "Select",
+			"label": "Sourcing Frequency",
+			"options": "\nDaily\nWeekly\nMonthly\nQuarterly\nAnnually"
+		},
+		{
+			"fieldname": "cb_sourcing",
+			"fieldtype": "Column Break"
+		},
+		{
+			"fieldname": "annual_spending",
+			"fieldtype": "Select",
+			"label": "Annual Spending",
+			"options": "\nUnder $10K\n$10K-$50K\n$50K-$100K\n$100K-$500K\n$500K+"
 		},
 		{
 			"fieldname": "tab_tax",

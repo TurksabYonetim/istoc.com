@@ -202,20 +202,28 @@
               <!-- ── ATTACH / ATTACH IMAGE ── -->
               <div v-else-if="isAttachField(field)">
                 <!-- Mevcut dosya / görsel önizleme -->
-                <div v-if="formData[field.fieldname]" class="mb-2 flex items-center gap-3">
+                <div v-if="formData[field.fieldname]" class="mb-2">
+                  <!-- Resim önizleme (jpg, jpeg, png, webp) -->
                   <img
-                    v-if="field.fieldtype === 'Attach Image'"
-                    :src="formData[field.fieldname]"
-                    class="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-white/10"
+                    v-if="isImageFile(formData[field.fieldname])"
+                    :src="getFileUrl(formData[field.fieldname])"
+                    class="w-32 h-32 object-cover rounded-lg border border-gray-200 dark:border-white/10 mb-2 cursor-pointer"
                     alt="önizleme"
+                    @click="openInNewTab(formData[field.fieldname])"
                   />
-                  <div class="flex-1 min-w-0">
-                    <p class="text-xs text-gray-500 truncate">{{ formData[field.fieldname] }}</p>
-                    <button
-                      type="button"
-                      class="text-xs text-red-500 hover:text-red-700 mt-1"
-                      @click="formData[field.fieldname] = ''"
-                    >Kaldır</button>
+                  <!-- PDF ikonu -->
+                  <div v-else-if="isPdfFile(formData[field.fieldname])" class="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-200 dark:border-red-800/30 mb-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-red-500 flex-shrink-0"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2v6h6M9 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <span class="text-xs text-red-600 dark:text-red-400 font-medium truncate flex-1">{{ getFileName(formData[field.fieldname]) }}</span>
+                  </div>
+                  <!-- Diğer dosyalar -->
+                  <div v-else class="flex items-center gap-2 p-3 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10 mb-2">
+                    <AppIcon name="paperclip" :size="16" class="text-gray-400 flex-shrink-0" />
+                    <span class="text-xs text-gray-500 truncate flex-1">{{ getFileName(formData[field.fieldname]) }}</span>
+                  </div>
+                  <!-- Aksiyonlar -->
+                  <div class="flex items-center gap-3">
+                    <button type="button" class="text-xs text-red-500 hover:text-red-700" @click="formData[field.fieldname] = ''">Kaldır</button>
                   </div>
                 </div>
                 <!-- Upload alanı -->
@@ -535,11 +543,66 @@ const quickActions = computed(() => {
     ]
   }
 
+  if (doctype.value === 'KYB Verification') {
+    const status = formData.value.status || ''
+    return [
+      {
+        key: 'verify',
+        label: 'Doğrula',
+        icon: 'check-circle',
+        class: 'text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-950',
+        disabled: status === 'Verified',
+        newStatus: 'Verified',
+      },
+      {
+        key: 'reviewing',
+        label: 'İnceleniyor',
+        icon: 'clock',
+        class: 'text-amber-600 border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-950',
+        disabled: status === 'Under Review',
+        newStatus: 'Under Review',
+      },
+      {
+        key: 'reject',
+        label: 'Reddet',
+        icon: 'x-circle',
+        class: 'text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950',
+        disabled: status === 'Rejected',
+        newStatus: 'Rejected',
+      },
+    ]
+  }
+
   return []
 })
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function isAttachField(field) { return ATTACH_TYPES.includes(field.fieldtype) }
+
+function isImageFile(url) {
+  if (!url) return false
+  const ext = url.split('.').pop()?.toLowerCase() || ''
+  return ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)
+}
+
+function isPdfFile(url) {
+  if (!url) return false
+  return url.split('.').pop()?.toLowerCase() === 'pdf'
+}
+
+function getFileName(url) {
+  if (!url) return ''
+  return decodeURIComponent(url.split('/').pop() || url)
+}
+
+function getFileUrl(url) {
+  // URL'ler relative — nginx proxy backend'e yönlendirir
+  return url || ''
+}
+
+function openInNewTab(url) {
+  if (url) window.open(getFileUrl(url), '_blank')
+}
 
 async function uploadFile(field, file) {
   if (!file) return
@@ -547,7 +610,7 @@ async function uploadFile(field, file) {
   try {
     const fd = new FormData()
     fd.append('file', file)
-    fd.append('is_private', '0')
+    fd.append('is_private', '1')
     if (!isNew.value) {
       fd.append('doctype', doctype.value)
       fd.append('docname', docName.value)

@@ -60,9 +60,14 @@
 			"in_standard_filter": 1
 		},
 		{
+			"fieldname": "tab_contact",
+			"fieldtype": "Tab Break",
+			"label": "İletişim"
+		},
+		{
 			"fieldname": "sb_contact",
 			"fieldtype": "Section Break",
-			"label": "İletişim"
+			"label": "İletişim Bilgileri"
 		},
 		{
 			"fieldname": "city",
@@ -156,7 +161,8 @@
 		{
 			"fieldname": "year_established",
 			"fieldtype": "Int",
-			"label": "Year Established"
+			"label": "Year Established",
+			"default": "0"
 		},
 		{
 			"fieldname": "cb_more",

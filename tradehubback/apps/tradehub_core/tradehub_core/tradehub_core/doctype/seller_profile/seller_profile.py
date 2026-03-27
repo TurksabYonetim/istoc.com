@@ -77,7 +77,8 @@ class SellerProfile(Document):
 		# ── Shared fields → Buyer Profile sync ──
 		shared_fields = ["avatar", "website", "job_title", "year_established",
 		                 "employee_count", "about_us", "selling_platforms",
-		                 "city", "postal_code"]
+		                 "city", "postal_code",
+		                 "industry_preferences", "sourcing_frequency", "annual_spending"]
 		buyer_profile = frappe.db.get_value("Buyer Profile", {"user": self.user}, "name")
 		if buyer_profile:
 			for field in shared_fields:

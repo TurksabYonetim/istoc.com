@@ -407,13 +407,27 @@ export function initSupplierSetupForm(options: SupplierSetupFormOptions = {}): v
           reader.readAsDataURL(file);
         });
 
-        const result = await callMethod<{ file_url: string }>(
-          'tradehub_core.api.v1.identity.upload_private_file',
-          { filename: file.name, filedata: base64 },
-          true,
-        );
-        uploadedFileUrl = result.file_url || '';
-        if (fileNameEl) fileNameEl.textContent = file.name;
+        // Retry once if first attempt fails (session cookie may not be set yet)
+        let result: { file_url: string } | null = null;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            result = await callMethod<{ file_url: string }>(
+              'tradehub_core.api.v1.identity.upload_private_file',
+              { filename: file.name, filedata: base64 },
+              true,
+            );
+            break;
+          } catch {
+            if (attempt === 0) await new Promise(r => setTimeout(r, 500));
+          }
+        }
+
+        if (result?.file_url) {
+          uploadedFileUrl = result.file_url;
+          if (fileNameEl) fileNameEl.textContent = file.name;
+        } else {
+          throw new Error('Upload failed');
+        }
       } catch {
         uploadedFileUrl = '';
         if (fileNameEl) fileNameEl.textContent = t('auth.supplierSetup.uploadFailed') || 'Yukleme basarisiz. Tekrar deneyin.';

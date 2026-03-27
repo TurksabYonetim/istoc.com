@@ -94,6 +94,7 @@ export const adminPanelSections = {
         { label: 'Satıcı Profilleri',  icon: 'user-check',   doctype: 'Seller Profile' },
         { label: 'Mağazalar',          icon: 'store',        doctype: 'Admin Seller Profile' },
         { label: 'Tedarikçi Profili',  icon: 'building-2',   doctype: 'Supplier Profile' },
+        { label: 'KYB Doğrulama',    icon: 'shield-check', doctype: 'KYB Verification' },
       ],
     },
     {
@@ -187,6 +188,7 @@ export const sellerPanelSections = {
       color: '#f59e0b',
       items: [
         { label: 'Profilim',     icon: 'user-check',   doctype: 'Seller Profile',      sellerOwned: true },
+        { label: 'KYB Doğrulama', icon: 'shield-check', doctype: 'KYB Verification',   sellerOwned: true },
         { label: 'Bakiyem',      icon: 'wallet',        doctype: 'Seller Balance',      sellerOwned: true },
       ],
     },

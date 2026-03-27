@@ -62,42 +62,26 @@ const emptyProfile: ProfileData = {
 
 // ── Dynamic Select Options from DocType Meta ────────────────────
 
-const _optionsCache: Record<string, string[]> = {};
+const _optionsCache: Record<string, Record<string, string[]>> = {};
 
-async function fetchSelectOptions(doctype: string, fieldname: string): Promise<string[]> {
-  const key = `${doctype}:${fieldname}`;
-  if (_optionsCache[key]) return _optionsCache[key];
+async function loadDocTypeSelectOptions(doctype: string): Promise<Record<string, string[]>> {
+  if (_optionsCache[doctype]) return _optionsCache[doctype];
   try {
-    const res = await api<{ message: { fields: { fieldname: string; fieldtype: string; options?: string }[] } }>(
-      `/method/frappe.desk.form.load.getdoctype?doctype=${encodeURIComponent(doctype)}&with_parent=0`
+    const res = await api<{ message: Record<string, string[]> }>(
+      `/method/tradehub_core.api.v1.auth.get_select_options?doctype=${encodeURIComponent(doctype)}`
     );
-    const fields = res.message?.fields || [];
-    for (const f of fields) {
-      if (f.fieldtype === 'Select' && f.options) {
-        _optionsCache[`${doctype}:${f.fieldname}`] = f.options.split('\n').filter(Boolean);
-      }
-    }
-    return _optionsCache[key] || [];
+    _optionsCache[doctype] = res.message || {};
+    return _optionsCache[doctype];
   } catch {
-    return [];
+    return {};
   }
 }
 
-let buyerSelectOptions: Record<string, string[]> = {};
-let sellerSelectOptions: Record<string, string[]> = {};
+let selectOptions: Record<string, string[]> = {};
 
-async function loadAllSelectOptions(): Promise<void> {
-  await fetchSelectOptions('Buyer Profile', 'business_type');
-  buyerSelectOptions = {
-    business_type: _optionsCache['Buyer Profile:business_type'] || [],
-    employee_count: _optionsCache['Buyer Profile:employee_count'] || [],
-    sourcing_frequency: _optionsCache['Buyer Profile:sourcing_frequency'] || [],
-    annual_spending: _optionsCache['Buyer Profile:annual_spending'] || [],
-  };
-  await fetchSelectOptions('Seller Profile', 'employee_count');
-  sellerSelectOptions = {
-    employee_count: _optionsCache['Seller Profile:employee_count'] || [],
-  };
+async function loadSelectOptionsForType(accountType: string): Promise<void> {
+  const doctype = accountType === 'seller' ? 'Seller Profile' : 'Buyer Profile';
+  selectOptions = await loadDocTypeSelectOptions(doctype);
 }
 
 // ── API ──────────────────────────────────────────────────────────
@@ -147,7 +131,7 @@ function viewRow(label: string, value: string | undefined | null, extra?: string
   `;
 }
 
-function selectOptions(options: string[], selected: string): string {
+function renderSelectOpts(options: string[], selected: string): string {
   return ['', ...options].map(opt =>
     `<option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt || t('settings.incompleteLabel')}</option>`
   ).join('');
@@ -261,7 +245,7 @@ function buyerBusinessView(d: ProfileData): string {
 function buyerBusinessEdit(d: ProfileData): string {
   return `
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.businessTypeLabel')}</label>
-    <select class="${inputCls} bg-white cursor-pointer" data-field="business_type">${selectOptions(buyerSelectOptions.business_type || [], d.business_type || '')}</select></div>
+    <select class="${inputCls} bg-white cursor-pointer" data-field="business_type">${renderSelectOpts(selectOptions.business_type || [], d.business_type || '')}</select></div>
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.companyNameLabel')}</label>
     <input type="text" class="${inputCls}" data-field="company_name" value="${d.company_name || d.business_name || ''}" /></div>
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.addressLabel') || 'Address'}</label>
@@ -284,8 +268,8 @@ function moreInfoView(d: ProfileData): string {
   `;
 }
 
-function moreInfoEdit(d: ProfileData, isSeller = false): string {
-  const ecOptions = (isSeller ? sellerSelectOptions : buyerSelectOptions).employee_count || [];
+function moreInfoEdit(d: ProfileData): string {
+  const ecOptions = selectOptions.employee_count || [];
   return `
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.sellingPlatformsLabel')}</label>
     <input type="text" class="${inputCls}" data-field="selling_platforms" value="${d.selling_platforms || ''}" placeholder="Amazon, Trendyol, Hepsiburada..." /></div>
@@ -293,7 +277,7 @@ function moreInfoEdit(d: ProfileData, isSeller = false): string {
       <div><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.yearEstablishedLabel')}</label>
       <input type="number" class="${inputCls}" data-field="year_established" value="${d.year_established || ''}" placeholder="2020" /></div>
       <div><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.employeeCountLabel')}</label>
-      <select class="${inputCls} bg-white cursor-pointer" data-field="employee_count">${selectOptions(ecOptions, d.employee_count || '')}</select></div>
+      <select class="${inputCls} bg-white cursor-pointer" data-field="employee_count">${renderSelectOpts(ecOptions, d.employee_count || '')}</select></div>
     </div>
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.aboutUsLabel')}</label>
     <textarea class="${inputCls} resize-none" rows="3" data-field="about_us" placeholder="${t('settings.aboutUsLabel')}">${d.about_us || ''}</textarea></div>
@@ -309,16 +293,16 @@ function sourcingPrefsView(d: ProfileData): string {
 }
 
 function sourcingPrefsEdit(d: ProfileData): string {
-  const sfOptions = buyerSelectOptions.sourcing_frequency || [];
-  const asOptions = buyerSelectOptions.annual_spending || [];
+  const sfOptions = selectOptions.sourcing_frequency || [];
+  const asOptions = selectOptions.annual_spending || [];
   return `
     <div class="mb-4"><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.industryPrefsLabel')}</label>
     <input type="text" class="${inputCls}" data-field="industry_preferences" value="${d.industry_preferences || ''}" placeholder="${t('settings.industryPrefsLabel')}" /></div>
     <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-4 mb-4">
       <div><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.sourcingFreqLabel')}</label>
-      <select class="${inputCls} bg-white cursor-pointer" data-field="sourcing_frequency">${selectOptions(sfOptions, d.sourcing_frequency || '')}</select></div>
+      <select class="${inputCls} bg-white cursor-pointer" data-field="sourcing_frequency">${renderSelectOpts(sfOptions, d.sourcing_frequency || '')}</select></div>
       <div><label class="${labelCls}" style="color:var(--color-text-muted)">${t('settings.annualSpendingLabel')}</label>
-      <select class="${inputCls} bg-white cursor-pointer" data-field="annual_spending">${selectOptions(asOptions, d.annual_spending || '')}</select></div>
+      <select class="${inputCls} bg-white cursor-pointer" data-field="annual_spending">${renderSelectOpts(asOptions, d.annual_spending || '')}</select></div>
     </div>
   `;
 }
@@ -387,13 +371,10 @@ function renderAllCards(d: ProfileData): string {
   const cards = [
     renderCard('basic', t('settings.cardBasicInfo'), CARD_ICONS.basic, basicView, basicEdit),
     renderCard('business', t('settings.cardBusinessInfo'), CARD_ICONS.business, businessView, businessEdit, businessHint),
-    renderCard('more', t('settings.cardMoreInfo'), CARD_ICONS.more, moreInfoView(d), moreInfoEdit(d, isSeller), moreHint),
+    renderCard('more', t('settings.cardMoreInfo'), CARD_ICONS.more, moreInfoView(d), moreInfoEdit(d), moreHint),
   ];
 
-  // Buyer gets Sourcing Preferences, Seller doesn't
-  if (!isSeller) {
-    cards.push(renderCard('sourcing', t('settings.cardSourcingPrefs'), CARD_ICONS.sourcing, sourcingPrefsView(d), sourcingPrefsEdit(d), sourcingHint));
-  }
+  cards.push(renderCard('sourcing', t('settings.cardSourcingPrefs'), CARD_ICONS.sourcing, sourcingPrefsView(d), sourcingPrefsEdit(d), sourcingHint));
 
   return cards.join('');
 }
@@ -417,8 +398,8 @@ export function initSettingsAccountEdit(): void {
   let current: ProfileData = { ...emptyProfile };
 
   async function loadAndRender() {
-    await Promise.all([loadAllSelectOptions(), fetchCountryList()]);
     current = await fetchProfile();
+    await Promise.all([loadSelectOptionsForType(current.account_type), fetchCountryList()]);
     root!.innerHTML = `<div class="flex flex-col gap-5">${renderAllCards(current)}</div>`;
     bindEvents();
   }

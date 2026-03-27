@@ -111,6 +111,8 @@ Alpine.data('registerPage', () => ({
   },
 
   async submitEmail() {
+    if (this.loading) return; // Prevent double submit
+
     const input = (this.$refs as Record<string, HTMLInputElement>).emailInput;
     const value = input?.value.trim() || '';
 

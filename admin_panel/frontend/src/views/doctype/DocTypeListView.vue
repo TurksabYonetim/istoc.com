@@ -272,6 +272,10 @@ const SELLER_AUTO_FILTERS = {
   'Seller Profile': (user) => user.seller_profile
     ? [['name', '=', user.seller_profile]]
     : [],
+  // KYB Verification — sadece kendi KYB kaydı
+  'KYB Verification': (user) => user.email
+    ? [['user', '=', user.email]]
+    : [],
   // Aşağıdakiler seller = Admin Seller Profile.name
   'Seller Balance': (user) => user.admin_seller_profile?.name
     ? [['seller', '=', user.admin_seller_profile.name]]
@@ -299,7 +303,7 @@ const ADMIN_ONLY_DOCTYPES = new Set([
 // Satıcının yeni kayıt oluşturamayacağı doctype'lar (sistem tarafından yönetilir)
 const NO_CREATE_FOR_SELLER = new Set([
   'Seller Profile', 'Seller Balance', 'Seller Application',
-  'Buyer Profile', 'Admin Seller Profile',
+  'Buyer Profile', 'Admin Seller Profile', 'KYB Verification',
 ])
 
 const canCreate = computed(() => {

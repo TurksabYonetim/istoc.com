@@ -13,6 +13,24 @@ def _generate_member_id(email: str, creation) -> str:
 	return f"TH-{digest}"
 
 
+@frappe.whitelist(methods=["GET"])
+def get_select_options(doctype: str):
+	"""Return all Select field options for a given DocType.
+
+	Used by frontend to dynamically populate dropdowns.
+	"""
+	allowed = {"Buyer Profile", "Seller Profile", "KYB Verification"}
+	if doctype not in allowed:
+		frappe.throw(_("Not allowed."), frappe.PermissionError)
+
+	meta = frappe.get_meta(doctype)
+	result = {}
+	for f in meta.fields:
+		if f.fieldtype == "Select" and f.options:
+			result[f.fieldname] = [o for o in f.options.split("\n") if o]
+	return result
+
+
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 @rate_limit(limit=30, seconds=300)
 def check_email_exists(email: str):
@@ -104,6 +122,16 @@ def get_session_user():
 
 	member_id = _generate_member_id(user_data.email, user_data.creation)
 
+	# KYB verification status
+	kyb_status = (
+		frappe.db.get_value(
+			"KYB Verification",
+			{"user": frappe.session.user},
+			"status",
+		)
+		or None
+	)
+
 	return {
 		"logged_in": True,
 		"user": {
@@ -122,6 +150,7 @@ def get_session_user():
 			"seller_application_status": seller_application_status,
 			"seller_profile": seller_profile,
 			"admin_seller_profile": admin_seller_profile,
+			"kyb_status": kyb_status,
 		},
 	}
 
@@ -184,7 +213,8 @@ def get_user_profile():
 			 "tax_id_type", "tax_office", "address_line_1", "city",
 			 "bank_name", "iban", "account_holder_name",
 			 "avatar", "website", "job_title", "year_established",
-			 "employee_count", "about_us", "selling_platforms", "postal_code"],
+			 "employee_count", "about_us", "selling_platforms", "postal_code",
+			 "industry_preferences", "sourcing_frequency", "annual_spending"],
 			as_dict=True,
 		)
 		if sp:
@@ -210,6 +240,9 @@ def get_user_profile():
 				"about_us": sp.about_us or "",
 				"selling_platforms": sp.selling_platforms or "",
 				"postal_code": sp.postal_code or "",
+				"industry_preferences": sp.industry_preferences or "",
+				"sourcing_frequency": sp.sourcing_frequency or "",
+				"annual_spending": sp.annual_spending or "",
 			})
 			return base
 
@@ -382,6 +415,9 @@ def update_user_profile(
 
 	# Seller Profile
 	seller_profile = frappe.db.get_value("Seller Profile", {"user": user}, "name")
+	roles = frappe.get_roles(user)
+	is_admin = "System Manager" in roles or "Marketplace Admin" in roles
+
 	if seller_profile:
 		updates = {}
 		if first_name is not None or last_name is not None:
@@ -396,15 +432,16 @@ def update_user_profile(
 			updates["address_line_1"] = address
 		if city is not None:
 			updates["city"] = city
-		if tax_id_type is not None:
+		# permlevel 1 fields — admin only
+		if tax_id_type is not None and is_admin:
 			updates["tax_id_type"] = tax_id_type
-		if tax_office is not None:
+		if tax_office is not None and is_admin:
 			updates["tax_office"] = tax_office
-		if bank_name is not None:
+		if bank_name is not None and is_admin:
 			updates["bank_name"] = bank_name
-		if iban is not None:
+		if iban is not None and is_admin:
 			updates["iban"] = iban
-		if account_holder_name is not None:
+		if account_holder_name is not None and is_admin:
 			updates["account_holder_name"] = account_holder_name
 		if avatar is not None:
 			updates["avatar"] = avatar
@@ -422,6 +459,12 @@ def update_user_profile(
 			updates["selling_platforms"] = selling_platforms
 		if postal_code is not None:
 			updates["postal_code"] = postal_code
+		if industry_preferences is not None:
+			updates["industry_preferences"] = industry_preferences
+		if sourcing_frequency is not None:
+			updates["sourcing_frequency"] = sourcing_frequency
+		if annual_spending is not None:
+			updates["annual_spending"] = annual_spending
 		for field, value in updates.items():
 			frappe.db.set_value("Seller Profile", seller_profile, field, value)
 
